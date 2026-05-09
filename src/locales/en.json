@@ -1,6 +1,32 @@
 {
+  "option": {
+    "home": "Home",
+    "about": "About",
+    "catalog": "Catalog",
+    "ordering": "Orders",
+    "fulfillment": "Fulfillment",
+    "payment": "Payment",
+    "reporting": "Reports"
+  },
+  "authoring-phrase": {
+    "intro": "Made with",
+    "use": "using",
+    "author": "by {brand} Development Team"
+  },
   "about": {
-    "title": "About",
-    "content": "Temporary content"
+    "title": "About Us",
+    "content": "FullTank is a fuel delivery and fleet management platform."
+  },
+  "home": {
+    "title": "FullTank Platform",
+    "subtitle": "Fuel ordering and logistics management system for businesses."
+  },
+  "page-not-found": {
+    "title": "Page Not Found",
+    "content": "The path {unavailable-route} is not available.",
+    "go-home": "Go Home"
+  },
+  "errors": {
+    "occurred": "Errors occurred"
   }
 }
