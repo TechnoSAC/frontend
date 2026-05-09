@@ -18,8 +18,8 @@
     "content": "FullTank is a fuel delivery and fleet management platform."
   },
   "home": {
-    "title": "Welcome",
-    "content": "Welcome to FullTank."
+    "title": "FullTank Platform",
+    "subtitle": "Fuel ordering and logistics management system for businesses."
   },
   "page-not-found": {
     "title": "Page Not Found",
