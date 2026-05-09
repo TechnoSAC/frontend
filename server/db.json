@@ -1,0 +1,44 @@
+{
+  "catalog": [
+    {
+      "id": 1,
+      "name": "Premium Diesel",
+      "type": "GASOLINE_90",
+      "description": "-Premium Gasoline",
+      "pricePerLiter": 23,
+      "unit": "GALLONS"
+    },
+    {
+      "id": 2,
+      "name": "Regular Gasoline",
+      "type": "GASOLINE_84",
+      "description": "-Regular Gasoline",
+      "pricePerLiter": 18,
+      "unit": "GALLONS"
+    },
+    {
+      "id": 3,
+      "name": "Super Gasoline",
+      "type": "GASOLINE_95",
+      "description": "-Super Gasoline",
+      "pricePerLiter": 26,
+      "unit": "GALLONS"
+    },
+    {
+      "id": 4,
+      "name": "Eco Diesel",
+      "type": "DIESEL_B5",
+      "description": "-Eco Diesel",
+      "pricePerLiter": 21,
+      "unit": "GALLONS"
+    },
+    {
+      "id": 5,
+      "name": "Premium Plus",
+      "type": "GASOLINE_97",
+      "description": "-Premium Plus Gasoline",
+      "pricePerLiter": 29,
+      "unit": "GALLONS"
+    }
+  ]
+}
