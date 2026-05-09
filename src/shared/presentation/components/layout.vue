@@ -1,68 +1,63 @@
 <script setup>
 import LanguageSwitcher from "./language-switcher.vue";
 import FooterContent from "./footer-content.vue";
-import { ref } from "vue";
 import { useI18n } from "vue-i18n";
-// To import when IAM is implemented
 // import AuthenticationSection from "../../../iam/presentation/components/authentication-section.vue";
 
 const { t } = useI18n();
-
-const drawer = ref(false);
-const toggleDrawer = () => {
-  drawer.value = !drawer.value;
-};
-
-const items = [
-  { label: 'option.home',       to: '/home' },
-  { label: 'option.about',      to: '/about' },
-  { label: 'option.catalog',    to: '/catalog/products' },
-  { label: 'option.ordering',   to: '/ordering/requests' },
-  { label: 'option.fulfillment',to: '/fulfillment/vehicles' },
-  { label: 'option.payment',    to: '/payment' },
-  { label: 'option.reporting',  to: '/reporting/dashboard' },
-];
 </script>
 
 <template>
   <pv-toast/>
   <pv-confirm-dialog/>
   <div class="header">
-    <pv-toolbar class="bg-primary">
+    <pv-toolbar>
       <template #start>
-        <pv-button class="p-button-text" icon="pi pi-bars" @click="toggleDrawer"/>
-        <h3>FullTank</h3>
-      </template>
-      <template #center>
-
+        <div class="brand">
+          <img src="/fulltank-logo.png" alt="FullTank Logo" class="brand-logo"/>
+          <span class="brand-name">FullTank</span>
+        </div>
       </template>
       <template #end>
-        <div class="flex-column mr-3">
-          <pv-button v-for="item in items" :key="item.label" as-child v-slot="slotProps">
-            <router-link :to="item.to" :class="slotProps['class']">{{ t(item.label) }}</router-link>
-          </pv-button>
-        </div>
-        <!-- To add when IAM is implemented -->
         <!-- <authentication-section/> -->
         <language-switcher/>
       </template>
     </pv-toolbar>
-    <pv-drawer v-model:visible="drawer"/>
   </div>
   <div class="main-content">
     <router-view/>
   </div>
   <div class="footer">
-    <footer-content/>
   </div>
 </template>
 
 <style scoped>
 .header {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   width: 100%;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.brand-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1A73E8;  /* azul del documento */
 }
 
 .main-content {
@@ -70,7 +65,7 @@ const items = [
 }
 
 .footer {
-  position: absolute;
+  position: relative;
   bottom: 0;
   left: 0;
   width: 100%;
