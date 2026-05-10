@@ -142,8 +142,8 @@ onMounted(() => {
               <td colspan="6" class="empty-row">{{ t('catalog.product-list.no-products') }}</td>
             </tr>
             <tr v-for="product in products" :key="product.id">
-              <td>{{ product.productName }}</td>
-              <td>{{ formatFuelType(product.fuelType) }}</td>
+              <td>{{ product.name }}</td>
+              <td>{{ formatFuelType(product.type) }}</td>
               <td>S/ {{ Number(product.pricePerLiter).toFixed(2) }}</td>
               <td>{{ product.unit }}</td>
               <td class="desc-col">{{ product.description }}</td>
