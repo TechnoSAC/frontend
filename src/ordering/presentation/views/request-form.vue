@@ -124,8 +124,7 @@ const saveRequest = () => {
               <i class="pi pi-chevron-up chevron" :class="{ 'rotated': !ordersExpanded }"/>
             </a>
             <div v-if="ordersExpanded" class="sub-nav">
-              <router-link to="/ordering/requests" class="sub-item">My Requests</router-link>
-              <router-link to="/ordering/requests/new" class="sub-item active-sub">New Request</router-link>
+              <router-link to="/ordering/pending" class="sub-item">Pending Requests</router-link>
             </div>
           </div>
           <a class="side-item">
