@@ -2,6 +2,7 @@
 import { useRouter } from "vue-router";
 import { useConfirm } from "primevue/useconfirm";
 import { onMounted, ref, toRefs } from "vue";
+import { useI18n } from "vue-i18n";
 import useCatalogStore from "../../application/catalog.store.js";
 
 const router = useRouter();
@@ -9,6 +10,7 @@ const confirm = useConfirm();
 const store = useCatalogStore();
 const { products, errors, productsLoaded, loading } = toRefs(store);
 const { fetchProducts, deleteProduct, clearErrors } = store;
+const { t, locale } = useI18n();
 
 const sidebarCollapsed = ref(false);
 const catalogExpanded = ref(true);
@@ -49,14 +51,17 @@ onMounted(() => {
           <i class="pi pi-bars"/>
         </button>
         <div class="brand">
-          <div class="brand-logo"><i class="pi pi-bolt"/></div>
-          <span class="brand-name">FullTank</span>
+          <img src="/fulltank-logo.png" alt="FullTank" class="brand-logo-img"/>
         </div>
       </div>
       <div class="topbar-right">
         <div class="lang-switch">
-          <button class="lang-btn active"><i class="pi pi-check"/> EN</button>
-          <button class="lang-btn">ES</button>
+          <button class="lang-btn" :class="{ active: locale === 'en' }" @click="locale = 'en'">
+            <i v-if="locale === 'en'" class="pi pi-check"/> EN
+          </button>
+          <button class="lang-btn" :class="{ active: locale === 'es' }" @click="locale = 'es'">
+            <i v-if="locale === 'es'" class="pi pi-check"/> ES
+          </button>
         </div>
         <button class="icon-btn"><i class="pi pi-bell"/></button>
       </div>
@@ -67,32 +72,32 @@ onMounted(() => {
       <aside class="sidebar" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
         <nav class="side-nav">
           <a class="side-item">
-            <i class="pi pi-th-large"/><span>Dashboard</span>
+            <i class="pi pi-th-large"/><span>{{ t('option.dashboard') }}</span>
           </a>
           <div class="side-group">
             <a class="side-item active-group" @click="catalogExpanded = !catalogExpanded">
-              <i class="pi pi-box"/><span>Catalog</span>
+              <i class="pi pi-box"/><span>{{ t('option.catalog') }}</span>
               <i class="pi pi-chevron-up chevron" :class="{ 'rotated': !catalogExpanded }"/>
             </a>
             <div v-if="catalogExpanded" class="sub-nav">
-              <router-link to="/catalog/products" class="sub-item active-sub">Product Inventory</router-link>
-              <router-link to="/catalog/products/new" class="sub-item">Add Product</router-link>
+              <router-link to="/catalog/products" class="sub-item active-sub">{{ t('option.product-inventory') }}</router-link>
+              <router-link to="/catalog/products/new" class="sub-item">{{ t('option.add-product') }}</router-link>
             </div>
           </div>
           <a class="side-item">
-            <i class="pi pi-shopping-cart"/><span>Orders</span>
+            <i class="pi pi-shopping-cart"/><span>{{ t('option.ordering') }}</span>
             <i class="pi pi-chevron-down chevron"/>
           </a>
           <a class="side-item">
-            <i class="pi pi-truck"/><span>Fulfillment</span>
+            <i class="pi pi-truck"/><span>{{ t('option.fulfillment') }}</span>
             <i class="pi pi-chevron-down chevron"/>
           </a>
           <a class="side-item">
-            <i class="pi pi-credit-card"/><span>Payment</span>
+            <i class="pi pi-credit-card"/><span>{{ t('option.payment') }}</span>
             <i class="pi pi-chevron-down chevron"/>
           </a>
           <a class="side-item">
-            <i class="pi pi-chart-bar"/><span>Reports</span>
+            <i class="pi pi-chart-bar"/><span>{{ t('option.reporting') }}</span>
             <i class="pi pi-chevron-down chevron"/>
           </a>
         </nav>
@@ -102,39 +107,39 @@ onMounted(() => {
       <main class="main-area">
         <div class="page-header">
           <div class="page-title-group">
-            <h1 class="page-title">Product Inventory</h1>
-            <p class="page-subtitle">Manage your fuel products</p>
+            <h1 class="page-title">{{ t('catalog.product-list.title') }}</h1>
+            <p class="page-subtitle">{{ t('catalog.product-list.subtitle') }}</p>
           </div>
           <div class="page-actions">
             <button class="refresh-btn" @click="onRefresh" :disabled="loading">
               <i class="pi pi-refresh" :class="{ 'spinning': loading }"/>
             </button>
             <button class="add-btn" @click="navigateToNew">
-              <i class="pi pi-plus"/><span>Add Product</span>
+              <i class="pi pi-plus"/><span>{{ t('option.add-product') }}</span>
             </button>
           </div>
         </div>
 
         <div v-if="errors.length" class="error-banner">
           <i class="pi pi-exclamation-circle"/>
-          <span>Failed to fetch entities: {{ errors[0]?.message || 'Unknown Error' }}</span>
+          <span>{{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}</span>
         </div>
 
         <div class="table-card">
           <table class="products-table">
             <thead>
             <tr>
-              <th>Product Name</th>
-              <th>Fuel Type</th>
-              <th>Price per Liter</th>
-              <th>Unit</th>
-              <th>Description</th>
+              <th>{{ t('catalog.product-list.col-name') }}</th>
+              <th>{{ t('catalog.product-list.col-fuel') }}</th>
+              <th>{{ t('catalog.product-list.col-price') }}</th>
+              <th>{{ t('catalog.product-list.col-unit') }}</th>
+              <th>{{ t('catalog.product-list.col-desc') }}</th>
               <th class="actions-col"></th>
             </tr>
             </thead>
             <tbody>
             <tr v-if="!loading && products.length === 0">
-              <td colspan="6" class="empty-row">No products available</td>
+              <td colspan="6" class="empty-row">{{ t('catalog.product-list.no-products') }}</td>
             </tr>
             <tr v-for="product in products" :key="product.id">
               <td>{{ product.productName }}</td>
@@ -178,13 +183,11 @@ onMounted(() => {
 }
 .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
 .brand { display: flex; align-items: center; gap: 0.5rem; }
-.brand-logo {
-  width: 32px; height: 32px; background: #1E3A8A;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  color: #fff; font-size: 1rem;
+.brand-logo-img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
 }
-.brand-name { font-size: 1.25rem; font-weight: 700; color: #1E3A8A; }
 .topbar-right { display: flex; align-items: center; gap: 1rem; }
 .lang-switch { display: flex; background: #EFF2F7; border-radius: 999px; padding: 4px; }
 .lang-btn {
