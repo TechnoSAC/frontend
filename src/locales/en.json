@@ -2,11 +2,14 @@
   "option": {
     "home": "Home",
     "about": "About",
+    "dashboard": "Dashboard",
     "catalog": "Catalog",
+    "product-inventory": "Product Inventory",
+    "add-product": "Add Product",
     "ordering": "Orders",
     "fulfillment": "Fulfillment",
-    "payment": "Payment",
-    "reporting": "Reports"
+    "payment": "Payments",
+    "reporting": "Reporting"
   },
   "authoring-phrase": {
     "intro": "Made with",
@@ -18,15 +21,43 @@
     "content": "FullTank is a fuel delivery and fleet management platform."
   },
   "home": {
-    "title":   "FullTank Platform",
-    "content": "Fuel ordering and logistics management system for businesses"
+    "title": "FullTank Platform",
+    "content": "Fuel order management and logistics system for companies"
   },
   "page-not-found": {
     "title": "Page Not Found",
     "content": "The path {unavailable-route} is not available.",
-    "go-home": "Go Home"
+    "go-home": "Go to Home"
   },
   "errors": {
-    "occurred": "Errors occurred"
+    "occurred": "Errors occurred",
+    "fetch": "Error fetching entities"
+  },
+  "catalog": {
+    "product-list": {
+      "title": "Product Inventory",
+      "subtitle": "Manage your fuel products",
+      "no-products": "No products available",
+      "col-name": "Product Name",
+      "col-fuel": "Fuel Type",
+      "col-price": "Price per Liter",
+      "col-unit": "Unit",
+      "col-desc": "Description"
+    },
+    "product-form": {
+      "title-create": "Create Product",
+      "title-edit": "Edit Product",
+      "subtitle-create": "Add a new fuel product to your catalog",
+      "subtitle-edit": "Update fuel product information",
+      "field-name": "Product Name",
+      "field-fuel": "Fuel Type",
+      "field-desc": "Description",
+      "field-price": "Price per Liter",
+      "field-unit": "Unit",
+      "select-fuel": "Select fuel type",
+      "cancel": "Cancel",
+      "save": "Save Product",
+      "update": "Update Product"
+    }
   }
 }
