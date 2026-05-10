@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const platformApi = import.meta.env.VITE_FULLTANK_API_URL;
+const fulltankApi = import.meta.env.VITE_FULLTANK_API_URL;
 
 /**
  * Shared infrastructure base class that owns the configured Axios client.
@@ -15,7 +15,7 @@ export class BaseApi {
     /** Initializes the shared Axios client with environment-driven configuration. */
     constructor() {
         this.#http = axios.create({
-            baseURL: platformApi,
+            baseURL: fulltankApi,
             headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
         });
     }
