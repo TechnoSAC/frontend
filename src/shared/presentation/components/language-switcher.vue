@@ -12,5 +12,4 @@ const { locale, availableLocales } = useI18n();
 </template>
 
 <style scoped>
-
 </style>

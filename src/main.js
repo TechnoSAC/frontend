@@ -5,6 +5,26 @@ import PrimeVue from 'primevue/config';
 import Material from '@primeuix/themes/material';
 import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css';
+
+import { definePreset } from '@primeuix/themes';
+const FullTankTheme = definePreset(Material, {
+    semantic: {
+        primary: {
+            50:  '#eff6ff',
+            100: '#dbeafe',
+            200: '#bfdbfe',
+            300: '#93c5fd',
+            400: '#60a5fa',
+            500: '#3b82f6',
+            600: '#2563eb',
+            700: '#1d4ed8',
+            800: '#1e40af',
+            900: '#1e3a8a',
+            950: '#172554'
+        }
+    }
+});
+
 import {
     Button,
     Card,
@@ -24,7 +44,7 @@ createApp(App)
     .use(pinia)
     .use(router)
     .use(i18n)
-    .use(PrimeVue, { theme: { preset: Material}, ripple: true})
+    .use(PrimeVue, { theme: { preset: FullTankTheme, options: { darkModeSelector: false } }, ripple: true })
     .use(ConfirmationService)
     .use(DialogService)
     .use(ToastService)
