@@ -2,7 +2,10 @@
   "option": {
     "home": "Inicio",
     "about": "Acerca de",
+    "dashboard": "Panel",
     "catalog": "Catálogo",
+    "product-inventory": "Inventario de Productos",
+    "add-product": "Agregar Producto",
     "ordering": "Pedidos",
     "fulfillment": "Despacho",
     "payment": "Pagos",
@@ -27,6 +30,34 @@
     "go-home": "Ir al Inicio"
   },
   "errors": {
-    "occurred": "Ocurrieron errores"
+    "occurred": "Ocurrieron errores",
+    "fetch": "Error al obtener entidades"
+  },
+  "catalog": {
+    "product-list": {
+      "title":       "Inventario de Productos",
+      "subtitle":    "Gestiona tus productos de combustible",
+      "no-products": "No hay productos disponibles",
+      "col-name":    "Nombre del Producto",
+      "col-fuel":    "Tipo de Combustible",
+      "col-price":   "Precio por Litro",
+      "col-unit":    "Unidad",
+      "col-desc":    "Descripción"
+    },
+    "product-form": {
+      "title-create":    "Crear Producto",
+      "title-edit":      "Editar Producto",
+      "subtitle-create": "Agrega un nuevo producto de combustible a tu catálogo",
+      "subtitle-edit":   "Actualiza la información del producto de combustible",
+      "field-name":      "Nombre del Producto",
+      "field-fuel":      "Tipo de Combustible",
+      "field-desc":      "Descripción",
+      "field-price":     "Precio por Litro",
+      "field-unit":      "Unidad",
+      "select-fuel":     "Selecciona el tipo de combustible",
+      "cancel":          "Cancelar",
+      "save":            "Guardar Producto",
+      "update":          "Actualizar Producto"
+    }
   }
-}
+}
