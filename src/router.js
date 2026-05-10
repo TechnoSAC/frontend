@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "./shared/presentation/views/home.vue";
+import catalogRoutes from "./catalog/presentation/catalog-routes.js";
+import { RouterView } from 'vue-router';
 // To import when IAM is implemented
 // import iamRoutes from "./iam/presentation/iam-routes.js";
 
 // Lazy-loaded routes
-const about        = () => import('./shared/presentation/views/about.vue');
+const about = () => import('./shared/presentation/views/about.vue');
 const pageNotFound = () => import('./shared/presentation/views/page-not-found.vue');
 
 // Lazy-loaded BC routes (uncomment as each BC is implemented)
@@ -34,10 +36,11 @@ const routes = [
 
 // Routes version without IAM and BCs not yet implemented
 const routes = [
-    { path: '/home',            name: 'home',      component: Home,         meta: { title: 'Home' } },
-    { path: '/about',           name: 'about',     component: about,        meta: { title: 'About' } },
-    { path: '/',                redirect: '/home' },
-    { path: '/:pathMatch(.*)*', name: 'not-found', component: pageNotFound, meta: { title: 'Page Not Found' } }
+    { path: '/home', name: 'home', component: Home, meta: { title: 'Home' } },
+    { path: '/about', name: 'about', component: about, meta: { title: 'About' } },
+    { path: '/', redirect: '/home' },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: pageNotFound, meta: { title: 'Page Not Found' } },
+    { path: '/catalog', component: RouterView, children: catalogRoutes }
 ];
 
 const router = createRouter({
