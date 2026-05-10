@@ -40,5 +40,19 @@
       "pricePerLiter": 29,
       "unit": "GALLONS"
     }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "clientId": 101,
+      "providerId": 201,
+      "fuelType": "DIESEL_B5",
+      "quantity": 5000,
+      "unit": "GALLONS",
+      "deliveryAddress": "Av. Arequipa 123, Lima",
+      "deliveryDate": "2026-05-15",
+      "status": "PENDING",
+      "createdAt": "2026-05-10T10:30:00Z"
+    }
   ]
 }
