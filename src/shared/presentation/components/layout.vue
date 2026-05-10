@@ -48,53 +48,7 @@ const items = publicItems;
 </script>
 
 <template>
-  <pv-toast/>
-  <pv-confirm-dialog/>
-  <div class="header">
-    <pv-toolbar class="bg-primary">
-      <template #start>
-        <pv-button class="p-button-text" icon="pi pi-bars" @click="toggleDrawer"/>
-        <h3>FullTank</h3>
-      </template>
-      <template #center>
-      </template>
-      <template #end>
-        <div class="flex-column mr-3">
-          <pv-button v-for="item in items" :key="item.label" as-child v-slot="slotProps">
-            <router-link :to="item.to" :class="slotProps['class']">{{ t(item.label) }}</router-link>
-          </pv-button>
-        </div>
-        <!-- To add when IAM is implemented -->
-        <!-- <authentication-section/> -->
-        <language-switcher/>
-      </template>
-    </pv-toolbar>
-    <pv-drawer v-model:visible="drawer"/>
-  </div>
-  <div class="main-content">
-    <router-view/>
-  </div>
-  <div class="footer">
-  </div>
+  <!-- Shell delegado a cada vista BC que maneja su propio layout -->
+  <!-- Cuando IAM sea implementado, restaurar el toolbar y sidebar aquí -->
+  <router-view/>
 </template>
-
-<style scoped>
-.header {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-}
-
-.main-content {
-  margin-top: 60px;
-}
-
-.footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 10px;
-}
-</style>
