@@ -6,7 +6,7 @@ const { t } = useI18n();
 <template>
   <div class="grid bg-primary mt-4 p-2 align-content-start">
     <div class="col-12 ml-3 align-items-center justify-content-center">
-      <p>Copyright &copy; 2026. FullTank</p>
+      <p>Copyright &copy; 2026. TechnoSAC</p>
     </div>
     <div class="col-12 ml-3 mt-1 align-items-center justify-content-center">
       <p>
@@ -19,5 +19,4 @@ const { t } = useI18n();
 </template>
 
 <style scoped>
-
 </style>
