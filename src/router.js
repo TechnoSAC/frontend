@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "./shared/presentation/views/home.vue";
 import catalogRoutes from "./catalog/presentation/catalog-routes.js";
 import { RouterView } from 'vue-router';
+import orderingRoutes from "./ordering/presentation/ordering-routes.js";
 // To import when IAM is implemented
 // import iamRoutes from "./iam/presentation/iam-routes.js";
 
@@ -40,7 +41,8 @@ const routes = [
     { path: '/about', name: 'about', component: about, meta: { title: 'About' } },
     { path: '/', redirect: '/home' },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: pageNotFound, meta: { title: 'Page Not Found' } },
-    { path: '/catalog', component: RouterView, children: catalogRoutes }
+    { path: '/catalog', component: RouterView, children: catalogRoutes },
+    { path: '/ordering', children: orderingRoutes }
 ];
 
 const router = createRouter({
