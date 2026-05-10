@@ -1,6 +1,7 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router";
 import { computed, onMounted, ref, toRefs } from "vue";
+import { useI18n } from "vue-i18n";
 import useCatalogStore from "../../application/catalog.store.js";
 import { Product } from "../../domain/model/product.entity.js";
 
@@ -9,6 +10,7 @@ const router = useRouter();
 const store = useCatalogStore();
 const { errors, productsLoaded } = toRefs(store);
 const { addProduct, updateProduct, fetchProducts, getProductById } = store;
+const { t, locale } = useI18n();
 
 const sidebarCollapsed = ref(false);
 const catalogExpanded = ref(true);
@@ -85,14 +87,17 @@ const saveProduct = () => {
           <i class="pi pi-bars"/>
         </button>
         <div class="brand">
-          <div class="brand-logo"><i class="pi pi-bolt"/></div>
-          <span class="brand-name">FullTank</span>
+          <img src="/fulltank-logo.png" alt="FullTank" class="brand-logo-img"/>
         </div>
       </div>
       <div class="topbar-right">
         <div class="lang-switch">
-          <button class="lang-btn active"><i class="pi pi-check"/> EN</button>
-          <button class="lang-btn">ES</button>
+          <button class="lang-btn" :class="{ active: locale === 'en' }" @click="locale = 'en'">
+            <i v-if="locale === 'en'" class="pi pi-check"/> EN
+          </button>
+          <button class="lang-btn" :class="{ active: locale === 'es' }" @click="locale = 'es'">
+            <i v-if="locale === 'es'" class="pi pi-check"/> ES
+          </button>
         </div>
         <button class="icon-btn"><i class="pi pi-bell"/></button>
       </div>
@@ -103,32 +108,32 @@ const saveProduct = () => {
       <aside class="sidebar" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
         <nav class="side-nav">
           <a class="side-item">
-            <i class="pi pi-th-large"/><span>Dashboard</span>
+            <i class="pi pi-th-large"/><span>{{ t('option.dashboard') }}</span>
           </a>
           <div class="side-group">
             <a class="side-item active-group" @click="catalogExpanded = !catalogExpanded">
-              <i class="pi pi-box"/><span>Catalog</span>
+              <i class="pi pi-box"/><span>{{ t('option.catalog') }}</span>
               <i class="pi pi-chevron-up chevron" :class="{ 'rotated': !catalogExpanded }"/>
             </a>
             <div v-if="catalogExpanded" class="sub-nav">
-              <router-link to="/catalog/products" class="sub-item">Product Inventory</router-link>
-              <router-link to="/catalog/products/new" class="sub-item active-sub">Add Product</router-link>
+              <router-link to="/catalog/products" class="sub-item">{{ t('option.product-inventory') }}</router-link>
+              <router-link to="/catalog/products/new" class="sub-item active-sub">{{ t('option.add-product') }}</router-link>
             </div>
           </div>
           <a class="side-item">
-            <i class="pi pi-shopping-cart"/><span>Orders</span>
+            <i class="pi pi-shopping-cart"/><span>{{ t('option.ordering') }}</span>
             <i class="pi pi-chevron-down chevron"/>
           </a>
           <a class="side-item">
-            <i class="pi pi-truck"/><span>Fulfillment</span>
+            <i class="pi pi-truck"/><span>{{ t('option.fulfillment') }}</span>
             <i class="pi pi-chevron-down chevron"/>
           </a>
           <a class="side-item">
-            <i class="pi pi-credit-card"/><span>Payment</span>
+            <i class="pi pi-credit-card"/><span>{{ t('option.payment') }}</span>
             <i class="pi pi-chevron-down chevron"/>
           </a>
           <a class="side-item">
-            <i class="pi pi-chart-bar"/><span>Reports</span>
+            <i class="pi pi-chart-bar"/><span>{{ t('option.reporting') }}</span>
             <i class="pi pi-chevron-down chevron"/>
           </a>
         </nav>
@@ -137,13 +142,13 @@ const saveProduct = () => {
       <!-- MAIN -->
       <main class="main-area">
         <div class="page-header">
-          <h1 class="page-title">{{ isEdit ? 'Edit Product' : 'Create Product' }}</h1>
-          <p class="page-subtitle">{{ isEdit ? 'Update fuel product information' : 'Add a new fuel product to your catalog' }}</p>
+          <h1 class="page-title">{{ isEdit ? t('catalog.product-form.title-edit') : t('catalog.product-form.title-create') }}</h1>
+          <p class="page-subtitle">{{ isEdit ? t('catalog.product-form.subtitle-edit') : t('catalog.product-form.subtitle-create') }}</p>
         </div>
 
         <div v-if="errors.length" class="error-banner">
           <i class="pi pi-exclamation-circle"/>
-          <span>Failed to fetch entities: {{ errors[0]?.message || 'Unknown Error' }}</span>
+          <span>{{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}</span>
         </div>
 
         <form class="form-card" @submit.prevent="saveProduct">
@@ -151,7 +156,7 @@ const saveProduct = () => {
           <div class="field-group">
             <div class="field-icon"><i class="pi pi-tag"/></div>
             <div class="field-content">
-              <label>Product Name<span class="req">*</span></label>
+              <label>{{ t('catalog.product-form.field-name') }}<span class="req">*</span></label>
               <input v-model="form.name" type="text" class="text-input" required/>
             </div>
           </div>
@@ -160,9 +165,9 @@ const saveProduct = () => {
           <div class="field-group">
             <div class="field-icon"><i class="pi pi-bolt"/></div>
             <div class="field-content">
-              <label>Fuel Type<span class="req">*</span></label>
+              <label>{{ t('catalog.product-form.field-fuel') }}<span class="req">*</span></label>
               <select v-model="form.type" class="select-input" required>
-                <option value="" disabled>Select fuel type</option>
+                <option value="" disabled>{{ t('catalog.product-form.select-fuel') }}</option>
                 <option v-for="opt in fuelTypeOptions" :key="opt.value" :value="opt.value">
                   {{ opt.label }}
                 </option>
@@ -174,7 +179,7 @@ const saveProduct = () => {
           <div class="field-group field-group-textarea">
             <div class="field-icon"><i class="pi pi-file"/></div>
             <div class="field-content">
-              <label>Description<span class="req">*</span></label>
+              <label>{{ t('catalog.product-form.field-desc') }}<span class="req">*</span></label>
               <textarea v-model="form.description" rows="3" class="textarea-input" required/>
             </div>
           </div>
@@ -184,7 +189,7 @@ const saveProduct = () => {
             <div class="field-group field-group-half">
               <div class="field-icon"><i class="pi pi-money-bill"/></div>
               <div class="field-content">
-                <label>Price per Liter<span class="req">*</span></label>
+                <label>{{ t('catalog.product-form.field-price') }}<span class="req">*</span></label>
                 <div class="price-input-wrapper">
                   <span class="prefix">S/</span>
                   <input
@@ -201,7 +206,7 @@ const saveProduct = () => {
             <div class="field-group field-group-half">
               <div class="field-icon"><i class="pi pi-list"/></div>
               <div class="field-content">
-                <label>Unit<span class="req">*</span></label>
+                <label>{{ t('catalog.product-form.field-unit') }}<span class="req">*</span></label>
                 <select v-model="form.unit" class="select-input" required>
                   <option v-for="opt in unitOptions" :key="opt.value" :value="opt.value">
                     {{ opt.label }}
@@ -213,10 +218,10 @@ const saveProduct = () => {
 
           <!-- ACTIONS -->
           <div class="form-actions">
-            <button type="button" class="btn-secondary" @click="navigateBack">Cancel</button>
+            <button type="button" class="btn-secondary" @click="navigateBack">{{ t('catalog.product-form.cancel') }}</button>
             <button type="submit" class="btn-primary">
               <i class="pi pi-save"/>
-              <span>{{ isEdit ? 'Update Product' : 'Save Product' }}</span>
+              <span>{{ isEdit ? t('catalog.product-form.update') : t('catalog.product-form.save') }}</span>
             </button>
           </div>
         </form>
@@ -239,13 +244,11 @@ const saveProduct = () => {
 }
 .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
 .brand { display: flex; align-items: center; gap: 0.5rem; }
-.brand-logo {
-  width: 32px; height: 32px; background: #1E3A8A;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  color: #fff; font-size: 1rem;
+.brand-logo-img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
 }
-.brand-name { font-size: 1.25rem; font-weight: 700; color: #1E3A8A; }
 .topbar-right { display: flex; align-items: center; gap: 1rem; }
 .lang-switch { display: flex; background: #EFF2F7; border-radius: 999px; padding: 4px; }
 .lang-btn {
