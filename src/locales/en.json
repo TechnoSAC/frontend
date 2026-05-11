@@ -1,63 +1,63 @@
 {
   "option": {
-    "home": "Home",
-    "about": "About",
-    "dashboard": "Dashboard",
-    "catalog": "Catalog",
-    "product-inventory": "Product Inventory",
-    "add-product": "Add Product",
-    "ordering": "Orders",
-    "fulfillment": "Fulfillment",
-    "payment": "Payments",
-    "reporting": "Reporting"
-  },
-  "authoring-phrase": {
-    "intro": "Made with",
-    "use": "using",
-    "author": "by {brand} Development Team"
-  },
-  "about": {
-    "title": "About Us",
-    "content": "FullTank is a fuel delivery and fleet management platform."
+    "home":          "Home",
+    "dashboard":     "Dashboard",
+    "catalog":       "Catalog",
+    "ordering":      "Orders",
+    "fulfillment":   "Fulfillment",
+    "payment":       "Payment",
+    "reporting":     "Reporting",
+    "inventory":     "Inventory",
+    "fleet":         "Fleet",
+    "drivers":       "Drivers",
+    "notifications": "Notifications",
+    "reports":       "Reports",
+    "profile":       "Profile",
+    "sign-in":       "Sign In",
+    "sign-out":      "Sign Out"
   },
   "home": {
-    "title": "FullTank Platform",
-    "content": "Fuel order management and logistics system for companies"
+    "title":   "Welcome to FullTank",
+    "content": "Manage fuel orders efficiently between companies and providers."
   },
   "page-not-found": {
-    "title": "Page Not Found",
-    "content": "The path {unavailable-route} is not available.",
-    "go-home": "Go to Home"
+    "title":    "Page Not Found",
+    "content":  "The route '{unavailable-route}' does not exist.",
+    "go-home":  "Go to Home"
   },
-  "errors": {
-    "occurred": "Errors occurred",
-    "fetch": "Error fetching entities"
+  "authoring-phrase": {
+    "intro":   "Built with",
+    "use":     "using",
+    "author":  "by {brand}"
+  },
+  "ordering": {
+    "pending-requests": "Pending Requests",
+    "my-requests": "My Requests",
+    "new-request": "New Request",
+    "edit-request": "Edit Request",
+    "create-request": "Create Fuel Request",
+    "request-details": "Request Details",
+    "approve": "Approve",
+    "reject": "Reject",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "submit": "Submit Request",
+    "update": "Update Request"
   },
   "catalog": {
-    "product-list": {
-      "title": "Product Inventory",
-      "subtitle": "Manage your fuel products",
-      "no-products": "No products available",
-      "col-name": "Product Name",
-      "col-fuel": "Fuel Type",
-      "col-price": "Price per Liter",
-      "col-unit": "Unit",
-      "col-desc": "Description"
-    },
-    "product-form": {
-      "title-create": "Create Product",
-      "title-edit": "Edit Product",
-      "subtitle-create": "Add a new fuel product to your catalog",
-      "subtitle-edit": "Update fuel product information",
-      "field-name": "Product Name",
-      "field-fuel": "Fuel Type",
-      "field-desc": "Description",
-      "field-price": "Price per Liter",
-      "field-unit": "Unit",
-      "select-fuel": "Select fuel type",
-      "cancel": "Cancel",
-      "save": "Save Product",
-      "update": "Update Product"
-    }
+    "products": "Product Inventory",
+    "add-product": "Add Product",
+    "edit-product": "Edit Product"
+  },
+  "fulfillment": {
+    "vehicles": "Vehicles",
+    "drivers": "Drivers",
+    "dispatch": "Dispatch"
+  },
+  "errors": {
+    "fetch": "Error fetching entities",
+    "network": "Network Error",
+    "unknown": "Unknown Error"
   }
 }
