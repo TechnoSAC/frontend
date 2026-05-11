@@ -1,34 +1,21 @@
 {
   "option": {
-    "home":          "Home",
-    "dashboard":     "Dashboard",
-    "catalog":       "Catalog",
-    "ordering":      "Orders",
-    "fulfillment":   "Fulfillment",
-    "payment":       "Payment",
-    "reporting":     "Reporting",
-    "inventory":     "Inventory",
-    "fleet":         "Fleet",
-    "drivers":       "Drivers",
-    "notifications": "Notifications",
-    "reports":       "Reports",
-    "profile":       "Profile",
-    "sign-in":       "Sign In",
-    "sign-out":      "Sign Out"
+    "product-inventory": "Product Inventory",
+    "add-product": "Add Product"
   },
   "home": {
-    "title":   "Welcome to FullTank",
+    "title": "Welcome to FullTank",
     "content": "Manage fuel orders efficiently between companies and providers."
   },
   "page-not-found": {
-    "title":    "Page Not Found",
-    "content":  "The route '{unavailable-route}' does not exist.",
-    "go-home":  "Go to Home"
+    "title": "Page Not Found",
+    "content": "The route '{unavailable-route}' does not exist.",
+    "go-home": "Go to Home"
   },
   "authoring-phrase": {
-    "intro":   "Built with",
-    "use":     "using",
-    "author":  "by {brand}"
+    "intro": "Built with",
+    "use": "using",
+    "author": "by {brand}"
   },
   "ordering": {
     "pending-requests": "Pending Requests",
@@ -48,7 +35,31 @@
   "catalog": {
     "products": "Product Inventory",
     "add-product": "Add Product",
-    "edit-product": "Edit Product"
+    "edit-product": "Edit Product",
+    "product-list": {
+      "title": "Product Inventory",
+      "subtitle": "Manage your fuel products catalog",
+      "col-name": "Name",
+      "col-fuel": "Fuel Type",
+      "col-price": "Price",
+      "col-unit": "Unit",
+      "col-desc": "Description",
+      "no-products": "No products available"
+    },
+    "product-form": {
+      "title-create": "Add New Product",
+      "title-edit": "Edit Product",
+      "subtitle-create": "Add a new fuel product to your inventory",
+      "subtitle-edit": "Update product information",
+      "field-name": "Product Name",
+      "field-fuel": "Fuel Type",
+      "field-desc": "Description",
+      "field-price": "Price per Liter",
+      "field-unit": "Unit",
+      "select-fuel": "Select fuel type",
+      "cancel": "Cancel",
+      "save": "Save Product"
+    }
   },
   "fulfillment": {
     "vehicles": "Vehicles",
@@ -59,5 +70,17 @@
     "fetch": "Error fetching entities",
     "network": "Network Error",
     "unknown": "Unknown Error"
+  },
+  "common": {
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "refresh": "Refresh",
+    "actions": "Actions",
+    "status": "Status",
+    "loading": "Loading...",
+    "no-data": "No data available"
   }
 }
