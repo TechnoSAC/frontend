@@ -80,7 +80,31 @@
   "fulfillment": {
     "vehicles": "Vehicles",
     "drivers": "Drivers",
-    "dispatch": "Dispatch"
+    "dispatch": "Dispatch",
+    "show-all": "Show All",
+    "available-only": "Available Only",
+    "vehicle-list": {
+      "title": "Vehicle Fleet",
+      "subtitle": "Manage your fuel delivery fleet",
+      "register": "Register Vehicle",
+      "col-plate": "License Plate",
+      "col-brand": "Brand",
+      "col-model": "Model",
+      "col-capacity": "Capacity",
+      "col-status": "Status",
+      "no-data": "No vehicles available"
+    },
+    "driver-list": {
+      "title": "Driver Registry",
+      "subtitle": "Manage authorized drivers for fuel delivery",
+      "register": "Register Driver",
+      "col-name": "Full Name",
+      "col-license": "License Number",
+      "col-phone": "Phone",
+      "col-email": "Email",
+      "col-status": "Status",
+      "no-data": "No drivers available"
+    }
   },
   "errors": {
     "fetch": "Error fetching entities",
