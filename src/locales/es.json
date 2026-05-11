@@ -1,63 +1,63 @@
 {
   "option": {
-    "home": "Inicio",
-    "about": "Acerca de",
-    "dashboard": "Panel",
-    "catalog": "Catálogo",
-    "product-inventory": "Inventario de Productos",
-    "add-product": "Agregar Producto",
-    "ordering": "Pedidos",
-    "fulfillment": "Despacho",
-    "payment": "Pagos",
-    "reporting": "Reportes"
-  },
-  "authoring-phrase": {
-    "intro": "Hecho con",
-    "use": "utilizando",
-    "author": "por el Equipo de Desarrollo de {brand}"
-  },
-  "about": {
-    "title": "Acerca de Nosotros",
-    "content": "FullTank es una plataforma de entrega de combustible y gestión de flota."
+    "home":          "Inicio",
+    "dashboard":     "Panel",
+    "catalog":       "Catálogo",
+    "ordering":      "Pedidos",
+    "fulfillment":   "Logística",
+    "payment":       "Pagos",
+    "reporting":     "Reportes",
+    "inventory":     "Inventario",
+    "fleet":         "Flota",
+    "drivers":       "Conductores",
+    "notifications": "Notificaciones",
+    "reports":       "Reportes",
+    "profile":       "Perfil",
+    "sign-in":       "Iniciar sesión",
+    "sign-out":      "Cerrar sesión"
   },
   "home": {
-    "title":   "Plataforma FullTank",
-    "content": "Sistema de gestión de pedidos de combustible y logística para empresas"
+    "title":   "Bienvenido a FullTank",
+    "content": "Gestiona pedidos de combustible de forma eficiente entre empresas y proveedores."
   },
   "page-not-found": {
-    "title": "Página no encontrada",
-    "content": "La ruta {unavailable-route} no está disponible.",
-    "go-home": "Ir al Inicio"
+    "title":    "Página no encontrada",
+    "content":  "La ruta '{unavailable-route}' no existe.",
+    "go-home":  "Ir al inicio"
   },
-  "errors": {
-    "occurred": "Ocurrieron errores",
-    "fetch": "Error al obtener entidades"
+  "authoring-phrase": {
+    "intro":   "Hecho con",
+    "use":     "usando",
+    "author":  "por {brand}"
+  },
+  "ordering": {
+    "pending-requests": "Pedidos Pendientes",
+    "my-requests": "Mis Pedidos",
+    "new-request": "Nuevo Pedido",
+    "edit-request": "Editar Pedido",
+    "create-request": "Crear Pedido de Combustible",
+    "request-details": "Detalles del Pedido",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "submit": "Enviar Pedido",
+    "update": "Actualizar Pedido"
   },
   "catalog": {
-    "product-list": {
-      "title":       "Inventario de Productos",
-      "subtitle":    "Gestiona tus productos de combustible",
-      "no-products": "No hay productos disponibles",
-      "col-name":    "Nombre del Producto",
-      "col-fuel":    "Tipo de Combustible",
-      "col-price":   "Precio por Litro",
-      "col-unit":    "Unidad",
-      "col-desc":    "Descripción"
-    },
-    "product-form": {
-      "title-create":    "Crear Producto",
-      "title-edit":      "Editar Producto",
-      "subtitle-create": "Agrega un nuevo producto de combustible a tu catálogo",
-      "subtitle-edit":   "Actualiza la información del producto de combustible",
-      "field-name":      "Nombre del Producto",
-      "field-fuel":      "Tipo de Combustible",
-      "field-desc":      "Descripción",
-      "field-price":     "Precio por Litro",
-      "field-unit":      "Unidad",
-      "select-fuel":     "Selecciona el tipo de combustible",
-      "cancel":          "Cancelar",
-      "save":            "Guardar Producto",
-      "update":          "Actualizar Producto"
-    }
+    "products": "Inventario de Productos",
+    "add-product": "Agregar Producto",
+    "edit-product": "Editar Producto"
+  },
+  "fulfillment": {
+    "vehicles": "Vehículos",
+    "drivers": "Conductores",
+    "dispatch": "Despacho"
+  },
+  "errors": {
+    "fetch": "Error al cargar datos",
+    "network": "Error de Red",
+    "unknown": "Error Desconocido"
   }
-}
+}
