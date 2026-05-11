@@ -1,7 +1,13 @@
 {
   "option": {
+    "dashboard":         "Panel Principal",
+    "catalog":           "Catálogo",
+    "ordering":          "Pedidos",
+    "fulfillment":       "Despacho",
+    "payment":           "Pagos",
+    "reporting":         "Reportes",
     "product-inventory": "Inventario de Productos",
-    "add-product": "Agregar Producto"
+    "add-product":       "Agregar Producto"
   },
   "home": {
     "title": "Bienvenido a FullTank",
@@ -18,19 +24,29 @@
     "author": "por {brand}"
   },
   "ordering": {
-    "pending-requests": "Pedidos Pendientes",
-    "my-requests": "Mis Pedidos",
-    "new-request": "Nuevo Pedido",
-    "edit-request": "Editar Pedido",
-    "create-request": "Crear Pedido de Combustible",
-    "request-details": "Detalles del Pedido",
+    "pending-requests": "Solicitudes Pendientes",
+    "my-requests": "Mis Solicitudes",
+    "new-request": "Nueva Solicitud",
+    "edit-request": "Editar Solicitud",
+    "create-request": "Crear Solicitud de Combustible",
+    "request-details": "Detalles de la Solicitud",
     "approve": "Aprobar",
     "reject": "Rechazar",
     "delete": "Eliminar",
     "cancel": "Cancelar",
     "save": "Guardar",
-    "submit": "Enviar Pedido",
-    "update": "Actualizar Pedido"
+    "submit": "Enviar Solicitud",
+    "update": "Actualizar Solicitud",
+    "page-title": "Solicitudes de Combustible Pendientes",
+    "page-subtitle": "Revisa y aprueba las solicitudes de entrega de combustible entrantes",
+    "col-request-id": "ID Solicitud",
+    "col-client-id": "ID Cliente",
+    "col-fuel-type": "Tipo de Combustible",
+    "col-quantity": "Cantidad",
+    "col-address": "Dirección de Entrega",
+    "col-date": "Fecha de Entrega",
+    "col-actions": "Acciones",
+    "no-pending": "No hay solicitudes pendientes"
   },
   "catalog": {
     "products": "Inventario de Productos",
