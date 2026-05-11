@@ -54,5 +54,18 @@
       "status": "PENDING",
       "createdAt": "2026-05-10T10:30:00Z"
     }
+  ],
+  "vehicles": [
+    {
+      "id": 1, "plate": "ABC-123", "brand": "Volvo", "model": "FH16 500",
+      "capacity": 15000, "unit": "LITERS", "status": "AVAILABLE"
+    }
+  ],
+  "drivers": [
+    {
+      "id": 1, "name": "Carlos Ramírez", "licenseNumber": "Q12345678",
+      "phone": "+51987654321", "email": "carlos.ramirez@fulltank.com",
+      "status": "AVAILABLE"
+    }
   ]
 }
