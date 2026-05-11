@@ -85,7 +85,7 @@ onMounted(() => {
               <i class="pi pi-chevron-up chevron" :class="{ 'rotated': !ordersExpanded }"/>
             </a>
             <div v-if="ordersExpanded" class="sub-nav">
-              <router-link to="/ordering/pending" class="sub-item active-sub">Pending Requests</router-link>
+              <router-link to="/ordering/pending" class="sub-item active-sub">{{ t('ordering.pending-requests') }}</router-link>
             </div>
           </div>
           <a class="side-item">
@@ -107,8 +107,8 @@ onMounted(() => {
       <main class="main-area">
         <div class="page-header">
           <div class="page-title-group">
-            <h1 class="page-title">Pending Fuel Requests</h1>
-            <p class="page-subtitle">Review and approve incoming fuel delivery requests</p>
+            <h1 class="page-title">{{ t('ordering.page-title') }}</h1>
+            <p class="page-subtitle">{{ t('ordering.page-subtitle') }}</p>
           </div>
           <div class="page-actions">
             <button class="refresh-btn" @click="onRefresh" :disabled="loading">
@@ -126,18 +126,18 @@ onMounted(() => {
           <table class="requests-table">
             <thead>
             <tr>
-              <th>Request ID</th>
-              <th>Client ID</th>
-              <th>Fuel Type</th>
-              <th>Quantity</th>
-              <th>Delivery Address</th>
-              <th>Delivery Date</th>
-              <th class="actions-col">Actions</th>
+              <th>{{ t('ordering.col-request-id') }}</th>
+              <th>{{ t('ordering.col-client-id') }}</th>
+              <th>{{ t('ordering.col-fuel-type') }}</th>
+              <th>{{ t('ordering.col-quantity') }}</th>
+              <th>{{ t('ordering.col-address') }}</th>
+              <th>{{ t('ordering.col-date') }}</th>
+              <th class="actions-col">{{ t('ordering.col-actions') }}</th>
             </tr>
             </thead>
             <tbody>
             <tr v-if="!loading && pendingRequests.length === 0">
-              <td colspan="7" class="empty-row">No pending requests</td>
+              <td colspan="7" class="empty-row">{{ t('ordering.no-pending') }}</td>
             </tr>
             <tr v-for="request in pendingRequests" :key="request.id">
               <td><strong>#{{ request.id }}</strong></td>
@@ -149,11 +149,11 @@ onMounted(() => {
               <td class="actions-col">
                 <button class="action-btn approve-btn" @click="confirmApprove(request)">
                   <i class="pi pi-check"/>
-                  <span>Approve</span>
+                  <span>{{ t('ordering.approve') }}</span>
                 </button>
                 <button class="action-btn reject-btn" @click="confirmReject(request)">
                   <i class="pi pi-times"/>
-                  <span>Reject</span>
+                  <span>{{ t('ordering.reject') }}</span>
                 </button>
               </td>
             </tr>
