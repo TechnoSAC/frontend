@@ -1,7 +1,13 @@
 {
   "option": {
+    "dashboard":         "Dashboard",
+    "catalog":           "Catalog",
+    "ordering":          "Ordering",
+    "fulfillment":       "Fulfillment",
+    "payment":           "Payment",
+    "reporting":         "Reporting",
     "product-inventory": "Product Inventory",
-    "add-product": "Add Product"
+    "add-product":       "Add Product"
   },
   "home": {
     "title": "Welcome to FullTank",
@@ -30,7 +36,17 @@
     "cancel": "Cancel",
     "save": "Save",
     "submit": "Submit Request",
-    "update": "Update Request"
+    "update": "Update Request",
+    "page-title": "Pending Fuel Requests",
+    "page-subtitle": "Review and approve incoming fuel delivery requests",
+    "col-request-id": "Request ID",
+    "col-client-id": "Client ID",
+    "col-fuel-type": "Fuel Type",
+    "col-quantity": "Quantity",
+    "col-address": "Delivery Address",
+    "col-date": "Delivery Date",
+    "col-actions": "Actions",
+    "no-pending": "No pending requests"
   },
   "catalog": {
     "products": "Product Inventory",
