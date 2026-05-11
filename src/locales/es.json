@@ -80,7 +80,31 @@
   "fulfillment": {
     "vehicles": "Vehículos",
     "drivers": "Conductores",
-    "dispatch": "Despacho"
+    "dispatch": "Despacho",
+    "show-all": "Mostrar Todos",
+    "available-only": "Solo Disponibles",
+    "vehicle-list": {
+      "title": "Flota de Vehículos",
+      "subtitle": "Gestiona tu flota de entrega de combustible",
+      "register": "Registrar Vehículo",
+      "col-plate": "Placa",
+      "col-brand": "Marca",
+      "col-model": "Modelo",
+      "col-capacity": "Capacidad",
+      "col-status": "Estado",
+      "no-data": "No hay vehículos disponibles"
+    },
+    "driver-list": {
+      "title": "Registro de Conductores",
+      "subtitle": "Gestiona los conductores autorizados para entrega de combustible",
+      "register": "Registrar Conductor",
+      "col-name": "Nombre Completo",
+      "col-license": "Número de Licencia",
+      "col-phone": "Teléfono",
+      "col-email": "Correo",
+      "col-status": "Estado",
+      "no-data": "No hay conductores disponibles"
+    }
   },
   "errors": {
     "fetch": "Error al cargar datos",
