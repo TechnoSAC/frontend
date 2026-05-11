@@ -1,34 +1,21 @@
 {
   "option": {
-    "home":          "Inicio",
-    "dashboard":     "Panel",
-    "catalog":       "Catálogo",
-    "ordering":      "Pedidos",
-    "fulfillment":   "Logística",
-    "payment":       "Pagos",
-    "reporting":     "Reportes",
-    "inventory":     "Inventario",
-    "fleet":         "Flota",
-    "drivers":       "Conductores",
-    "notifications": "Notificaciones",
-    "reports":       "Reportes",
-    "profile":       "Perfil",
-    "sign-in":       "Iniciar sesión",
-    "sign-out":      "Cerrar sesión"
+    "product-inventory": "Inventario de Productos",
+    "add-product": "Agregar Producto"
   },
   "home": {
-    "title":   "Bienvenido a FullTank",
+    "title": "Bienvenido a FullTank",
     "content": "Gestiona pedidos de combustible de forma eficiente entre empresas y proveedores."
   },
   "page-not-found": {
-    "title":    "Página no encontrada",
-    "content":  "La ruta '{unavailable-route}' no existe.",
-    "go-home":  "Ir al inicio"
+    "title": "Página no encontrada",
+    "content": "La ruta '{unavailable-route}' no existe.",
+    "go-home": "Ir al inicio"
   },
   "authoring-phrase": {
-    "intro":   "Hecho con",
-    "use":     "usando",
-    "author":  "por {brand}"
+    "intro": "Hecho con",
+    "use": "usando",
+    "author": "por {brand}"
   },
   "ordering": {
     "pending-requests": "Pedidos Pendientes",
@@ -48,7 +35,31 @@
   "catalog": {
     "products": "Inventario de Productos",
     "add-product": "Agregar Producto",
-    "edit-product": "Editar Producto"
+    "edit-product": "Editar Producto",
+    "product-list": {
+      "title": "Inventario de Productos",
+      "subtitle": "Gestiona tu catálogo de combustibles",
+      "col-name": "Nombre",
+      "col-fuel": "Tipo de Combustible",
+      "col-price": "Precio",
+      "col-unit": "Unidad",
+      "col-desc": "Descripción",
+      "no-products": "No hay productos disponibles"
+    },
+    "product-form": {
+      "title-create": "Agregar Nuevo Producto",
+      "title-edit": "Editar Producto",
+      "subtitle-create": "Añade un nuevo producto de combustible a tu inventario",
+      "subtitle-edit": "Actualiza la información del producto",
+      "field-name": "Nombre del Producto",
+      "field-fuel": "Tipo de Combustible",
+      "field-desc": "Descripción",
+      "field-price": "Precio por Litro",
+      "field-unit": "Unidad",
+      "select-fuel": "Selecciona tipo de combustible",
+      "cancel": "Cancelar",
+      "save": "Guardar Producto"
+    }
   },
   "fulfillment": {
     "vehicles": "Vehículos",
@@ -59,5 +70,17 @@
     "fetch": "Error al cargar datos",
     "network": "Error de Red",
     "unknown": "Error Desconocido"
+  },
+  "common": {
+    "add": "Agregar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "refresh": "Actualizar",
+    "actions": "Acciones",
+    "status": "Estado",
+    "loading": "Cargando...",
+    "no-data": "No hay datos disponibles"
   }
 }
