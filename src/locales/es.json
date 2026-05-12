@@ -124,6 +124,44 @@
       "no-data": "No hay conductores disponibles"
     }
   },
+  "reporting": {
+    "supplier-dashboard": "Panel de Proveedor",
+    "client-portfolio": "Cartera de Clientes",
+    "supplier": {
+      "title": "Reportes",
+      "subtitle": "Vista general completa de tu desempeño de ventas",
+      "export-pdf": "Exportar PDF",
+      "kpi-sales": "Ingresos Totales por Ventas",
+      "kpi-fulfillment": "Tasa Promedio de Cumplimiento",
+      "kpi-lead-time": "Tiempo Promedio de Entrega",
+      "target": "Objetivo",
+      "vs-period": "vs período anterior",
+      "section-performance": "Desempeño de Ventas por Cliente",
+      "view-all": "Ver Todos los Clientes",
+      "col-company": "Nombre de Empresa",
+      "col-volume": "Volumen Total",
+      "col-status": "Estado",
+      "no-data": "No hay datos de clientes disponibles"
+    },
+    "portfolio": {
+      "title": "Reportes de Clientes Proveedor",
+      "subtitle": "Gestiona tu cartera de clientes B2B, monitorea el consumo de combustible y rastrea el volumen histórico de pedidos",
+      "kpi-clients": "Total de Clientes",
+      "kpi-revenue": "Ingresos",
+      "kpi-orders": "Pedidos Activos",
+      "kpi-growth": "Tasa de Crecimiento",
+      "section-clients": "Cartera de Clientes",
+      "section-distribution": "Distribución de Volumen por Sector",
+      "filter-sector": "Filtrar por Sector",
+      "all-sectors": "Todos los Sectores",
+      "col-entity": "Entidad Empresarial",
+      "col-sector": "Sector",
+      "col-volume": "Volumen Total (TM)",
+      "col-active": "Última Actividad",
+      "col-status": "Estado",
+      "no-clients": "No hay clientes disponibles"
+    }
+  },
   "errors": {
     "fetch": "Error al cargar datos",
     "network": "Error de Red",
