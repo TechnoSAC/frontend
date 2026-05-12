@@ -2,9 +2,9 @@
   "catalog": [
     {
       "id": 1,
-      "name": "Premium Diesel",
+      "name": "Premium Gasoline",
       "type": "GASOLINE_90",
-      "description": "-Premium Gasoline",
+      "description": "Premium gasoline fuel",
       "pricePerLiter": 23,
       "unit": "GALLONS"
     },
@@ -12,7 +12,7 @@
       "id": 2,
       "name": "Regular Gasoline",
       "type": "GASOLINE_84",
-      "description": "-Regular Gasoline",
+      "description": "Regular gasoline fuel",
       "pricePerLiter": 18,
       "unit": "GALLONS"
     },
@@ -20,7 +20,7 @@
       "id": 3,
       "name": "Super Gasoline",
       "type": "GASOLINE_95",
-      "description": "-Super Gasoline",
+      "description": "Super gasoline fuel",
       "pricePerLiter": 26,
       "unit": "GALLONS"
     },
@@ -28,7 +28,7 @@
       "id": 4,
       "name": "Eco Diesel",
       "type": "DIESEL_B5",
-      "description": "-Eco Diesel",
+      "description": "Eco diesel fuel",
       "pricePerLiter": 21,
       "unit": "GALLONS"
     },
@@ -36,7 +36,7 @@
       "id": 5,
       "name": "Premium Plus",
       "type": "GASOLINE_97",
-      "description": "-Premium Plus Gasoline",
+      "description": "Premium plus gasoline",
       "pricePerLiter": 29,
       "unit": "GALLONS"
     }
@@ -51,20 +51,124 @@
       "unit": "GALLONS",
       "deliveryAddress": "Av. Arequipa 123, Lima",
       "deliveryDate": "2026-05-15",
-      "status": "PENDING",
+      "status": "APPROVED",
       "createdAt": "2026-05-10T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "clientId": 102,
+      "providerId": 201,
+      "fuelType": "GASOLINE_95",
+      "quantity": 3200,
+      "unit": "GALLONS",
+      "deliveryAddress": "Av. Javier Prado 450, Lima",
+      "deliveryDate": "2026-05-18",
+      "status": "APPROVED",
+      "createdAt": "2026-05-11T14:00:00Z"
+    },
+    {
+      "id": 3,
+      "clientId": 103,
+      "providerId": 201,
+      "fuelType": "GASOLINE_84",
+      "quantity": 1500,
+      "unit": "GALLONS",
+      "deliveryAddress": "Av. Universitaria 890, Lima",
+      "deliveryDate": "2026-05-20",
+      "status": "IN_TRANSIT",
+      "createdAt": "2026-05-12T08:15:00Z"
+    },
+    {
+      "id": 4,
+      "clientId": 104,
+      "providerId": 201,
+      "fuelType": "GASOLINE_97",
+      "quantity": 2000,
+      "unit": "GALLONS",
+      "deliveryAddress": "Av. Benavides 234, Lima",
+      "deliveryDate": "2026-05-22",
+      "status": "DELIVERED",
+      "createdAt": "2026-05-09T16:00:00Z"
     }
   ],
   "vehicles": [
     {
-      "id": 1, "plate": "ABC-123", "brand": "Volvo", "model": "FH16 500",
-      "capacity": 15000, "unit": "LITERS", "status": "AVAILABLE"
+      "id": 1,
+      "plate": "ABC-123",
+      "brand": "Volvo",
+      "model": "FH16 500",
+      "capacity": 15000,
+      "unit": "LITERS",
+      "status": "AVAILABLE"
+    },
+    {
+      "id": 2,
+      "plate": "DEF-456",
+      "brand": "Mercedes-Benz",
+      "model": "Actros 1845",
+      "capacity": 12000,
+      "unit": "LITERS",
+      "status": "IN_ROUTE"
+    },
+    {
+      "id": 3,
+      "plate": "GHI-789",
+      "brand": "MAN",
+      "model": "TGX 18.500",
+      "capacity": 18000,
+      "unit": "LITERS",
+      "status": "AVAILABLE"
+    },
+    {
+      "id": 4,
+      "plate": "JKL-012",
+      "brand": "Scania",
+      "model": "R 580 LA",
+      "capacity": 20000,
+      "unit": "LITERS",
+      "status": "MAINTENANCE"
+    },
+    {
+      "id": 5,
+      "plate": "VXU-345",
+      "brand": "Mercedes",
+      "model": "FH16 500",
+      "capacity": 500,
+      "unit": "LITERS",
+      "status": "AVAILABLE"
     }
   ],
   "drivers": [
     {
-      "id": 1, "name": "Carlos Ramírez", "licenseNumber": "Q12345678",
-      "phone": "+51987654321", "email": "carlos.ramirez@fulltank.com",
+      "id": 1,
+      "name": "Carlos Ramírez",
+      "licenseNumber": "Q12345678",
+      "phone": "+51987654321",
+      "email": "carlos.ramirez@fulltank.com",
+      "status": "AVAILABLE"
+    },
+    {
+      "id": 2,
+      "name": "María García",
+      "licenseNumber": "Q87654321",
+      "phone": "+51976543210",
+      "email": "maria.garcia@fulltank.com",
+      "status": "ASSIGNED"
+    },
+    {
+      "id": 3,
+      "name": "Juan López",
+      "licenseNumber": "Q11223344",
+      "phone": "+51998765432",
+      "email": "juan.lopez@fulltank.com",
+      "status": "AVAILABLE"
+    },
+    {
+      "id": 4,
+      "name": "Ana Torres",
+      "licenseNumber": "Q55443322",
+      "phone": "+51912345678",
+      "email": "ana.torres@fulltank.com",
       "status": "AVAILABLE"
     }
   ]
