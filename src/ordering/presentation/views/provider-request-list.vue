@@ -140,12 +140,21 @@ onMounted(() => {
               <td colspan="7" class="empty-row">{{ t('ordering.no-pending') }}</td>
             </tr>
             <tr v-for="request in pendingRequests" :key="request.id">
-              <td><strong>#{{ request.id }}</strong></td>
+              <!--<td><strong>#{{ request.id }}</strong></td>-->
+              <td>
+                <strong
+                    class="request-id-link"
+                    @click="$router.push({ name: 'ordering-order-detail', params: { id: request.id } })"
+                >
+                  #{{ request.id }}
+                </strong>
+              </td>
               <td>Client #{{ request.clientId }}</td>
               <td>{{ request.fuelType }}</td>
               <td>{{ request.quantity }} {{ request.unit }}</td>
               <td class="address-col">{{ request.deliveryAddress }}</td>
               <td>{{ request.deliveryDate }}</td>
+
               <td class="actions-col">
                 <button class="action-btn approve-btn" @click="confirmApprove(request)">
                   <i class="pi pi-check"/>
@@ -168,6 +177,16 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
+.request-id-link {
+  color: #1E3A8A;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.request-id-link:hover { color: #F59E0B; }
+
+
 .layout-wrapper {
   min-height: 100vh;
   background: #F5F6F8;
