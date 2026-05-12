@@ -124,6 +124,44 @@
       "no-data": "No drivers available"
     }
   },
+  "reporting": {
+    "supplier-dashboard": "Supplier Dashboard",
+    "client-portfolio": "Client Portfolio",
+    "supplier": {
+      "title": "Reports",
+      "subtitle": "Comprehensive overview of your sales performance",
+      "export-pdf": "Export PDF",
+      "kpi-sales": "Total Sales Revenue",
+      "kpi-fulfillment": "Avg. Fulfillment Rate",
+      "kpi-lead-time": "Avg. Lead Time",
+      "target": "Target",
+      "vs-period": "vs last period",
+      "section-performance": "Client Sales Performance",
+      "view-all": "View All Clients",
+      "col-company": "Company Name",
+      "col-volume": "Total Volume",
+      "col-status": "Status",
+      "no-data": "No client data available"
+    },
+    "portfolio": {
+      "title": "Supplier Clients Reports",
+      "subtitle": "Manage your B2B client portfolio, monitor fuel consumption, and track historical order volume",
+      "kpi-clients": "Total Clients",
+      "kpi-revenue": "Revenue",
+      "kpi-orders": "Active Orders",
+      "kpi-growth": "Growth Rate",
+      "section-clients": "Client Portfolio",
+      "section-distribution": "Volume Distribution by Sector",
+      "filter-sector": "Filter by Sector",
+      "all-sectors": "All Sectors",
+      "col-entity": "Company Entity",
+      "col-sector": "Sector",
+      "col-volume": "Total Volume (MT)",
+      "col-active": "Last Active",
+      "col-status": "Status",
+      "no-clients": "No clients available"
+    }
+  },
   "errors": {
     "fetch": "Error fetching entities",
     "network": "Network Error",
