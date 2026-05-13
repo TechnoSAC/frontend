@@ -80,64 +80,10 @@ const saveProduct = () => {
 
 <template>
   <div class="layout-wrapper">
-    <!-- TOP NAVBAR -->
-    <div class="topbar">
-      <div class="topbar-left">
-        <button class="icon-btn" @click="sidebarCollapsed = !sidebarCollapsed">
-          <i class="pi pi-bars"/>
-        </button>
-        <div class="brand">
-          <img src="/fulltank-logo.png" alt="FullTank" class="brand-logo-img"/>
-        </div>
-      </div>
-      <div class="topbar-right">
-        <div class="lang-switch">
-          <button class="lang-btn" :class="{ active: locale === 'en' }" @click="locale = 'en'">
-            <i v-if="locale === 'en'" class="pi pi-check"/> EN
-          </button>
-          <button class="lang-btn" :class="{ active: locale === 'es' }" @click="locale = 'es'">
-            <i v-if="locale === 'es'" class="pi pi-check"/> ES
-          </button>
-        </div>
-        <button class="icon-btn"><i class="pi pi-bell"/></button>
-      </div>
-    </div>
+
 
     <div class="layout-body">
       <!-- SIDEBAR -->
-      <aside class="sidebar" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
-        <nav class="side-nav">
-          <a class="side-item">
-            <i class="pi pi-th-large"/><span>{{ t('option.dashboard') }}</span>
-          </a>
-          <div class="side-group">
-            <a class="side-item active-group" @click="catalogExpanded = !catalogExpanded">
-              <i class="pi pi-box"/><span>{{ t('option.catalog') }}</span>
-              <i class="pi pi-chevron-up chevron" :class="{ 'rotated': !catalogExpanded }"/>
-            </a>
-            <div v-if="catalogExpanded" class="sub-nav">
-              <router-link to="/catalog/products" class="sub-item">{{ t('option.product-inventory') }}</router-link>
-              <router-link to="/catalog/products/new" class="sub-item active-sub">{{ t('option.add-product') }}</router-link>
-            </div>
-          </div>
-          <a class="side-item">
-            <i class="pi pi-shopping-cart"/><span>{{ t('option.ordering') }}</span>
-            <i class="pi pi-chevron-down chevron"/>
-          </a>
-          <a class="side-item">
-            <i class="pi pi-truck"/><span>{{ t('option.fulfillment') }}</span>
-            <i class="pi pi-chevron-down chevron"/>
-          </a>
-          <a class="side-item">
-            <i class="pi pi-credit-card"/><span>{{ t('option.payment') }}</span>
-            <i class="pi pi-chevron-down chevron"/>
-          </a>
-          <a class="side-item">
-            <i class="pi pi-chart-bar"/><span>{{ t('option.reporting') }}</span>
-            <i class="pi pi-chevron-down chevron"/>
-          </a>
-        </nav>
-      </aside>
 
       <!-- MAIN -->
       <main class="main-area">
