@@ -4,7 +4,7 @@ import { SectorDistribution } from '../domain/model/sector-distribution.entity.j
 
 export const ClientAssembler = {
     /**
-     * Transforma un DTO de cliente en entidad Client
+     * Transforms a Client DTO into a Client entity
      */
     toClient(dto) {
         return new Client({
@@ -19,14 +19,14 @@ export const ClientAssembler = {
     },
 
     /**
-     * Transforma un array de DTOs en array de entidades Client
+     * Transforms an array of DTOs into an array of Client entities
      */
     toClientList(dtos) {
         return dtos.map(dto => this.toClient(dto));
     },
 
     /**
-     * Transforma un cliente en SalesPerformance
+     * Transform a customer into SalesPerformance
      */
     toSalesPerformance(client) {
         return new SalesPerformance({
@@ -37,10 +37,10 @@ export const ClientAssembler = {
     },
 
     /**
-     * Calcula la distribución por sectores desde una lista de clientes
+     * Calculate sector distribution from a customer list
      */
     toSectorDistribution(clients) {
-        // Agrupar por sector
+        // Group by sector
         const sectorTotals = clients.reduce((acc, client) => {
             if (!acc[client.sector]) {
                 acc[client.sector] = 0;
@@ -49,10 +49,10 @@ export const ClientAssembler = {
             return acc;
         }, {});
 
-        // Calcular total general
+        // Calculate grand total
         const totalVolume = Object.values(sectorTotals).reduce((sum, vol) => sum + vol, 0);
 
-        // Crear entidades SectorDistribution
+        // Create SectorDistribution entities
         return Object.entries(sectorTotals)
             .map(([sector, volume]) => new SectorDistribution({
                 sector,
