@@ -1,13 +1,13 @@
 {
   "option": {
-    "dashboard":         "Panel Principal",
-    "catalog":           "Catálogo",
-    "ordering":          "Pedidos",
-    "fulfillment":       "Despacho",
-    "payment":           "Pagos",
-    "reporting":         "Reportes",
+    "dashboard": "Panel Principal",
+    "ordering": "Pedidos",
+    "fulfillment": "Despacho",
+    "payment": "Pagos",
+    "reporting": "Reportes",
     "product-inventory": "Inventario de Productos",
-    "add-product":       "Agregar Producto"
+    "add-product": "Agregar Producto",
+    "inventory": "Catálogo"
   },
   "home": {
     "title": "Bienvenido a FullTank",
@@ -65,35 +65,6 @@
     "status-delivered": "Entregada",
     "confirm-delivery": "Confirmar Entrega",
     "not-available": "N/D"
-  },
-  "catalog": {
-    "products": "Inventario de Productos",
-    "add-product": "Agregar Producto",
-    "edit-product": "Editar Producto",
-    "product-list": {
-      "title": "Inventario de Productos",
-      "subtitle": "Gestiona tu catálogo de combustibles",
-      "col-name": "Nombre",
-      "col-fuel": "Tipo de Combustible",
-      "col-price": "Precio",
-      "col-unit": "Unidad",
-      "col-desc": "Descripción",
-      "no-products": "No hay productos disponibles"
-    },
-    "product-form": {
-      "title-create": "Agregar Nuevo Producto",
-      "title-edit": "Editar Producto",
-      "subtitle-create": "Añade un nuevo producto de combustible a tu inventario",
-      "subtitle-edit": "Actualiza la información del producto",
-      "field-name": "Nombre del Producto",
-      "field-fuel": "Tipo de Combustible",
-      "field-desc": "Descripción",
-      "field-price": "Precio por Litro",
-      "field-unit": "Unidad",
-      "select-fuel": "Selecciona tipo de combustible",
-      "cancel": "Cancelar",
-      "save": "Guardar Producto"
-    }
   },
   "fulfillment": {
     "vehicles": "Vehículos",
@@ -178,5 +149,34 @@
     "status": "Estado",
     "loading": "Cargando...",
     "no-data": "No hay datos disponibles"
+  },
+  "inventory": {
+    "products": "Inventario de Productos",
+    "add-product": "Agregar Producto",
+    "edit-product": "Editar Producto",
+    "product-list": {
+      "title": "Inventario de Productos",
+      "subtitle": "Gestiona tu catálogo de combustibles",
+      "col-name": "Nombre",
+      "col-fuel": "Tipo de Combustible",
+      "col-price": "Precio",
+      "col-unit": "Unidad",
+      "col-desc": "Descripción",
+      "no-products": "No hay productos disponibles"
+    },
+    "product-form": {
+      "title-create": "Agregar Nuevo Producto",
+      "title-edit": "Editar Producto",
+      "subtitle-create": "Añade un nuevo producto de combustible a tu inventario",
+      "subtitle-edit": "Actualiza la información del producto",
+      "field-name": "Nombre del Producto",
+      "field-fuel": "Tipo de Combustible",
+      "field-desc": "Descripción",
+      "field-price": "Precio por Litro",
+      "field-unit": "Unidad",
+      "select-fuel": "Selecciona tipo de combustible",
+      "cancel": "Cancelar",
+      "save": "Guardar Producto"
+    }
   }
 }

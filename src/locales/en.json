@@ -1,13 +1,13 @@
 {
   "option": {
-    "dashboard":         "Dashboard",
-    "catalog":           "Catalog",
-    "ordering":          "Ordering",
-    "fulfillment":       "Fulfillment",
-    "payment":           "Payment",
-    "reporting":         "Reporting",
+    "dashboard": "Dashboard",
+    "ordering": "Ordering",
+    "fulfillment": "Fulfillment",
+    "payment": "Payment",
+    "reporting": "Reporting",
     "product-inventory": "Product Inventory",
-    "add-product":       "Add Product"
+    "add-product": "Add Product",
+    "inventory": "Catalog"
   },
   "home": {
     "title": "Welcome to FullTank",
@@ -65,35 +65,6 @@
     "status-delivered": "Delivered",
     "confirm-delivery": "Confirm Delivery",
     "not-available": "N/A"
-  },
-  "catalog": {
-    "products": "Product Inventory",
-    "add-product": "Add Product",
-    "edit-product": "Edit Product",
-    "product-list": {
-      "title": "Product Inventory",
-      "subtitle": "Manage your fuel products catalog",
-      "col-name": "Name",
-      "col-fuel": "Fuel Type",
-      "col-price": "Price",
-      "col-unit": "Unit",
-      "col-desc": "Description",
-      "no-products": "No products available"
-    },
-    "product-form": {
-      "title-create": "Add New Product",
-      "title-edit": "Edit Product",
-      "subtitle-create": "Add a new fuel product to your inventory",
-      "subtitle-edit": "Update product information",
-      "field-name": "Product Name",
-      "field-fuel": "Fuel Type",
-      "field-desc": "Description",
-      "field-price": "Price per Liter",
-      "field-unit": "Unit",
-      "select-fuel": "Select fuel type",
-      "cancel": "Cancel",
-      "save": "Save Product"
-    }
   },
   "fulfillment": {
     "vehicles": "Vehicles",
@@ -178,5 +149,34 @@
     "status": "Status",
     "loading": "Loading...",
     "no-data": "No data available"
+  },
+  "inventory": {
+    "products": "Product Inventory",
+    "add-product": "Add Product",
+    "edit-product": "Edit Product",
+    "product-list": {
+      "title": "Product Inventory",
+      "subtitle": "Manage your fuel products catalog",
+      "col-name": "Name",
+      "col-fuel": "Fuel Type",
+      "col-price": "Price",
+      "col-unit": "Unit",
+      "col-desc": "Description",
+      "no-products": "No products available"
+    },
+    "product-form": {
+      "title-create": "Add New Product",
+      "title-edit": "Edit Product",
+      "subtitle-create": "Add a new fuel product to your inventory",
+      "subtitle-edit": "Update product information",
+      "field-name": "Product Name",
+      "field-fuel": "Fuel Type",
+      "field-desc": "Description",
+      "field-price": "Price per Liter",
+      "field-unit": "Unit",
+      "select-fuel": "Select fuel type",
+      "cancel": "Cancel",
+      "save": "Save Product"
+    }
   }
 }
