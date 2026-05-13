@@ -31,14 +31,18 @@ const statusLabel = computed(() => {
 });
 
 const statusClass = computed(() => {
+  return request.value?.status ?? '';
+});
+
+const statusSeverity = computed(() => {
   const map = {
-    PENDING:    'status-badge--pending',
-    APPROVED:   'status-badge--approved',
-    REJECTED:   'status-badge--rejected',
-    DISPATCHED: 'status-badge--dispatched',
-    DELIVERED:  'status-badge--delivered',
+    PENDING: 'warn',
+    APPROVED: 'success',
+    REJECTED: 'danger',
+    DISPATCHED: 'info',
+    DELIVERED: 'success',
   };
-  return map[request.value?.status] ?? '';
+  return map[request.value?.status] ?? 'secondary';
 });
 
 const formatDate = (val) => {
@@ -63,16 +67,14 @@ const formatCurrency = (val) => {
       <main class="main-area">
         <!-- Back button -->
         <div class="back-row">
-          <button class="back-btn" @click="router.back()">
-            <i class="pi pi-arrow-left"/> {{ t('ordering.back') }}
-          </button>
+          <pv-button :label="t('ordering.back')" icon="pi pi-arrow-left" text class="back-btn" @click="router.back()" />
           <h1 class="page-title">{{ t('ordering.order-detail-title') }}</h1>
         </div>
 
         <!-- Not found -->
-        <div v-if="store.requestsLoaded && !request" class="not-found-card">
-          <i class="pi pi-inbox"/> {{ t('common.no-data') }}
-        </div>
+        <pv-message v-if="store.requestsLoaded && !request" severity="warn" class="not-found-card">
+          {{ t('common.no-data') }}
+        </pv-message>
 
         <!-- Loading -->
         <div v-else-if="store.loading" class="loading-row">
@@ -80,11 +82,12 @@ const formatCurrency = (val) => {
         </div>
 
         <!-- Detail card -->
-        <div v-else-if="request" class="detail-card">
+        <pv-card v-else-if="request" class="detail-card">
+          <template #content>
           <!-- Card header: ID + status badge -->
           <div class="card-header">
             <span class="order-id">{{ request.id }}</span>
-            <span class="status-badge" :class="statusClass">{{ statusLabel }}</span>
+            <pv-tag :value="statusLabel" :severity="statusSeverity" class="status-badge" />
           </div>
 
           <div class="card-divider"/>
@@ -133,15 +136,16 @@ const formatCurrency = (val) => {
 
           <!-- Actions -->
           <div class="card-footer">
-            <button
+            <pv-button
                 v-if="request.status === 'DISPATCHED'"
+                :label="t('ordering.confirm-delivery')"
+                icon="pi pi-check-circle"
                 class="confirm-btn"
                 @click="store.updateRequest({ ...request, status: 'DELIVERED' })"
-            >
-              <i class="pi pi-check-circle"/> {{ t('ordering.confirm-delivery') }}
-            </button>
+            />
           </div>
-        </div>
+          </template>
+        </pv-card>
       </main>
     </div>
 </template>
@@ -225,11 +229,12 @@ const formatCurrency = (val) => {
 
 /* DETAIL CARD */
 .detail-card {
-  background: #ffffff; border-radius: 10px;
-  padding: 1.75rem 2rem;
+  border-radius: 10px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.07);
   max-width: 820px;
 }
+.detail-card :deep(.p-card-body) { padding: 1.75rem 2rem; }
+.detail-card :deep(.p-card-content) { padding: 0; }
 .card-header {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 1.25rem;
@@ -238,15 +243,7 @@ const formatCurrency = (val) => {
 .card-divider { border: none; border-top: 1px solid #E5E7EB; margin: 1.25rem 0; }
 
 /* Status badge */
-.status-badge {
-  padding: 5px 14px; border-radius: 6px;
-  font-size: 0.82rem; font-weight: 600;
-}
-.status-badge--pending    { background: #FEF3C7; color: #92400E; }
-.status-badge--approved   { background: #DCFCE7; color: #15803D; }
-.status-badge--rejected   { background: #FEE2E2; color: #B91C1C; }
-.status-badge--dispatched { background: #E0E7FF; color: #3730A3; }
-.status-badge--delivered  { background: #F0FDF4; color: #166534; }
+.status-badge { font-size: 0.82rem; font-weight: 600; }
 
 /* Fields */
 .fields-grid {
