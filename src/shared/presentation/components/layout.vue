@@ -10,12 +10,12 @@ const sidebarCollapsed = ref(false);
 
 const navItems = [
   {
-    key: 'catalog',
+    key: 'inventory',
     icon: 'pi pi-box',
-    label: 'option.catalog',
+    label: 'option.inventory',
     children: [
-      { label: 'option.product-inventory', to: '/catalog/products' },
-      { label: 'option.add-product',       to: '/catalog/products/new' },
+      { label: 'option.product-inventory', to: '/inventory/products' },
+      { label: 'option.add-product',       to: '/inventory/products/new' },
     ]
   },
   {
