@@ -92,18 +92,19 @@ const saveProduct = () => {
           <p class="page-subtitle">{{ isEdit ? t('inventory.product-form.subtitle-edit') : t('inventory.product-form.subtitle-create') }}</p>
         </div>
 
-        <div v-if="errors.length" class="error-banner">
-          <i class="pi pi-exclamation-circle"/>
-          <span>{{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}</span>
-        </div>
+        <pv-message v-if="errors.length" severity="error" class="error-banner">
+          {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
+        </pv-message>
 
-        <form class="form-card" @submit.prevent="saveProduct">
+        <pv-card class="form-card">
+          <template #content>
+        <form class="form-content" @submit.prevent="saveProduct">
           <!-- Product Name -->
           <div class="field-group">
             <div class="field-icon"><i class="pi pi-tag"/></div>
             <div class="field-content">
               <label>{{ t('inventory.product-form.field-name') }}<span class="req">*</span></label>
-              <input v-model="form.name" type="text" class="text-input" required/>
+              <pv-input-text v-model="form.name" class="text-input" required/>
             </div>
           </div>
 
@@ -112,12 +113,15 @@ const saveProduct = () => {
             <div class="field-icon"><i class="pi pi-bolt"/></div>
             <div class="field-content">
               <label>{{ t('inventory.product-form.field-fuel') }}<span class="req">*</span></label>
-              <select v-model="form.type" class="select-input" required>
-                <option value="" disabled>{{ t('inventory.product-form.select-fuel') }}</option>
-                <option v-for="opt in fuelTypeOptions" :key="opt.value" :value="opt.value">
-                  {{ opt.label }}
-                </option>
-              </select>
+              <pv-select
+                  v-model="form.type"
+                  :options="fuelTypeOptions"
+                  option-label="label"
+                  option-value="value"
+                  :placeholder="t('inventory.product-form.select-fuel')"
+                  class="select-input"
+                  required
+              />
             </div>
           </div>
 
@@ -126,7 +130,7 @@ const saveProduct = () => {
             <div class="field-icon"><i class="pi pi-file"/></div>
             <div class="field-content">
               <label>{{ t('inventory.product-form.field-desc') }}<span class="req">*</span></label>
-              <textarea v-model="form.description" rows="3" class="textarea-input" required/>
+              <pv-textarea v-model="form.description" rows="3" class="textarea-input" required/>
             </div>
           </div>
 
@@ -138,12 +142,13 @@ const saveProduct = () => {
                 <label>{{ t('inventory.product-form.field-price') }}<span class="req">*</span></label>
                 <div class="price-input-wrapper">
                   <span class="prefix">S/</span>
-                  <input
-                      v-model.number="form.pricePerLiter"
-                      type="number"
-                      step="0.01"
-                      min="0"
+                  <pv-input-number
+                      v-model="form.pricePerLiter"
+                      :min="0"
+                      :min-fraction-digits="2"
+                      :max-fraction-digits="2"
                       class="text-input price-input"
+                      input-class="text-input-native"
                       required
                   />
                 </div>
@@ -153,24 +158,19 @@ const saveProduct = () => {
               <div class="field-icon"><i class="pi pi-list"/></div>
               <div class="field-content">
                 <label>{{ t('inventory.product-form.field-unit') }}<span class="req">*</span></label>
-                <select v-model="form.unit" class="select-input" required>
-                  <option v-for="opt in unitOptions" :key="opt.value" :value="opt.value">
-                    {{ opt.label }}
-                  </option>
-                </select>
+                <pv-select v-model="form.unit" :options="unitOptions" option-label="label" option-value="value" class="select-input" required/>
               </div>
             </div>
           </div>
 
           <!-- ACTIONS -->
           <div class="form-actions">
-            <button type="button" class="btn-secondary" @click="navigateBack">{{ t('inventory.product-form.cancel') }}</button>
-            <button type="submit" class="btn-primary">
-              <i class="pi pi-save"/>
-              <span>{{ isEdit ? t('inventory.product-form.update') : t('inventory.product-form.save') }}</span>
-            </button>
+            <pv-button type="button" :label="t('inventory.product-form.cancel')" outlined class="btn-secondary" @click="navigateBack" />
+            <pv-button type="submit" :label="isEdit ? t('inventory.product-form.update') : t('inventory.product-form.save')" icon="pi pi-save" class="btn-primary" />
           </div>
         </form>
+          </template>
+        </pv-card>
       </main>
     </div>
   </div>
@@ -265,9 +265,16 @@ const saveProduct = () => {
 }
 
 .form-card {
-  background: #ffffff; border-radius: 12px;
-  padding: 2rem;
+  border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.form-card :deep(.p-card-body) {
+  padding: 2rem;
+}
+.form-card :deep(.p-card-content) {
+  padding: 0;
+}
+.form-content {
   display: flex; flex-direction: column; gap: 1.25rem;
 }
 .field-group {
@@ -291,14 +298,34 @@ const saveProduct = () => {
   font-weight: 500; margin-bottom: 0.15rem;
 }
 .req { color: #DC2626; margin-left: 2px; }
-.text-input, .select-input, .textarea-input {
+.text-input, .select-input, .textarea-input,
+.text-input :deep(.p-inputtext),
+.select-input :deep(.p-select-label),
+.textarea-input,
+.text-input-native {
   border: none; outline: none;
   padding: 0.25rem 0;
   font-size: 0.95rem; font-family: inherit;
   color: #1f2937; width: 100%; background: transparent;
+  box-shadow: none;
 }
-.textarea-input { resize: vertical; min-height: 60px; }
-.select-input { cursor: pointer; }
+.text-input :deep(.p-inputnumber-input) {
+  border: none;
+  padding: 0.25rem 0;
+  background: transparent;
+  box-shadow: none;
+}
+.textarea-input { resize: vertical; min-height: 60px; box-shadow: none; }
+.select-input {
+  cursor: pointer;
+  width: 100%;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+.select-input :deep(.p-select-dropdown) {
+  color: #6B7280;
+}
 .field-row { display: flex; gap: 1rem; }
 .field-group-half { flex: 1; }
 .price-input-wrapper {
