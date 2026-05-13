@@ -83,23 +83,17 @@ const saveVehicle = () => {
     <!-- TOP NAVBAR -->
     <div class="topbar">
       <div class="topbar-left">
-        <button class="icon-btn" @click="sidebarCollapsed = !sidebarCollapsed">
-          <i class="pi pi-bars"/>
-        </button>
+        <pv-button icon="pi pi-bars" text rounded class="icon-btn" @click="sidebarCollapsed = !sidebarCollapsed" />
         <div class="brand">
           <img src="/fulltank-logo.png" alt="FullTank" class="brand-logo-img"/>
         </div>
       </div>
       <div class="topbar-right">
         <div class="lang-switch">
-          <button class="lang-btn" :class="{ active: locale === 'en' }" @click="locale = 'en'">
-            <i v-if="locale === 'en'" class="pi pi-check"/> EN
-          </button>
-          <button class="lang-btn" :class="{ active: locale === 'es' }" @click="locale = 'es'">
-            <i v-if="locale === 'es'" class="pi pi-check"/> ES
-          </button>
+          <pv-button label="EN" :icon="locale === 'en' ? 'pi pi-check' : undefined" text class="lang-btn" :class="{ active: locale === 'en' }" @click="locale = 'en'" />
+          <pv-button label="ES" :icon="locale === 'es' ? 'pi pi-check' : undefined" text class="lang-btn" :class="{ active: locale === 'es' }" @click="locale = 'es'" />
         </div>
-        <button class="icon-btn"><i class="pi pi-bell"/></button>
+        <pv-button icon="pi pi-bell" text rounded class="icon-btn" />
       </div>
     </div>
 
@@ -146,18 +140,19 @@ const saveVehicle = () => {
           <p class="page-subtitle">{{ isEdit ? 'Update vehicle information' : 'Add a new vehicle to your fleet' }}</p>
         </div>
 
-        <div v-if="errors.length" class="error-banner">
-          <i class="pi pi-exclamation-circle"/>
-          <span>{{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}</span>
-        </div>
+        <pv-message v-if="errors.length" severity="error" class="error-banner">
+          {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
+        </pv-message>
 
-        <form class="form-card" @submit.prevent="saveVehicle">
+        <pv-card class="form-card">
+          <template #content>
+        <form class="form-content" @submit.prevent="saveVehicle">
           <!-- License Plate -->
           <div class="field-group">
             <div class="field-icon"><i class="pi pi-id-card"/></div>
             <div class="field-content">
               <label>License Plate<span class="req">*</span></label>
-              <input v-model="form.plate" type="text" class="text-input" required/>
+              <pv-input-text v-model="form.plate" class="text-input" required/>
             </div>
           </div>
 
@@ -167,14 +162,14 @@ const saveVehicle = () => {
               <div class="field-icon"><i class="pi pi-tag"/></div>
               <div class="field-content">
                 <label>Brand<span class="req">*</span></label>
-                <input v-model="form.brand" type="text" class="text-input" required/>
+                <pv-input-text v-model="form.brand" class="text-input" required/>
               </div>
             </div>
             <div class="field-group field-group-half">
               <div class="field-icon"><i class="pi pi-box"/></div>
               <div class="field-content">
                 <label>Model<span class="req">*</span></label>
-                <input v-model="form.model" type="text" class="text-input" required/>
+                <pv-input-text v-model="form.model" class="text-input" required/>
               </div>
             </div>
           </div>
@@ -185,18 +180,14 @@ const saveVehicle = () => {
               <div class="field-icon"><i class="pi pi-database"/></div>
               <div class="field-content">
                 <label>Capacity<span class="req">*</span></label>
-                <input v-model.number="form.capacity" type="number" min="1" class="text-input" required/>
+                <pv-input-number v-model="form.capacity" :min="1" class="text-input" input-class="text-input-native" required/>
               </div>
             </div>
             <div class="field-group field-group-half">
               <div class="field-icon"><i class="pi pi-list"/></div>
               <div class="field-content">
                 <label>Unit<span class="req">*</span></label>
-                <select v-model="form.unit" class="select-input" required>
-                  <option v-for="opt in unitOptions" :key="opt.value" :value="opt.value">
-                    {{ opt.label }}
-                  </option>
-                </select>
+                <pv-select v-model="form.unit" :options="unitOptions" option-label="label" option-value="value" class="select-input" required/>
               </div>
             </div>
           </div>
@@ -206,23 +197,18 @@ const saveVehicle = () => {
             <div class="field-icon"><i class="pi pi-check-circle"/></div>
             <div class="field-content">
               <label>Status<span class="req">*</span></label>
-              <select v-model="form.status" class="select-input" required>
-                <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">
-                  {{ opt.label }}
-                </option>
-              </select>
+              <pv-select v-model="form.status" :options="statusOptions" option-label="label" option-value="value" class="select-input" required/>
             </div>
           </div>
 
           <!-- ACTIONS -->
           <div class="form-actions">
-            <button type="button" class="btn-secondary" @click="navigateBack">Cancel</button>
-            <button type="submit" class="btn-primary">
-              <i class="pi pi-save"/>
-              <span>{{ isEdit ? 'Update Vehicle' : 'Register Vehicle' }}</span>
-            </button>
+            <pv-button type="button" label="Cancel" outlined class="btn-secondary" @click="navigateBack" />
+            <pv-button type="submit" :label="isEdit ? 'Update Vehicle' : 'Register Vehicle'" icon="pi pi-save" class="btn-primary" />
           </div>
         </form>
+          </template>
+        </pv-card>
       </main>
     </div>
   </div>
@@ -317,9 +303,16 @@ const saveVehicle = () => {
 }
 
 .form-card {
-  background: #ffffff; border-radius: 12px;
-  padding: 2rem;
+  border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.form-card :deep(.p-card-body) {
+  padding: 2rem;
+}
+.form-card :deep(.p-card-content) {
+  padding: 0;
+}
+.form-content {
   display: flex; flex-direction: column; gap: 1.25rem;
 }
 .field-group {
@@ -343,13 +336,32 @@ const saveVehicle = () => {
   font-weight: 500; margin-bottom: 0.15rem;
 }
 .req { color: #DC2626; margin-left: 2px; }
-.text-input, .select-input {
+.text-input, .select-input,
+.text-input :deep(.p-inputtext),
+.select-input :deep(.p-select-label),
+.text-input-native {
   border: none; outline: none;
   padding: 0.25rem 0;
   font-size: 0.95rem; font-family: inherit;
   color: #1f2937; width: 100%; background: transparent;
+  box-shadow: none;
 }
-.select-input { cursor: pointer; }
+.text-input :deep(.p-inputnumber-input) {
+  border: none;
+  padding: 0.25rem 0;
+  background: transparent;
+  box-shadow: none;
+}
+.select-input {
+  cursor: pointer;
+  width: 100%;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+.select-input :deep(.p-select-dropdown) {
+  color: #6B7280;
+}
 .field-row { display: flex; gap: 1rem; }
 .field-group-half { flex: 1; }
 
