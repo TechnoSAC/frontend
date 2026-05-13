@@ -1,6 +1,6 @@
 /**
  * SalesPerformance Entity
- * Representa el rendimiento de ventas de un cliente
+ * Represents a customer's sales performance
  */
 export class SalesPerformance {
     constructor({
@@ -14,14 +14,14 @@ export class SalesPerformance {
     }
 
     /**
-     * Obtiene el volumen formateado
+     * Gets the formatted volume
      */
     getFormattedVolume() {
         return `${this.totalVolume.toLocaleString('es-PE', { minimumFractionDigits: 1 })} MT`;
     }
 
     /**
-     * Obtiene el badge de estado
+     * Get the status badge
      */
     getStatusBadge() {
         const badgeMap = {
