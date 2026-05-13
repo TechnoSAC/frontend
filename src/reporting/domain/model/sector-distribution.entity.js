@@ -1,6 +1,6 @@
 /**
  * SectorDistribution Entity
- * Representa la distribución de volumen por sector industrial
+ * Represents the distribution of volume by industrial sector
  */
 export class SectorDistribution {
     constructor({
@@ -14,7 +14,7 @@ export class SectorDistribution {
     }
 
     /**
-     * Obtiene el nombre del sector formateado
+     * Gets the name of the formatted sector
      */
     getSectorLabel() {
         const sectorMap = {
@@ -28,21 +28,21 @@ export class SectorDistribution {
     }
 
     /**
-     * Obtiene el volumen formateado
+     * Gets the formatted volume
      */
     getFormattedVolume() {
         return `${this.totalVolume.toLocaleString('es-PE', { minimumFractionDigits: 3 })} MT`;
     }
 
     /**
-     * Obtiene el porcentaje formateado
+     * Gets the formatted percentage
      */
     getFormattedPercentage() {
         return `${this.percentage}%`;
     }
 
     /**
-     * Obtiene el color para el gráfico según el sector
+     * Gets the color for the graph according to the sector
      */
     getChartColor() {
         const colorMap = {
