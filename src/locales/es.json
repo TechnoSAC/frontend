@@ -98,7 +98,24 @@
   "fulfillment": {
     "vehicles": "Vehículos",
     "drivers": "Conductores",
-    "dispatch": "Despacho",
+    "dispatch": {
+      "title": "Despacho",
+      "subtitle": "Vista general de recursos de flota y entregas activas",
+      "kpi-vehicles": "Vehículos Disponibles",
+      "kpi-drivers": "Conductores Disponibles",
+      "kpi-deliveries": "Entregas Activas",
+      "total": "Total",
+      "completed": "Completadas",
+      "manage-vehicles": "Gestionar Vehículos",
+      "manage-drivers": "Gestionar Conductores",
+      "section-active": "Entregas Activas",
+      "col-order": "ID de Pedido",
+      "col-vehicle": "Vehículo",
+      "col-driver": "Conductor",
+      "col-status": "Estado",
+      "col-scheduled": "Fecha Programada",
+      "no-deliveries": "No hay entregas activas"
+    },
     "show-all": "Mostrar Todos",
     "available-only": "Solo Disponibles",
     "vehicle-list": {
