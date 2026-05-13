@@ -64,7 +64,21 @@
     "status-dispatched": "Dispatched",
     "status-delivered": "Delivered",
     "confirm-delivery": "Confirm Delivery",
-    "not-available": "N/A"
+    "not-available": "N/A",
+    "orders": "Orders",
+    "order-list-title": "Orders",
+    "order-list-subtitle": "Track and manage all fuel delivery orders",
+    "dispatch": "Dispatch",
+    "close-order": "Close Order",
+    "col-order-id": "Order ID",
+    "col-request-ref": "Request Ref",
+    "col-request-ref-label": "REQUEST REF",
+    "col-total": "Total",
+    "col-delivered-label": "DELIVERED",
+    "col-closed-label": "CLOSED",
+    "status-created": "Created",
+    "status-closed": "Closed",
+    "no-orders": "No orders available"
   },
   "fulfillment": {
     "vehicles": "Vehicles",

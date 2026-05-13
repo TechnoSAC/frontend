@@ -2,6 +2,7 @@ import { BaseApi } from "../../shared/infrastructure/base-api.js";
 import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
 const requestsEndpointPath = import.meta.env.VITE_REQUESTS_ENDPOINT_PATH;
+const ordersEndpointPath   = import.meta.env.VITE_ORDERS_ENDPOINT_PATH;
 
 /**
  * Infrastructure adapter for Ordering HTTP endpoints.
@@ -12,11 +13,13 @@ const requestsEndpointPath = import.meta.env.VITE_REQUESTS_ENDPOINT_PATH;
 export class OrderingApi extends BaseApi {
     /** @type {BaseEndpoint} */
     #requestsEndpoint;
+    /** @type {BaseEndpoint} */
+    #ordersEndpoint;
 
-    /** Creates endpoint client for the requests resource. */
     constructor() {
         super();
         this.#requestsEndpoint = new BaseEndpoint(this, requestsEndpointPath);
+        this.#ordersEndpoint   = new BaseEndpoint(this, ordersEndpointPath);
     }
 
     /**
@@ -61,5 +64,30 @@ export class OrderingApi extends BaseApi {
      */
     deleteRequest(id) {
         return this.#requestsEndpoint.delete(id);
+    }
+
+    /** @returns {Promise<import('axios').AxiosResponse>} */
+    getOrders() {
+        return this.#ordersEndpoint.getAll();
+    }
+
+    /** @param {number|string} id @returns {Promise<import('axios').AxiosResponse>} */
+    getOrderById(id) {
+        return this.#ordersEndpoint.getById(id);
+    }
+
+    /** @param {Object} resource @returns {Promise<import('axios').AxiosResponse>} */
+    createOrder(resource) {
+        return this.#ordersEndpoint.create(resource);
+    }
+
+    /** @param {Object} resource @returns {Promise<import('axios').AxiosResponse>} */
+    updateOrder(resource) {
+        return this.#ordersEndpoint.update(resource.id, resource);
+    }
+
+    /** @param {number|string} id @returns {Promise<import('axios').AxiosResponse>} */
+    deleteOrder(id) {
+        return this.#ordersEndpoint.delete(id);
     }
 }

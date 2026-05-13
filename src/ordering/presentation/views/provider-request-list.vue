@@ -72,9 +72,7 @@ onMounted(() => {
               </template>
               <pv-column :header="t('ordering.col-request-id')">
                 <template #body="{ data }">
-                  <strong class="request-id-link" @click="$router.push({ name: 'ordering-order-detail', params: { id: data.id } })">
-                    #{{ data.id }}
-                  </strong>
+                  <span class="request-id">#{{ data.id }}</span>
                 </template>
               </pv-column>
               <pv-column :header="t('ordering.col-client-id')">
@@ -106,14 +104,10 @@ onMounted(() => {
 
 <style scoped>
 
-.request-id-link {
-  color: #1E3A8A;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+.request-id {
+  font-family: monospace;
+  color: #1f2937;
 }
-.request-id-link:hover { color: #F59E0B; }
-
 
 .layout-wrapper {
   min-height: 100vh;

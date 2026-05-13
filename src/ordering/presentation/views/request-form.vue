@@ -61,7 +61,7 @@ const loadRequestIntoForm = () => {
   }
 };
 
-const navigateBack = () => router.push({ name: 'ordering-client-requests' });
+const navigateBack = () => router.push({ name: 'ordering-orders' });
 
 const saveRequest = () => {
   const request = new Request({
