@@ -4,6 +4,8 @@ import catalogRoutes from "./catalog/presentation/catalog-routes.js";
 import { RouterView } from 'vue-router';
 import orderingRoutes from "./ordering/presentation/ordering-routes.js";
 import fulfillmentRoutes from "./fulfillment/presentation/fulfillment-routes.js";
+import reportingRoutes from './reporting/presentation/reporting-routes.js';
+
 // To import when IAM is implemented
 // import iamRoutes from "./iam/presentation/iam-routes.js";
 
@@ -44,7 +46,12 @@ const routes = [
     { path: '/:pathMatch(.*)*', name: 'not-found', component: pageNotFound, meta: { title: 'Page Not Found' } },
     { path: '/catalog', component: RouterView, children: catalogRoutes },
     { path: '/ordering', children: orderingRoutes },
-    { path: '/fulfillment', children: fulfillmentRoutes }
+    { path: '/fulfillment', children: fulfillmentRoutes },
+    {
+        path: '/reporting',
+        children: reportingRoutes
+    }
+
 ];
 
 const router = createRouter({
