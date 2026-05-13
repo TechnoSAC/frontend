@@ -89,6 +89,18 @@
       "deliveryDate": "2026-05-22",
       "status": "DELIVERED",
       "createdAt": "2026-05-09T16:00:00Z"
+    },
+    {
+      "id": 5,
+      "clientId": 101,
+      "providerId": 201,
+      "fuelType": "GASOLINE_95",
+      "quantity": 3,
+      "unit": "LITERS",
+      "deliveryAddress": "kjugyjgkuih",
+      "deliveryDate": "0004-03-31",
+      "status": "PENDING",
+      "createdAt": "2026-05-13T14:42:43.321Z"
     }
   ],
   "vehicles": [
