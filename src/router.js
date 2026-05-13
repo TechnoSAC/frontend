@@ -5,6 +5,7 @@ import { RouterView } from 'vue-router';
 import orderingRoutes from "./ordering/presentation/ordering-routes.js";
 import fulfillmentRoutes from "./fulfillment/presentation/fulfillment-routes.js";
 import reportingRoutes from "./reporting/presentation/reporting-routes.js";
+import dashboardRoutes from "./dashboard/presentation/dashboard-routes.js";
 // To import when IAM is implemented
 // import iamRoutes from "./iam/presentation/iam-routes.js";
 
@@ -41,15 +42,13 @@ const routes = [
 const routes = [
     { path: '/home', name: 'home', component: Home, meta: { title: 'Home' } },
     { path: '/about', name: 'about', component: about, meta: { title: 'About' } },
-    { path: '/', redirect: '/home' },
+    { path: '/', redirect: '/dashboard' },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: pageNotFound, meta: { title: 'Page Not Found' } },
+    { path: '/dashboard', component: RouterView, children: dashboardRoutes },
     { path: '/inventory', component: RouterView, children: inventoryRoutes },
     { path: '/ordering', children: orderingRoutes },
     { path: '/fulfillment', children: fulfillmentRoutes },
-    {
-        path: '/reporting',
-        children: reportingRoutes
-    }
+    { path: '/reporting', children: reportingRoutes }
 ];
 
 

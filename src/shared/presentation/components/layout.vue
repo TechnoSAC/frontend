@@ -10,6 +10,13 @@ const sidebarCollapsed = ref(false);
 
 const navItems = [
   {
+    key: 'dashboard',
+    icon: 'pi pi-home',
+    label: 'option.dashboard',
+    to: '/dashboard',
+    children: []
+  },
+  {
     key: 'inventory',
     icon: 'pi pi-box',
     label: 'option.inventory',
@@ -94,33 +101,46 @@ const isActive = (to) => route.path === to || route.path.startsWith(to + '/');
       <aside class="sidebar" :class="{ collapsed: sidebarCollapsed }">
         <nav>
           <template v-for="item in navItems" :key="item.key">
-            <div
+            <router-link
+                v-if="item.to && !item.children.length"
+                :to="item.to"
                 class="nav-item"
                 :class="{ 'nav-item--active': route.path.startsWith('/' + item.key) }"
-                @click="toggle(item.key)"
+                style="text-decoration:none"
             >
               <i :class="item.icon"/>
               <span v-if="!sidebarCollapsed">{{ t(item.label) }}</span>
-              <i
-                  v-if="item.children.length && !sidebarCollapsed"
-                  class="pi chevron"
-                  :class="expanded[item.key] ? 'pi-chevron-up' : 'pi-chevron-down'"
-              />
-            </div>
+            </router-link>
 
-            <transition name="slide">
-              <div v-if="expanded[item.key] && !sidebarCollapsed && item.children.length" class="sub-nav">
-                <router-link
-                    v-for="child in item.children"
-                    :key="child.to"
-                    :to="child.to"
-                    class="sub-item"
-                    :class="{ 'sub-item--active': isActive(child.to) }"
-                >
-                  {{ t(child.label) }}
-                </router-link>
+            <template v-else>
+              <div
+                  class="nav-item"
+                  :class="{ 'nav-item--active': route.path.startsWith('/' + item.key) }"
+                  @click="toggle(item.key)"
+              >
+                <i :class="item.icon"/>
+                <span v-if="!sidebarCollapsed">{{ t(item.label) }}</span>
+                <i
+                    v-if="item.children.length && !sidebarCollapsed"
+                    class="pi chevron"
+                    :class="expanded[item.key] ? 'pi-chevron-up' : 'pi-chevron-down'"
+                />
               </div>
-            </transition>
+
+              <transition name="slide">
+                <div v-if="expanded[item.key] && !sidebarCollapsed && item.children.length" class="sub-nav">
+                  <router-link
+                      v-for="child in item.children"
+                      :key="child.to"
+                      :to="child.to"
+                      class="sub-item"
+                      :class="{ 'sub-item--active': isActive(child.to) }"
+                  >
+                    {{ t(child.label) }}
+                  </router-link>
+                </div>
+              </transition>
+            </template>
           </template>
         </nav>
       </aside>
