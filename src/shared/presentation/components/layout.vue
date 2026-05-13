@@ -31,7 +31,7 @@ const navItems = [
     label: 'option.ordering',
     children: [
       { label: 'ordering.pending-requests', to: '/ordering/pending' },
-      { label: 'ordering.my-requests',      to: '/ordering/requests' },
+      { label: 'ordering.orders',           to: '/ordering/orders' },
     ]
   },
   {
