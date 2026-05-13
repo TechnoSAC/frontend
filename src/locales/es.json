@@ -64,7 +64,21 @@
     "status-dispatched": "Despachada",
     "status-delivered": "Entregada",
     "confirm-delivery": "Confirmar Entrega",
-    "not-available": "N/D"
+    "not-available": "N/D",
+    "orders": "Órdenes",
+    "order-list-title": "Órdenes",
+    "order-list-subtitle": "Rastrea y gestiona todas las órdenes de entrega de combustible",
+    "dispatch": "Despachar",
+    "close-order": "Cerrar Orden",
+    "col-order-id": "ID Orden",
+    "col-request-ref": "Ref. Solicitud",
+    "col-request-ref-label": "REF. SOLICITUD",
+    "col-total": "Total",
+    "col-delivered-label": "ENTREGADA",
+    "col-closed-label": "CERRADA",
+    "status-created": "Creada",
+    "status-closed": "Cerrada",
+    "no-orders": "No hay órdenes disponibles"
   },
   "fulfillment": {
     "vehicles": "Vehículos",
