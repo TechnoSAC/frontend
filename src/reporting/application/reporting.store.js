@@ -66,12 +66,12 @@ const useReportingStore = defineStore('reporting', () => {
     });
 
     const avgFulfillmentRate = computed(() => {
-        // Mock calculation - en producción vendría de otra fuente
+        // Mock calculation - in production. it comes from another source
         return 98.2;
     });
 
     const avgLeadTime = computed(() => {
-        // Mock calculation - en producción vendría de otra fuente
+        // Mock calculation - in production. it comes from another source
         return 4.2;
     });
 
@@ -85,12 +85,12 @@ const useReportingStore = defineStore('reporting', () => {
     });
 
     const activeOrders = computed(() => {
-        // Mock - en producción vendría de ordering BC
+        // Mock - in production. it comes from ordering BC
         return 65;
     });
 
     const growthRate = computed(() => {
-        // Mock calculation - en producción se calcularía con históricos
+        // Mock calculation - in production. it calculates with history records
         return 12.4;
     });
 
