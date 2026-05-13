@@ -1,18 +1,18 @@
 /**
- * Application service store for the `Catalog` bounded context.
+ * Application service store for the `Inventory` bounded context.
  * Coordinates product use cases and exposes UI-facing state.
  *
- * @module useCatalogStore
+ * @module useInventoryStore
  */
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { CatalogApi } from "../infrastructure/catalog-api.js";
+import { InventoryApi } from "../infrastructure/inventory-api.js";
 import { ProductAssembler } from "../infrastructure/product.assembler.js";
 import { Product } from "../domain/model/product.entity.js";
 
-const catalogApi = new CatalogApi();
+const inventoryApi = new InventoryApi();
 
-const useCatalogStore = defineStore('catalog', () => {
+const useInventoryStore = defineStore('inventory', () => {
     /** @type {import('vue').Ref<Product[]>} */
     const products = ref([]);
     /** @type {import('vue').Ref<Error[]>} */
@@ -27,7 +27,7 @@ const useCatalogStore = defineStore('catalog', () => {
 
     function fetchProducts() {
         loading.value = true;
-        catalogApi.getProducts().then(response => {
+        inventoryApi.getProducts().then(response => {
             products.value = ProductAssembler.toEntitiesFromResponse(response);
             productsLoaded.value = true;
         }).catch(error => {
@@ -43,7 +43,7 @@ const useCatalogStore = defineStore('catalog', () => {
     }
 
     function addProduct(product) {
-        catalogApi.createProduct(product).then(response => {
+        inventoryApi.createProduct(product).then(response => {
             const newProduct = ProductAssembler.toEntityFromResource(response.data);
             products.value.push(newProduct);
         }).catch(error => {
@@ -52,7 +52,7 @@ const useCatalogStore = defineStore('catalog', () => {
     }
 
     function updateProduct(product) {
-        catalogApi.updateProduct(product).then(response => {
+        inventoryApi.updateProduct(product).then(response => {
             const updated = ProductAssembler.toEntityFromResource(response.data);
             const index = products.value.findIndex(p => p.id === updated.id);
             if (index !== -1) products.value[index] = updated;
@@ -62,7 +62,7 @@ const useCatalogStore = defineStore('catalog', () => {
     }
 
     function deleteProduct(product) {
-        catalogApi.deleteProduct(product.id).then(() => {
+        inventoryApi.deleteProduct(product.id).then(() => {
             const index = products.value.findIndex(p => p.id === product.id);
             if (index !== -1) products.value.splice(index, 1);
         }).catch(error => {
@@ -89,4 +89,4 @@ const useCatalogStore = defineStore('catalog', () => {
     };
 });
 
-export default useCatalogStore;
+export default useInventoryStore;

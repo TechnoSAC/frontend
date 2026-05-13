@@ -1,6 +1,6 @@
 /**
- * Product entity in the Catalog bounded context.
- * Represents a fuel product item in the catalog.
+ * Product entity in the Inventory bounded context.
+ * Represents a fuel product item in the inventory.
  *
  * @class Product
  */

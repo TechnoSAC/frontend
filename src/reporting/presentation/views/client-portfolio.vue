@@ -3,7 +3,7 @@ import { onMounted, ref, toRefs } from "vue";
 import { useI18n } from "vue-i18n";
 import useReportingStore from "../../application/reporting.store.js";
 import useOrderingStore from "../../../ordering/application/ordering.store.js";
-import useCatalogStore from "../../../catalog/application/catalog.store.js";
+import useCatalogStore from "../../../inventory/application/inventory.store.js";
 
 const reportingStore = useReportingStore();
 const orderingStore = useOrderingStore();

@@ -2,18 +2,18 @@
 import { useRoute, useRouter } from "vue-router";
 import { computed, onMounted, ref, toRefs } from "vue";
 import { useI18n } from "vue-i18n";
-import useCatalogStore from "../../application/catalog.store.js";
+import useInventoryStore from "../../application/inventory.store.js";
 import { Product } from "../../domain/model/product.entity.js";
 
 const route = useRoute();
 const router = useRouter();
-const store = useCatalogStore();
+const store = useInventoryStore();
 const { errors, productsLoaded } = toRefs(store);
 const { addProduct, updateProduct, fetchProducts, getProductById } = store;
 const { t, locale } = useI18n();
 
 const sidebarCollapsed = ref(false);
-const catalogExpanded = ref(true);
+const inventoryExpanded = ref(true);
 
 const isEdit = computed(() => !!route.params.id);
 
@@ -61,7 +61,7 @@ const loadProductIntoForm = () => {
   }
 };
 
-const navigateBack = () => router.push({ name: 'catalog-products' });
+const navigateBack = () => router.push({ name: 'inventory-products' });
 
 const saveProduct = () => {
   const product = new Product({
@@ -88,8 +88,8 @@ const saveProduct = () => {
       <!-- MAIN -->
       <main class="main-area">
         <div class="page-header">
-          <h1 class="page-title">{{ isEdit ? t('catalog.product-form.title-edit') : t('catalog.product-form.title-create') }}</h1>
-          <p class="page-subtitle">{{ isEdit ? t('catalog.product-form.subtitle-edit') : t('catalog.product-form.subtitle-create') }}</p>
+          <h1 class="page-title">{{ isEdit ? t('inventory.product-form.title-edit') : t('inventory.product-form.title-create') }}</h1>
+          <p class="page-subtitle">{{ isEdit ? t('inventory.product-form.subtitle-edit') : t('inventory.product-form.subtitle-create') }}</p>
         </div>
 
         <div v-if="errors.length" class="error-banner">
@@ -102,7 +102,7 @@ const saveProduct = () => {
           <div class="field-group">
             <div class="field-icon"><i class="pi pi-tag"/></div>
             <div class="field-content">
-              <label>{{ t('catalog.product-form.field-name') }}<span class="req">*</span></label>
+              <label>{{ t('inventory.product-form.field-name') }}<span class="req">*</span></label>
               <input v-model="form.name" type="text" class="text-input" required/>
             </div>
           </div>
@@ -111,9 +111,9 @@ const saveProduct = () => {
           <div class="field-group">
             <div class="field-icon"><i class="pi pi-bolt"/></div>
             <div class="field-content">
-              <label>{{ t('catalog.product-form.field-fuel') }}<span class="req">*</span></label>
+              <label>{{ t('inventory.product-form.field-fuel') }}<span class="req">*</span></label>
               <select v-model="form.type" class="select-input" required>
-                <option value="" disabled>{{ t('catalog.product-form.select-fuel') }}</option>
+                <option value="" disabled>{{ t('inventory.product-form.select-fuel') }}</option>
                 <option v-for="opt in fuelTypeOptions" :key="opt.value" :value="opt.value">
                   {{ opt.label }}
                 </option>
@@ -125,7 +125,7 @@ const saveProduct = () => {
           <div class="field-group field-group-textarea">
             <div class="field-icon"><i class="pi pi-file"/></div>
             <div class="field-content">
-              <label>{{ t('catalog.product-form.field-desc') }}<span class="req">*</span></label>
+              <label>{{ t('inventory.product-form.field-desc') }}<span class="req">*</span></label>
               <textarea v-model="form.description" rows="3" class="textarea-input" required/>
             </div>
           </div>
@@ -135,7 +135,7 @@ const saveProduct = () => {
             <div class="field-group field-group-half">
               <div class="field-icon"><i class="pi pi-money-bill"/></div>
               <div class="field-content">
-                <label>{{ t('catalog.product-form.field-price') }}<span class="req">*</span></label>
+                <label>{{ t('inventory.product-form.field-price') }}<span class="req">*</span></label>
                 <div class="price-input-wrapper">
                   <span class="prefix">S/</span>
                   <input
@@ -152,7 +152,7 @@ const saveProduct = () => {
             <div class="field-group field-group-half">
               <div class="field-icon"><i class="pi pi-list"/></div>
               <div class="field-content">
-                <label>{{ t('catalog.product-form.field-unit') }}<span class="req">*</span></label>
+                <label>{{ t('inventory.product-form.field-unit') }}<span class="req">*</span></label>
                 <select v-model="form.unit" class="select-input" required>
                   <option v-for="opt in unitOptions" :key="opt.value" :value="opt.value">
                     {{ opt.label }}
@@ -164,10 +164,10 @@ const saveProduct = () => {
 
           <!-- ACTIONS -->
           <div class="form-actions">
-            <button type="button" class="btn-secondary" @click="navigateBack">{{ t('catalog.product-form.cancel') }}</button>
+            <button type="button" class="btn-secondary" @click="navigateBack">{{ t('inventory.product-form.cancel') }}</button>
             <button type="submit" class="btn-primary">
               <i class="pi pi-save"/>
-              <span>{{ isEdit ? t('catalog.product-form.update') : t('catalog.product-form.save') }}</span>
+              <span>{{ isEdit ? t('inventory.product-form.update') : t('inventory.product-form.save') }}</span>
             </button>
           </div>
         </form>
