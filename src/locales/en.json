@@ -98,9 +98,9 @@
   "fulfillment": {
     "vehicles": "Vehicles",
     "drivers": "Drivers",
-    "dispatch": "Dispatch",
     "show-all": "Show All",
     "available-only": "Available Only",
+
     "vehicle-list": {
       "title": "Vehicle Fleet",
       "subtitle": "Manage your fuel delivery fleet",
@@ -112,6 +112,7 @@
       "col-status": "Status",
       "no-data": "No vehicles available"
     },
+
     "driver-list": {
       "title": "Driver Registry",
       "subtitle": "Manage authorized drivers for fuel delivery",
@@ -122,6 +123,25 @@
       "col-email": "Email",
       "col-status": "Status",
       "no-data": "No drivers available"
+    },
+
+    "dispatch": {
+      "title": "Dispatch",
+      "subtitle": "Overview of fleet resources and active deliveries",
+      "kpi-vehicles": "Available Vehicles",
+      "kpi-drivers": "Available Drivers",
+      "kpi-deliveries": "Active Deliveries",
+      "total": "Total",
+      "completed": "Completed",
+      "manage-vehicles": "Manage Vehicles",
+      "manage-drivers": "Manage Drivers",
+      "section-active": "Active Deliveries",
+      "col-order": "Order ID",
+      "col-vehicle": "Vehicle",
+      "col-driver": "Driver",
+      "col-status": "Status",
+      "col-scheduled": "Scheduled Date",
+      "no-deliveries": "No active deliveries"
     }
   },
   "reporting": {
