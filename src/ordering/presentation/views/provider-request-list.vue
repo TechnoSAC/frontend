@@ -56,64 +56,47 @@ onMounted(() => {
             <p class="page-subtitle">{{ t('ordering.page-subtitle') }}</p>
           </div>
           <div class="page-actions">
-            <button class="refresh-btn" @click="onRefresh" :disabled="loading">
-              <i class="pi pi-refresh" :class="{ 'spinning': loading }"/>
-            </button>
+            <pv-button icon="pi pi-refresh" text rounded class="refresh-btn" :loading="loading" @click="onRefresh" />
           </div>
         </div>
 
-        <div v-if="errors.length" class="error-banner">
-          <i class="pi pi-exclamation-circle"/>
-          <span>{{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}</span>
-        </div>
+        <pv-message v-if="errors.length" severity="error" class="error-banner">
+          {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
+        </pv-message>
 
-        <div class="table-card">
-          <table class="requests-table">
-            <thead>
-            <tr>
-              <th>{{ t('ordering.col-request-id') }}</th>
-              <th>{{ t('ordering.col-client-id') }}</th>
-              <th>{{ t('ordering.col-fuel-type') }}</th>
-              <th>{{ t('ordering.col-quantity') }}</th>
-              <th>{{ t('ordering.col-address') }}</th>
-              <th>{{ t('ordering.col-date') }}</th>
-              <th class="actions-col">{{ t('ordering.col-actions') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-if="!loading && pendingRequests.length === 0">
-              <td colspan="7" class="empty-row">{{ t('ordering.no-pending') }}</td>
-            </tr>
-            <tr v-for="request in pendingRequests" :key="request.id">
-              <!--<td><strong>#{{ request.id }}</strong></td>-->
-              <td>
-                <strong
-                    class="request-id-link"
-                    @click="$router.push({ name: 'ordering-order-detail', params: { id: request.id } })"
-                >
-                  #{{ request.id }}
-                </strong>
-              </td>
-              <td>Client #{{ request.clientId }}</td>
-              <td>{{ request.fuelType }}</td>
-              <td>{{ request.quantity }} {{ request.unit }}</td>
-              <td class="address-col">{{ request.deliveryAddress }}</td>
-              <td>{{ request.deliveryDate }}</td>
-
-              <td class="actions-col">
-                <button class="action-btn approve-btn" @click="confirmApprove(request)">
-                  <i class="pi pi-check"/>
-                  <span>{{ t('ordering.approve') }}</span>
-                </button>
-                <button class="action-btn reject-btn" @click="confirmReject(request)">
-                  <i class="pi pi-times"/>
-                  <span>{{ t('ordering.reject') }}</span>
-                </button>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+        <pv-card class="table-card">
+          <template #content>
+            <pv-data-table :value="pendingRequests" :loading="loading" responsive-layout="scroll" class="requests-table">
+              <template #empty>
+                <div class="empty-row">{{ t('ordering.no-pending') }}</div>
+              </template>
+              <pv-column :header="t('ordering.col-request-id')">
+                <template #body="{ data }">
+                  <strong class="request-id-link" @click="$router.push({ name: 'ordering-order-detail', params: { id: data.id } })">
+                    #{{ data.id }}
+                  </strong>
+                </template>
+              </pv-column>
+              <pv-column :header="t('ordering.col-client-id')">
+                <template #body="{ data }">Client #{{ data.clientId }}</template>
+              </pv-column>
+              <pv-column field="fuelType" :header="t('ordering.col-fuel-type')" />
+              <pv-column :header="t('ordering.col-quantity')">
+                <template #body="{ data }">{{ data.quantity }} {{ data.unit }}</template>
+              </pv-column>
+              <pv-column field="deliveryAddress" :header="t('ordering.col-address')" class="address-col" />
+              <pv-column field="deliveryDate" :header="t('ordering.col-date')" />
+              <pv-column :header="t('ordering.col-actions')" class="actions-col">
+                <template #body="{ data }">
+                  <div class="row-actions">
+                    <pv-button :label="t('ordering.approve')" icon="pi pi-check" class="action-btn approve-btn" @click="confirmApprove(data)" />
+                    <pv-button :label="t('ordering.reject')" icon="pi pi-times" class="action-btn reject-btn" @click="confirmReject(data)" />
+                  </div>
+                </template>
+              </pv-column>
+            </pv-data-table>
+          </template>
+        </pv-card>
       </main>
     </div>
 
@@ -242,35 +225,32 @@ onMounted(() => {
 }
 
 .table-card {
-  background: #ffffff; border-radius: 8px;
-  padding: 1.5rem 2rem;
+  border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.requests-table { width: 100%; border-collapse: collapse; }
-.requests-table th {
+.table-card :deep(.p-card-body) { padding: 1.5rem 2rem; }
+.table-card :deep(.p-card-content) { padding: 0; }
+.requests-table :deep(.p-datatable-table) { width: 100%; border-collapse: collapse; }
+.requests-table :deep(.p-datatable-thead > tr > th) {
   text-align: left; font-weight: 600;
   color: #1E3A8A; font-size: 0.95rem;
   padding: 0.75rem 0.5rem;
   border-bottom: 1px solid #E5E7EB;
+  background: #ffffff;
 }
-.requests-table td {
+.requests-table :deep(.p-datatable-tbody > tr > td) {
   padding: 1rem 0.5rem; color: #1f2937; font-size: 0.92rem;
   border-bottom: 1px solid #F3F4F6;
 }
 .empty-row { text-align: center; color: #9CA3AF; padding: 3rem 0 !important; }
 .address-col { color: #6B7280; max-width: 200px; }
 .actions-col { width: 220px; text-align: right; }
+.row-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
 .action-btn {
-  border: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  cursor: pointer;
   font-weight: 600;
   font-size: 0.85rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-left: 0.5rem;
 }
 .approve-btn {
   background: #DCFCE7;

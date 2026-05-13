@@ -183,5 +183,93 @@
       "email": "ana.torres@fulltank.com",
       "status": "AVAILABLE"
     }
+  ],
+  "clients": [
+    {
+      "id": 101,
+      "companyName": "Transportes Andinos SAC",
+      "sector": "TRANSPORT",
+      "totalVolume": 18450.5,
+      "totalCost": 428500,
+      "lastActive": "2026-05-12T10:20:00Z",
+      "status": "ACTIVE"
+    },
+    {
+      "id": 102,
+      "companyName": "Minera Santa Lucia",
+      "sector": "MINING",
+      "totalVolume": 32600,
+      "totalCost": 782400,
+      "lastActive": "2026-05-11T15:45:00Z",
+      "status": "ACTIVE"
+    },
+    {
+      "id": 103,
+      "companyName": "Constructora Lima Norte",
+      "sector": "CONSTRUCTION",
+      "totalVolume": 12750.25,
+      "totalCost": 291100,
+      "lastActive": "2026-05-09T09:10:00Z",
+      "status": "PENDING"
+    },
+    {
+      "id": 104,
+      "companyName": "Logistica Pacifico",
+      "sector": "LOGISTICS",
+      "totalVolume": 21980.75,
+      "totalCost": 517900,
+      "lastActive": "2026-05-10T18:30:00Z",
+      "status": "ACTIVE"
+    },
+    {
+      "id": 105,
+      "companyName": "Terminales Maritimos Callao",
+      "sector": "MARITIME",
+      "totalVolume": 15420,
+      "totalCost": 361250,
+      "lastActive": "2026-05-08T13:05:00Z",
+      "status": "REVIEW"
+    },
+    {
+      "id": 106,
+      "companyName": "Distribuidora Sur Express",
+      "sector": "TRANSPORT",
+      "totalVolume": 9350,
+      "totalCost": 210800,
+      "lastActive": "2026-05-07T11:00:00Z",
+      "status": "INACTIVE"
+    }
+  ],
+  "monthlySales": [
+    {
+      "id": 1,
+      "month": "Jan",
+      "revenue": 185000
+    },
+    {
+      "id": 2,
+      "month": "Feb",
+      "revenue": 224500
+    },
+    {
+      "id": 3,
+      "month": "Mar",
+      "revenue": 248750
+    },
+    {
+      "id": 4,
+      "month": "Apr",
+      "revenue": 276300
+    },
+    {
+      "id": 5,
+      "month": "May",
+      "revenue": 315900
+    },
+    {
+      "id": 6,
+      "month": "Jun",
+      "revenue": 342100
+    }
   ]
 }

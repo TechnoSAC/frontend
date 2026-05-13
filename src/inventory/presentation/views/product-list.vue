@@ -54,54 +54,45 @@ onMounted(() => {
             <p class="page-subtitle">{{ t('inventory.product-list.subtitle') }}</p>
           </div>
           <div class="page-actions">
-            <button class="refresh-btn" @click="onRefresh" :disabled="loading">
-              <i class="pi pi-refresh" :class="{ 'spinning': loading }"/>
-            </button>
-            <button class="add-btn" @click="navigateToNew">
-              <i class="pi pi-plus"/><span>{{ t('option.add-product') }}</span>
-            </button>
+            <pv-button icon="pi pi-refresh" text rounded class="refresh-btn" :loading="loading" @click="onRefresh" />
+            <pv-button :label="t('option.add-product')" icon="pi pi-plus" class="add-btn" @click="navigateToNew" />
           </div>
         </div>
 
-        <div v-if="errors.length" class="error-banner">
-          <i class="pi pi-exclamation-circle"/>
-          <span>{{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}</span>
-        </div>
+        <pv-message v-if="errors.length" severity="error" class="error-banner">
+          {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
+        </pv-message>
 
-        <div class="table-card">
-          <table class="products-table">
-            <thead>
-            <tr>
-              <th>{{ t('inventory.product-list.col-name') }}</th>
-              <th>{{ t('inventory.product-list.col-fuel') }}</th>
-              <th>{{ t('inventory.product-list.col-price') }}</th>
-              <th>{{ t('inventory.product-list.col-unit') }}</th>
-              <th>{{ t('inventory.product-list.col-desc') }}</th>
-              <th class="actions-col"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-if="!loading && products.length === 0">
-              <td colspan="6" class="empty-row">{{ t('inventory.product-list.no-products') }}</td>
-            </tr>
-            <tr v-for="product in products" :key="product.id">
-              <td>{{ product.name }}</td>
-              <td>{{ formatFuelType(product.type) }}</td>
-              <td>S/ {{ Number(product.pricePerLiter).toFixed(2) }}</td>
-              <td>{{ product.unit }}</td>
-              <td class="desc-col">{{ product.description }}</td>
-              <td class="actions-col">
-                <button class="row-btn" @click="navigateToEdit(product.id)">
-                  <i class="pi pi-pencil"/>
-                </button>
-                <button class="row-btn row-btn-danger" @click="confirmDelete(product)">
-                  <i class="pi pi-trash"/>
-                </button>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+        <pv-card class="table-card">
+          <template #content>
+            <pv-data-table :value="products" :loading="loading" responsive-layout="scroll" class="products-table">
+              <template #empty>
+                <div class="empty-row">{{ t('inventory.product-list.no-products') }}</div>
+              </template>
+              <pv-column field="name" :header="t('inventory.product-list.col-name')" />
+              <pv-column field="type" :header="t('inventory.product-list.col-fuel')">
+                <template #body="{ data }">
+                  {{ formatFuelType(data.type) }}
+                </template>
+              </pv-column>
+              <pv-column field="pricePerLiter" :header="t('inventory.product-list.col-price')">
+                <template #body="{ data }">
+                  S/ {{ Number(data.pricePerLiter).toFixed(2) }}
+                </template>
+              </pv-column>
+              <pv-column field="unit" :header="t('inventory.product-list.col-unit')" />
+              <pv-column field="description" :header="t('inventory.product-list.col-desc')" class="desc-col" />
+              <pv-column class="actions-col">
+                <template #body="{ data }">
+                  <div class="row-actions">
+                    <pv-button icon="pi pi-pencil" text rounded class="row-btn" @click="navigateToEdit(data.id)" />
+                    <pv-button icon="pi pi-trash" text rounded class="row-btn row-btn-danger" @click="confirmDelete(data)" />
+                  </div>
+                </template>
+              </pv-column>
+            </pv-data-table>
+          </template>
+        </pv-card>
       </main>
     </div>
 
@@ -228,24 +219,27 @@ onMounted(() => {
 }
 
 .table-card {
-  background: #ffffff; border-radius: 8px;
-  padding: 1.5rem 2rem;
+  border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.products-table { width: 100%; border-collapse: collapse; }
-.products-table th {
+.table-card :deep(.p-card-body) { padding: 1.5rem 2rem; }
+.table-card :deep(.p-card-content) { padding: 0; }
+.products-table :deep(.p-datatable-table) { width: 100%; border-collapse: collapse; }
+.products-table :deep(.p-datatable-thead > tr > th) {
   text-align: left; font-weight: 600;
   color: #1E3A8A; font-size: 0.95rem;
   padding: 0.75rem 0.5rem;
   border-bottom: 1px solid #E5E7EB;
+  background: #ffffff;
 }
-.products-table td {
+.products-table :deep(.p-datatable-tbody > tr > td) {
   padding: 1rem 0.5rem; color: #1f2937; font-size: 0.92rem;
   border-bottom: 1px solid #F3F4F6;
 }
 .empty-row { text-align: center; color: #9CA3AF; padding: 3rem 0 !important; }
 .desc-col { color: #6B7280; }
 .actions-col { width: 100px; text-align: right; }
+.row-actions { display: flex; justify-content: flex-end; gap: 0.25rem; }
 .row-btn {
   border: none; background: transparent;
   width: 32px; height: 32px; border-radius: 50%;

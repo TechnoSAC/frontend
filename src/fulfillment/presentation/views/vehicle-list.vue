@@ -38,13 +38,13 @@ const confirmDelete = (vehicle) => {
   });
 };
 
-const getStatusClass = (status) => {
+const getStatusSeverity = (status) => {
   const map = {
-    'AVAILABLE': 'status-available',
-    'IN_ROUTE': 'status-inroute',
-    'MAINTENANCE': 'status-maintenance'
+    'AVAILABLE': 'success',
+    'IN_ROUTE': 'info',
+    'MAINTENANCE': 'warn'
   };
-  return map[status] || 'status-available';
+  return map[status] || 'secondary';
 };
 
 onMounted(() => {
@@ -63,72 +63,80 @@ onMounted(() => {
             <p class="page-subtitle">{{ t('fulfillment.vehicle-list.subtitle') }}</p>
           </div>
           <div class="page-actions">
-            <button
+            <pv-button
+                :label="t('fulfillment.show-all')"
+                icon="pi pi-list"
                 class="filter-btn"
                 :class="{ 'filter-active': !showAvailableOnly }"
                 @click="showAvailableOnly = false"
-            >
-              <i class="pi pi-list"/> {{ t('fulfillment.show-all') }}
-            </button>
-            <button
+            />
+            <pv-button
+                :label="t('fulfillment.available-only')"
+                icon="pi pi-check-circle"
                 class="filter-btn"
                 :class="{ 'filter-active': showAvailableOnly }"
                 @click="showAvailableOnly = true"
-            >
-              <i class="pi pi-check-circle"/> {{ t('fulfillment.available-only') }}
-            </button>
-            <button class="refresh-btn" @click="onRefresh" :disabled="loading">
-              <i class="pi pi-refresh" :class="{ 'spinning': loading }"/>
-            </button>
-            <button class="add-btn" @click="navigateToNew">
-              <i class="pi pi-plus"/><span>{{ t('fulfillment.vehicle-list.register') }}</span>
-            </button>
+            />
+            <pv-button
+                icon="pi pi-refresh"
+                text
+                rounded
+                class="refresh-btn"
+                :loading="loading"
+                @click="onRefresh"
+            />
+            <pv-button
+                :label="t('fulfillment.vehicle-list.register')"
+                icon="pi pi-plus"
+                class="add-btn"
+                @click="navigateToNew"
+            />
           </div>
         </div>
 
-        <div v-if="errors.length" class="error-banner">
-          <i class="pi pi-exclamation-circle"/>
-          <span>{{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}</span>
-        </div>
+        <pv-message v-if="errors.length" severity="error" class="error-banner">
+          {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
+        </pv-message>
 
-        <div class="table-card">
-          <table class="vehicles-table">
-            <thead>
-            <tr>
-              <th>{{ t('fulfillment.vehicle-list.col-plate') }}</th>
-              <th>{{ t('fulfillment.vehicle-list.col-brand') }}</th>
-              <th>{{ t('fulfillment.vehicle-list.col-model') }}</th>
-              <th>{{ t('fulfillment.vehicle-list.col-capacity') }}</th>
-              <th>{{ t('fulfillment.vehicle-list.col-status') }}</th>
-              <th class="actions-col"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-if="!loading && filteredVehicles.length === 0">
-              <td colspan="6" class="empty-row">{{ t('fulfillment.vehicle-list.no-data') }}</td>
-            </tr>
-            <tr v-for="vehicle in filteredVehicles" :key="vehicle.id">
-              <td><strong>{{ vehicle.plate }}</strong></td>
-              <td>{{ vehicle.brand }}</td>
-              <td>{{ vehicle.model }}</td>
-              <td>{{ vehicle.capacity.toLocaleString() }} {{ vehicle.unit }}</td>
-              <td>
-                <span class="status-pill" :class="getStatusClass(vehicle.status)">
-                  {{ vehicle.status }}
-                </span>
-              </td>
-              <td class="actions-col">
-                <button class="row-btn" @click="navigateToEdit(vehicle.id)">
-                  <i class="pi pi-pencil"/>
-                </button>
-                <button class="row-btn row-btn-danger" @click="confirmDelete(vehicle)">
-                  <i class="pi pi-times"/>
-                </button>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+        <pv-card class="table-card">
+          <template #content>
+            <pv-data-table
+                :value="filteredVehicles"
+                :loading="loading"
+                responsive-layout="scroll"
+                class="vehicles-table"
+            >
+              <template #empty>
+                <div class="empty-row">{{ t('fulfillment.vehicle-list.no-data') }}</div>
+              </template>
+              <pv-column field="plate" :header="t('fulfillment.vehicle-list.col-plate')">
+                <template #body="{ data }">
+                  <strong>{{ data.plate }}</strong>
+                </template>
+              </pv-column>
+              <pv-column field="brand" :header="t('fulfillment.vehicle-list.col-brand')" />
+              <pv-column field="model" :header="t('fulfillment.vehicle-list.col-model')" />
+              <pv-column field="capacity" :header="t('fulfillment.vehicle-list.col-capacity')">
+                <template #body="{ data }">
+                  {{ data.capacity.toLocaleString() }} {{ data.unit }}
+                </template>
+              </pv-column>
+              <pv-column field="status" :header="t('fulfillment.vehicle-list.col-status')">
+                <template #body="{ data }">
+                  <pv-tag :value="data.status" :severity="getStatusSeverity(data.status)" class="status-pill" />
+                </template>
+              </pv-column>
+              <pv-column class="actions-col">
+                <template #body="{ data }">
+                  <div class="row-actions">
+                    <pv-button icon="pi pi-pencil" text rounded class="row-btn" @click="navigateToEdit(data.id)" />
+                    <pv-button icon="pi pi-times" text rounded class="row-btn row-btn-danger" @click="confirmDelete(data)" />
+                  </div>
+                </template>
+              </pv-column>
+            </pv-data-table>
+          </template>
+        </pv-card>
       </main>
     </div>
 
@@ -266,23 +274,26 @@ onMounted(() => {
 }
 
 .table-card {
-  background: #ffffff; border-radius: 8px;
-  padding: 1.5rem 2rem;
+  border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.vehicles-table { width: 100%; border-collapse: collapse; }
-.vehicles-table th {
+.table-card :deep(.p-card-body) { padding: 1.5rem 2rem; }
+.table-card :deep(.p-card-content) { padding: 0; }
+.vehicles-table :deep(.p-datatable-table) { width: 100%; border-collapse: collapse; }
+.vehicles-table :deep(.p-datatable-thead > tr > th) {
   text-align: left; font-weight: 600;
   color: #1E3A8A; font-size: 0.95rem;
   padding: 0.75rem 0.5rem;
   border-bottom: 1px solid #E5E7EB;
+  background: #ffffff;
 }
-.vehicles-table td {
+.vehicles-table :deep(.p-datatable-tbody > tr > td) {
   padding: 1rem 0.5rem; color: #1f2937; font-size: 0.92rem;
   border-bottom: 1px solid #F3F4F6;
 }
 .empty-row { text-align: center; color: #9CA3AF; padding: 3rem 0 !important; }
 .actions-col { width: 100px; text-align: right; }
+.row-actions { display: flex; justify-content: flex-end; gap: 0.25rem; }
 .row-btn {
   border: none; background: transparent;
   width: 32px; height: 32px; border-radius: 50%;
@@ -290,13 +301,5 @@ onMounted(() => {
 }
 .row-btn:hover { background: #F3F4F6; color: #1E3A8A; }
 .row-btn-danger:hover { color: #DC2626; background: #FEE2E2; }
-.status-pill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-.status-available { background: #DCFCE7; color: #15803D; }
-.status-inroute { background: #E0E7FF; color: #4338CA; }
-.status-maintenance { background: #FEF3C7; color: #92400E; }
+.status-pill { font-size: 0.8rem; font-weight: 600; }
 </style>

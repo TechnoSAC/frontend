@@ -10,7 +10,7 @@ const reportingStore = useReportingStore(pinia);
 const orderingStore = useOrderingStore(pinia);
 const inventoryStore = useInventoryStore(pinia);
 
-const { totalSalesRevenue, avgFulfillmentRate, clientSalesPerformance, loading } = toRefs(reportingStore);
+const { totalSalesRevenue, avgFulfillmentRate, clientSalesPerformance, loading, error } = toRefs(reportingStore);
 const { fetchClients, fetchMonthlySales } = reportingStore;
 const { t, locale } = useI18n();
 
@@ -62,6 +62,10 @@ onMounted(() => {
             />
           </div>
         </div>
+
+        <pv-message v-if="error" severity="error" class="error-message">
+          {{ t('errors.fetch') }}: {{ error }}
+        </pv-message>
 
         <!-- KPI CARDS -->
         <div class="kpi-grid">
@@ -242,6 +246,7 @@ onMounted(() => {
 .page-title { font-size: 1.75rem; font-weight: 700; color: #1E3A8A; margin: 0; }
 .page-subtitle { color: #6B7280; font-size: 0.9rem; margin: 0.25rem 0 0 0; }
 .page-actions { display: flex; align-items: center; gap: 0.75rem; }
+.error-message { margin-bottom: 1.5rem; }
 .export-btn {
   display: flex; align-items: center; gap: 0.5rem;
   background: #1E3A8A; color: #ffffff;

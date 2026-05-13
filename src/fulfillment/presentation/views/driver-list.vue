@@ -38,12 +38,12 @@ const confirmDelete = (driver) => {
   });
 };
 
-const getStatusClass = (status) => {
+const getStatusSeverity = (status) => {
   const map = {
-    'AVAILABLE': 'status-available',
-    'ASSIGNED': 'status-assigned'
+    'AVAILABLE': 'success',
+    'ASSIGNED': 'info'
   };
-  return map[status] || 'status-available';
+  return map[status] || 'secondary';
 };
 
 onMounted(() => {
@@ -62,72 +62,76 @@ onMounted(() => {
             <p class="page-subtitle">{{ t('fulfillment.driver-list.subtitle') }}</p>
           </div>
           <div class="page-actions">
-            <button
+            <pv-button
+                :label="t('fulfillment.show-all')"
+                icon="pi pi-list"
                 class="filter-btn"
                 :class="{ 'filter-active': !showAvailableOnly }"
                 @click="showAvailableOnly = false"
-            >
-              <i class="pi pi-list"/> {{ t('fulfillment.show-all') }}
-            </button>
-            <button
+            />
+            <pv-button
+                :label="t('fulfillment.available-only')"
+                icon="pi pi-check-circle"
                 class="filter-btn"
                 :class="{ 'filter-active': showAvailableOnly }"
                 @click="showAvailableOnly = true"
-            >
-              <i class="pi pi-check-circle"/> {{ t('fulfillment.available-only') }}
-            </button>
-            <button class="refresh-btn" @click="onRefresh" :disabled="loading">
-              <i class="pi pi-refresh" :class="{ 'spinning': loading }"/>
-            </button>
-            <button class="add-btn" @click="navigateToNew">
-              <i class="pi pi-plus"/><span>{{ t('fulfillment.driver-list.register') }}</span>
-            </button>
+            />
+            <pv-button
+                icon="pi pi-refresh"
+                text
+                rounded
+                class="refresh-btn"
+                :loading="loading"
+                @click="onRefresh"
+            />
+            <pv-button
+                :label="t('fulfillment.driver-list.register')"
+                icon="pi pi-plus"
+                class="add-btn"
+                @click="navigateToNew"
+            />
           </div>
         </div>
 
-        <div v-if="errors.length" class="error-banner">
-          <i class="pi pi-exclamation-circle"/>
-          <span>{{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}</span>
-        </div>
+        <pv-message v-if="errors.length" severity="error" class="error-banner">
+          {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
+        </pv-message>
 
-        <div class="table-card">
-          <table class="drivers-table">
-            <thead>
-            <tr>
-              <th>{{ t('fulfillment.driver-list.col-name') }}</th>
-              <th>{{ t('fulfillment.driver-list.col-license') }}</th>
-              <th>{{ t('fulfillment.driver-list.col-phone') }}</th>
-              <th>{{ t('fulfillment.driver-list.col-email') }}</th>
-              <th>{{ t('fulfillment.driver-list.col-status') }}</th>
-              <th class="actions-col"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-if="!loading && filteredDrivers.length === 0">
-              <td colspan="6" class="empty-row">{{ t('fulfillment.driver-list.no-data') }}</td>
-            </tr>
-            <tr v-for="driver in filteredDrivers" :key="driver.id">
-              <td><strong>{{ driver.name }}</strong></td>
-              <td>{{ driver.licenseNumber }}</td>
-              <td>{{ driver.phone }}</td>
-              <td>{{ driver.email }}</td>
-              <td>
-                <span class="status-pill" :class="getStatusClass(driver.status)">
-                  {{ driver.status }}
-                </span>
-              </td>
-              <td class="actions-col">
-                <button class="row-btn" @click="navigateToEdit(driver.id)">
-                  <i class="pi pi-pencil"/>
-                </button>
-                <button class="row-btn row-btn-danger" @click="confirmDelete(driver)">
-                  <i class="pi pi-times"/>
-                </button>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+        <pv-card class="table-card">
+          <template #content>
+            <pv-data-table
+                :value="filteredDrivers"
+                :loading="loading"
+                responsive-layout="scroll"
+                class="drivers-table"
+            >
+              <template #empty>
+                <div class="empty-row">{{ t('fulfillment.driver-list.no-data') }}</div>
+              </template>
+              <pv-column field="name" :header="t('fulfillment.driver-list.col-name')">
+                <template #body="{ data }">
+                  <strong>{{ data.name }}</strong>
+                </template>
+              </pv-column>
+              <pv-column field="licenseNumber" :header="t('fulfillment.driver-list.col-license')" />
+              <pv-column field="phone" :header="t('fulfillment.driver-list.col-phone')" />
+              <pv-column field="email" :header="t('fulfillment.driver-list.col-email')" />
+              <pv-column field="status" :header="t('fulfillment.driver-list.col-status')">
+                <template #body="{ data }">
+                  <pv-tag :value="data.status" :severity="getStatusSeverity(data.status)" class="status-pill" />
+                </template>
+              </pv-column>
+              <pv-column class="actions-col">
+                <template #body="{ data }">
+                  <div class="row-actions">
+                    <pv-button icon="pi pi-pencil" text rounded class="row-btn" @click="navigateToEdit(data.id)" />
+                    <pv-button icon="pi pi-times" text rounded class="row-btn row-btn-danger" @click="confirmDelete(data)" />
+                  </div>
+                </template>
+              </pv-column>
+            </pv-data-table>
+          </template>
+        </pv-card>
       </main>
     </div>
 
@@ -266,23 +270,26 @@ onMounted(() => {
 }
 
 .table-card {
-  background: #ffffff; border-radius: 8px;
-  padding: 1.5rem 2rem;
+  border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.drivers-table { width: 100%; border-collapse: collapse; }
-.drivers-table th {
+.table-card :deep(.p-card-body) { padding: 1.5rem 2rem; }
+.table-card :deep(.p-card-content) { padding: 0; }
+.drivers-table :deep(.p-datatable-table) { width: 100%; border-collapse: collapse; }
+.drivers-table :deep(.p-datatable-thead > tr > th) {
   text-align: left; font-weight: 600;
   color: #1E3A8A; font-size: 0.95rem;
   padding: 0.75rem 0.5rem;
   border-bottom: 1px solid #E5E7EB;
+  background: #ffffff;
 }
-.drivers-table td {
+.drivers-table :deep(.p-datatable-tbody > tr > td) {
   padding: 1rem 0.5rem; color: #1f2937; font-size: 0.92rem;
   border-bottom: 1px solid #F3F4F6;
 }
 .empty-row { text-align: center; color: #9CA3AF; padding: 3rem 0 !important; }
 .actions-col { width: 100px; text-align: right; }
+.row-actions { display: flex; justify-content: flex-end; gap: 0.25rem; }
 .row-btn {
   border: none; background: transparent;
   width: 32px; height: 32px; border-radius: 50%;
@@ -290,12 +297,5 @@ onMounted(() => {
 }
 .row-btn:hover { background: #F3F4F6; color: #1E3A8A; }
 .row-btn-danger:hover { color: #DC2626; background: #FEE2E2; }
-.status-pill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-.status-available { background: #DCFCE7; color: #15803D; }
-.status-assigned { background: #E0E7FF; color: #4338CA; }
+.status-pill { font-size: 0.8rem; font-weight: 600; }
 </style>
