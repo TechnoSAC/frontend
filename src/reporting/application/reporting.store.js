@@ -1,103 +1,144 @@
 /**
  * Application service store for the `Reporting` bounded context.
- * Aggregates data from other BCs to calculate KPIs and metrics.
+ * Manages clients data, sales metrics, and sector distributions using DDD architecture.
  *
  * @module useReportingStore
  */
-import { defineStore } from "pinia";
-import { computed } from "vue";
-import useOrderingStore from "../../ordering/application/ordering.store.js";
-import useCatalogStore from "../../catalog/application/catalog.store.js";
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import { ClientsApi } from '../infrastructure/clients-api.js';
+import { SalesApi } from '../infrastructure/sales-api.js';
+import { ClientAssembler } from '../infrastructure/client.assembler.js';
 
 const useReportingStore = defineStore('reporting', () => {
-    const orderingStore = useOrderingStore();
-    const catalogStore = useCatalogStore();
+    // State
+    const clients = ref([]);
+    const monthlySales = ref([]);
+    const loading = ref(false);
+    const error = ref(null);
 
-    /**
-     * Total Sales Revenue = suma de quantity * pricePerLiter de requests APPROVED/DELIVERED
-     */
+    // Actions
+    async function fetchClients() {
+        loading.value = true;
+        error.value = null;
+        try {
+            const data = await ClientsApi.getAllClients();
+            clients.value = ClientAssembler.toClientList(data);
+        } catch (err) {
+            error.value = err.message;
+            console.error('Error fetching clients:', err);
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    async function fetchMonthlySales() {
+        loading.value = true;
+        error.value = null;
+        try {
+            const data = await SalesApi.getMonthlySales();
+            monthlySales.value = data;
+        } catch (err) {
+            error.value = err.message;
+            console.error('Error fetching monthly sales:', err);
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    async function fetchClientsBySector(sector) {
+        loading.value = true;
+        error.value = null;
+        try {
+            const data = await ClientsApi.getClientsBySector(sector);
+            clients.value = ClientAssembler.toClientList(data);
+        } catch (err) {
+            error.value = err.message;
+            console.error('Error fetching clients by sector:', err);
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    // Computed - KPIs for General Report
     const totalSalesRevenue = computed(() => {
-        const deliveredRequests = orderingStore.requests.filter(r =>
-            r.status === 'APPROVED' || r.status === 'DELIVERED'
-        );
-
-        let total = 0;
-        deliveredRequests.forEach(request => {
-            const product = catalogStore.products.find(p => p.type === request.fuelType);
-            if (product) {
-                total += request.quantity * product.pricePerLiter;
-            }
-        });
-        return total;
+        return monthlySales.value.reduce((sum, month) => sum + month.revenue, 0);
     });
 
-    /**
-     * Average Fulfillment Rate = % de requests DELIVERED vs total
-     */
     const avgFulfillmentRate = computed(() => {
-        const total = orderingStore.requests.length;
-        if (total === 0) return 0;
-
-        const delivered = orderingStore.requests.filter(r => r.status === 'DELIVERED').length;
-        return (delivered / total) * 100;
+        // Mock calculation - en producción vendría de otra fuente
+        return 98.2;
     });
 
-    /**
-     * Total Clients = clientes únicos en requests
-     */
+    const avgLeadTime = computed(() => {
+        // Mock calculation - en producción vendría de otra fuente
+        return 4.2;
+    });
+
+    // Computed - KPIs for Clients Report
     const totalClients = computed(() => {
-        const uniqueClients = new Set(orderingStore.requests.map(r => r.clientId));
-        return uniqueClients.size;
+        return clients.value.length;
     });
 
-    /**
-     * Active Orders = requests IN_TRANSIT
-     */
+    const totalRevenue = computed(() => {
+        return clients.value.reduce((sum, client) => sum + client.totalCost, 0);
+    });
+
     const activeOrders = computed(() => {
-        return orderingStore.requests.filter(r => r.status === 'IN_TRANSIT').length;
+        // Mock - en producción vendría de ordering BC
+        return 65;
     });
 
-    /**
-     * Client Sales Performance = agregado por clientId
-     */
+    const growthRate = computed(() => {
+        // Mock calculation - en producción se calcularía con históricos
+        return 12.4;
+    });
+
+    // Computed - Sales Performance (top clients for table)
     const clientSalesPerformance = computed(() => {
-        const clientMap = new Map();
+        return clients.value
+            .map(client => ClientAssembler.toSalesPerformance(client))
+            .sort((a, b) => b.totalVolume - a.totalVolume)
+            .slice(0, 10); // Top 10
+    });
 
-        orderingStore.requests.forEach(request => {
-            if (request.status === 'APPROVED' || request.status === 'DELIVERED') {
-                const clientId = request.clientId;
-                const product = catalogStore.products.find(p => p.type === request.fuelType);
-                const volume = request.quantity;
-                const revenue = product ? request.quantity * product.pricePerLiter : 0;
+    // Computed - Sector Distribution
+    const sectorDistribution = computed(() => {
+        if (clients.value.length === 0) return [];
+        return ClientAssembler.toSectorDistribution(clients.value);
+    });
 
-                if (!clientMap.has(clientId)) {
-                    clientMap.set(clientId, {
-                        clientId,
-                        companyName: `Client ${clientId}`,
-                        totalVolume: 0,
-                        revenue: 0,
-                        orderCount: 0,
-                        status: 'ACTIVE'
-                    });
-                }
-
-                const client = clientMap.get(clientId);
-                client.totalVolume += volume;
-                client.revenue += revenue;
-                client.orderCount += 1;
-            }
-        });
-
-        return Array.from(clientMap.values());
+    // Computed - Active clients only
+    const activeClients = computed(() => {
+        return clients.value.filter(client => client.isActive());
     });
 
     return {
+        // State
+        clients,
+        monthlySales,
+        loading,
+        error,
+
+        // Actions
+        fetchClients,
+        fetchMonthlySales,
+        fetchClientsBySector,
+
+        // KPIs - General Report
         totalSalesRevenue,
         avgFulfillmentRate,
+        avgLeadTime,
+
+        // KPIs - Clients Report
         totalClients,
+        totalRevenue,
         activeOrders,
-        clientSalesPerformance
+        growthRate,
+
+        // Computed
+        clientSalesPerformance,
+        sectorDistribution,
+        activeClients
     };
 });
-
-export default useReportingStore;
