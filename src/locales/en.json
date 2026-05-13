@@ -46,7 +46,25 @@
     "col-address": "Delivery Address",
     "col-date": "Delivery Date",
     "col-actions": "Actions",
-    "no-pending": "No pending requests"
+    "no-pending": "No pending requests",
+    "order-detail-title": "Order Detail",
+    "back": "Back",
+    "col-request-id-label": "REQUEST ID",
+    "col-client-label": "CLIENT",
+    "col-provider-label": "PROVIDER",
+    "col-product-label": "PRODUCT",
+    "col-quantity-label": "QUANTITY",
+    "col-total-label": "TOTAL AMOUNT",
+    "col-delivery-address-label": "DELIVERY ADDRESS",
+    "col-created-label": "CREATED",
+    "col-dispatched-label": "DISPATCHED",
+    "status-pending": "Pending",
+    "status-approved": "Approved",
+    "status-rejected": "Rejected",
+    "status-dispatched": "Dispatched",
+    "status-delivered": "Delivered",
+    "confirm-delivery": "Confirm Delivery",
+    "not-available": "N/A"
   },
   "catalog": {
     "products": "Product Inventory",
@@ -80,9 +98,15 @@
   "fulfillment": {
     "vehicles": "Vehicles",
     "drivers": "Drivers",
+<<<<<<< HEAD
     "dispatch": "Dispatch",
     "show-all": "Show All",
     "available-only": "Available Only",
+=======
+    "show-all": "Show All",
+    "available-only": "Available Only",
+
+>>>>>>> 7864c0a1d31dc8f19c9e0c8e29c4cbabd1393a59
     "vehicle-list": {
       "title": "Vehicle Fleet",
       "subtitle": "Manage your fuel delivery fleet",
@@ -94,6 +118,10 @@
       "col-status": "Status",
       "no-data": "No vehicles available"
     },
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7864c0a1d31dc8f19c9e0c8e29c4cbabd1393a59
     "driver-list": {
       "title": "Driver Registry",
       "subtitle": "Manage authorized drivers for fuel delivery",
@@ -104,6 +132,66 @@
       "col-email": "Email",
       "col-status": "Status",
       "no-data": "No drivers available"
+<<<<<<< HEAD
+=======
+    },
+
+    "dispatch": {
+      "title": "Dispatch",
+      "subtitle": "Overview of fleet resources and active deliveries",
+      "kpi-vehicles": "Available Vehicles",
+      "kpi-drivers": "Available Drivers",
+      "kpi-deliveries": "Active Deliveries",
+      "total": "Total",
+      "completed": "Completed",
+      "manage-vehicles": "Manage Vehicles",
+      "manage-drivers": "Manage Drivers",
+      "section-active": "Active Deliveries",
+      "col-order": "Order ID",
+      "col-vehicle": "Vehicle",
+      "col-driver": "Driver",
+      "col-status": "Status",
+      "col-scheduled": "Scheduled Date",
+      "no-deliveries": "No active deliveries"
+    }
+  },
+  "reporting": {
+    "supplier-dashboard": "Supplier Dashboard",
+    "client-portfolio": "Client Portfolio",
+    "supplier": {
+      "title": "Reports",
+      "subtitle": "Comprehensive overview of your sales performance",
+      "export-pdf": "Export PDF",
+      "kpi-sales": "Total Sales Revenue",
+      "kpi-fulfillment": "Avg. Fulfillment Rate",
+      "kpi-lead-time": "Avg. Lead Time",
+      "target": "Target",
+      "vs-period": "vs last period",
+      "section-performance": "Client Sales Performance",
+      "view-all": "View All Clients",
+      "col-company": "Company Name",
+      "col-volume": "Total Volume",
+      "col-status": "Status",
+      "no-data": "No client data available"
+    },
+    "portfolio": {
+      "title": "Supplier Clients Reports",
+      "subtitle": "Manage your B2B client portfolio, monitor fuel consumption, and track historical order volume",
+      "kpi-clients": "Total Clients",
+      "kpi-revenue": "Revenue",
+      "kpi-orders": "Active Orders",
+      "kpi-growth": "Growth Rate",
+      "section-clients": "Client Portfolio",
+      "section-distribution": "Volume Distribution by Sector",
+      "filter-sector": "Filter by Sector",
+      "all-sectors": "All Sectors",
+      "col-entity": "Company Entity",
+      "col-sector": "Sector",
+      "col-volume": "Total Volume (MT)",
+      "col-active": "Last Active",
+      "col-status": "Status",
+      "no-clients": "No clients available"
+>>>>>>> 7864c0a1d31dc8f19c9e0c8e29c4cbabd1393a59
     }
   },
   "errors": {

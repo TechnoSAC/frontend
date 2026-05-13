@@ -46,7 +46,25 @@
     "col-address": "Dirección de Entrega",
     "col-date": "Fecha de Entrega",
     "col-actions": "Acciones",
-    "no-pending": "No hay solicitudes pendientes"
+    "no-pending": "No hay solicitudes pendientes",
+    "order-detail-title": "Detalle de Orden",
+    "back": "Volver",
+    "col-request-id-label": "ID SOLICITUD",
+    "col-client-label": "CLIENTE",
+    "col-provider-label": "PROVEEDOR",
+    "col-product-label": "PRODUCTO",
+    "col-quantity-label": "CANTIDAD",
+    "col-total-label": "MONTO TOTAL",
+    "col-delivery-address-label": "DIRECCIÓN DE ENTREGA",
+    "col-created-label": "CREADA",
+    "col-dispatched-label": "DESPACHADA",
+    "status-pending": "Pendiente",
+    "status-approved": "Aprobada",
+    "status-rejected": "Rechazada",
+    "status-dispatched": "Despachada",
+    "status-delivered": "Entregada",
+    "confirm-delivery": "Confirmar Entrega",
+    "not-available": "N/D"
   },
   "catalog": {
     "products": "Inventario de Productos",
@@ -80,7 +98,28 @@
   "fulfillment": {
     "vehicles": "Vehículos",
     "drivers": "Conductores",
+<<<<<<< HEAD
     "dispatch": "Despacho",
+=======
+    "dispatch": {
+      "title": "Despacho",
+      "subtitle": "Vista general de recursos de flota y entregas activas",
+      "kpi-vehicles": "Vehículos Disponibles",
+      "kpi-drivers": "Conductores Disponibles",
+      "kpi-deliveries": "Entregas Activas",
+      "total": "Total",
+      "completed": "Completadas",
+      "manage-vehicles": "Gestionar Vehículos",
+      "manage-drivers": "Gestionar Conductores",
+      "section-active": "Entregas Activas",
+      "col-order": "ID de Pedido",
+      "col-vehicle": "Vehículo",
+      "col-driver": "Conductor",
+      "col-status": "Estado",
+      "col-scheduled": "Fecha Programada",
+      "no-deliveries": "No hay entregas activas"
+    },
+>>>>>>> 7864c0a1d31dc8f19c9e0c8e29c4cbabd1393a59
     "show-all": "Mostrar Todos",
     "available-only": "Solo Disponibles",
     "vehicle-list": {
@@ -105,6 +144,47 @@
       "col-status": "Estado",
       "no-data": "No hay conductores disponibles"
     }
+<<<<<<< HEAD
+=======
+  },
+  "reporting": {
+    "supplier-dashboard": "Panel de Proveedor",
+    "client-portfolio": "Cartera de Clientes",
+    "supplier": {
+      "title": "Reportes",
+      "subtitle": "Vista general completa de tu desempeño de ventas",
+      "export-pdf": "Exportar PDF",
+      "kpi-sales": "Ingresos Totales por Ventas",
+      "kpi-fulfillment": "Tasa Promedio de Cumplimiento",
+      "kpi-lead-time": "Tiempo Promedio de Entrega",
+      "target": "Objetivo",
+      "vs-period": "vs período anterior",
+      "section-performance": "Desempeño de Ventas por Cliente",
+      "view-all": "Ver Todos los Clientes",
+      "col-company": "Nombre de Empresa",
+      "col-volume": "Volumen Total",
+      "col-status": "Estado",
+      "no-data": "No hay datos de clientes disponibles"
+    },
+    "portfolio": {
+      "title": "Reportes de Clientes Proveedor",
+      "subtitle": "Gestiona tu cartera de clientes B2B, monitorea el consumo de combustible y rastrea el volumen histórico de pedidos",
+      "kpi-clients": "Total de Clientes",
+      "kpi-revenue": "Ingresos",
+      "kpi-orders": "Pedidos Activos",
+      "kpi-growth": "Tasa de Crecimiento",
+      "section-clients": "Cartera de Clientes",
+      "section-distribution": "Distribución de Volumen por Sector",
+      "filter-sector": "Filtrar por Sector",
+      "all-sectors": "Todos los Sectores",
+      "col-entity": "Entidad Empresarial",
+      "col-sector": "Sector",
+      "col-volume": "Volumen Total (TM)",
+      "col-active": "Última Actividad",
+      "col-status": "Estado",
+      "no-clients": "No hay clientes disponibles"
+    }
+>>>>>>> 7864c0a1d31dc8f19c9e0c8e29c4cbabd1393a59
   },
   "errors": {
     "fetch": "Error al cargar datos",
