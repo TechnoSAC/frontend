@@ -44,7 +44,7 @@ const routes = [
     { path: '/:pathMatch(.*)*', name: 'not-found', component: pageNotFound, meta: { title: 'Page Not Found' } },
     { path: '/catalog', component: RouterView, children: catalogRoutes },
     { path: '/ordering', children: orderingRoutes },
-    { path: '/fulfillment', children: fulfillmentRoutes }
+    { path: '/fulfillment', children: fulfillmentRoutes },
 ];
 
 const router = createRouter({

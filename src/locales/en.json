@@ -1,13 +1,13 @@
 {
   "option": {
-    "dashboard":         "Dashboard",
-    "catalog":           "Catalog",
-    "ordering":          "Ordering",
-    "fulfillment":       "Fulfillment",
-    "payment":           "Payment",
-    "reporting":         "Reporting",
+    "dashboard": "Dashboard",
+    "catalog": "Catalog",
+    "ordering": "Ordering",
+    "fulfillment": "Fulfillment",
+    "payment": "Payment",
+    "reporting": "Reporting",
     "product-inventory": "Product Inventory",
-    "add-product":       "Add Product"
+    "add-product": "Add Product"
   },
   "home": {
     "title": "Welcome to FullTank",
@@ -98,9 +98,9 @@
   "fulfillment": {
     "vehicles": "Vehicles",
     "drivers": "Drivers",
+    "dispatch": "Dispatch",
     "show-all": "Show All",
     "available-only": "Available Only",
-
     "vehicle-list": {
       "title": "Vehicle Fleet",
       "subtitle": "Manage your fuel delivery fleet",
@@ -112,7 +112,6 @@
       "col-status": "Status",
       "no-data": "No vehicles available"
     },
-
     "driver-list": {
       "title": "Driver Registry",
       "subtitle": "Manage authorized drivers for fuel delivery",
@@ -124,8 +123,7 @@
       "col-status": "Status",
       "no-data": "No drivers available"
     },
-
-    "dispatch": {
+    "dispatch-view": {
       "title": "Dispatch",
       "subtitle": "Overview of fleet resources and active deliveries",
       "kpi-vehicles": "Available Vehicles",
