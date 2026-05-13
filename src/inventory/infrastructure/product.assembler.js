@@ -1,7 +1,7 @@
 import { Product } from "../domain/model/product.entity.js";
 
 /**
- * Maps Catalog product resources into domain entities.
+ * Maps Inventory product resources into domain entities.
  *
  * @class ProductAssembler
  */

@@ -1,22 +1,22 @@
 import { BaseApi } from "../../shared/infrastructure/base-api.js";
 import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
-const catalogEndpointPath = import.meta.env.VITE_CATALOG_ENDPOINT_PATH;
+const inventoryEndpointPath = import.meta.env.VITE_INVENTORY_ENDPOINT_PATH;
 
 /**
  * Infrastructure adapter for Catalog HTTP endpoints.
  *
- * @class CatalogApi
+ * @class InventoryApi
  * @extends BaseApi
  */
-export class CatalogApi extends BaseApi {
+export class InventoryApi extends BaseApi {
     /** @type {BaseEndpoint} */
-    #catalogEndpoint;
+    #inventoryEndpoint;
 
-    /** Creates endpoint client for the catalog resource. */
+    /** Creates endpoint client for the inventory resource. */
     constructor() {
         super();
-        this.#catalogEndpoint = new BaseEndpoint(this, catalogEndpointPath);
+        this.#inventoryEndpoint = new BaseEndpoint(this, inventoryEndpointPath);
     }
 
     /**
@@ -24,7 +24,7 @@ export class CatalogApi extends BaseApi {
      * @returns {Promise<import('axios').AxiosResponse>}
      */
     getProducts() {
-        return this.#catalogEndpoint.getAll();
+        return this.#inventoryEndpoint.getAll();
     }
 
     /**
@@ -33,7 +33,7 @@ export class CatalogApi extends BaseApi {
      * @returns {Promise<import('axios').AxiosResponse>}
      */
     getProductById(id) {
-        return this.#catalogEndpoint.getById(id);
+        return this.#inventoryEndpoint.getById(id);
     }
 
     /**
@@ -42,7 +42,7 @@ export class CatalogApi extends BaseApi {
      * @returns {Promise<import('axios').AxiosResponse>}
      */
     createProduct(resource) {
-        return this.#catalogEndpoint.create(resource);
+        return this.#inventoryEndpoint.create(resource);
     }
 
     /**
@@ -51,7 +51,7 @@ export class CatalogApi extends BaseApi {
      * @returns {Promise<import('axios').AxiosResponse>}
      */
     updateProduct(resource) {
-        return this.#catalogEndpoint.update(resource.id, resource);
+        return this.#inventoryEndpoint.update(resource.id, resource);
     }
 
     /**
@@ -60,6 +60,6 @@ export class CatalogApi extends BaseApi {
      * @returns {Promise<import('axios').AxiosResponse>}
      */
     deleteProduct(id) {
-        return this.#catalogEndpoint.delete(id);
+        return this.#inventoryEndpoint.delete(id);
     }
 }
