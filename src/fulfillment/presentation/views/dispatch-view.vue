@@ -36,8 +36,8 @@ const completedDeliveries = computed(() => {
 
 // Get vehicle by plate
 const getVehiclePlate = (requestId) => {
-  // En producción, aquí buscarías la asignación real
-  // Por ahora, mapeo mock basado en requestId
+  // In production, here you search for the actual assignment
+  // For now, the mock mapping is based on requestId
   const mockAssignments = {
     1: 'DEF-456',
     2: 'ABC-123',
@@ -48,7 +48,7 @@ const getVehiclePlate = (requestId) => {
 
 // Get driver name
 const getDriverName = (requestId) => {
-  // En producción, aquí buscarías la asignación real
+  // In production, here you search for the actual assignment
   const mockAssignments = {
     1: 'María García',
     2: 'Carlos Ramírez',
