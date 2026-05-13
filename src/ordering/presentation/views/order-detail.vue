@@ -151,7 +151,7 @@ const formatCurrency = (val) => {
 </template>
 
 <style scoped>
-/* ── Reutiliza el mismo sistema de layout que provider-request-list ── */
+/* ── Reuses the same layout system as provider-request-list ── */
 .layout-wrapper { min-height: 100vh; background: #F5F6F8; font-family: 'Inter', sans-serif; }
 
 /* TOPBAR */
