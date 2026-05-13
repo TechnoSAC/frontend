@@ -17,7 +17,7 @@ export class ProductAssembler {
     /**
      * Parses product resources from a response and maps them into entities.
      *
-     * @param {import('axios').AxiosResponse<Array<Object>|{catalog: Array<Object>}>} response
+     * @param {import('axios').AxiosResponse<Array<Object>|{inventory: Array<Object>}>} response
      * @returns {Product[]} Product entities.
      */
     static toEntitiesFromResponse(response) {
@@ -27,7 +27,7 @@ export class ProductAssembler {
         }
         let resources = response.data instanceof Array
             ? response.data
-            : response.data['catalog'];
+            : response.data['inventory'];
 
         return resources.map(resource => this.toEntityFromResource(resource));
     }

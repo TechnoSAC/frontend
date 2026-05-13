@@ -1,5 +1,5 @@
 /**
- * Application service store for the `Catalog` bounded context.
+ * Application service store for the `Inventory` bounded context.
  * Coordinates product use cases and exposes UI-facing state.
  *
  * @module useInventoryStore

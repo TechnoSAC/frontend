@@ -4,7 +4,7 @@ import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 const inventoryEndpointPath = import.meta.env.VITE_INVENTORY_ENDPOINT_PATH;
 
 /**
- * Infrastructure adapter for Catalog HTTP endpoints.
+ * Infrastructure adapter for Inventory HTTP endpoints.
  *
  * @class InventoryApi
  * @extends BaseApi
