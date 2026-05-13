@@ -36,15 +36,15 @@ const formatStatus = (status) => {
   return status || 'PENDING';
 };
 
-const getStatusClass = (status) => {
+const getStatusSeverity = (status) => {
   const map = {
-    'PENDING': 'status-pending',
-    'APPROVED': 'status-approved',
-    'REJECTED': 'status-rejected',
-    'IN_TRANSIT': 'status-transit',
-    'DELIVERED': 'status-delivered'
+    'PENDING': 'warn',
+    'APPROVED': 'success',
+    'REJECTED': 'danger',
+    'IN_TRANSIT': 'info',
+    'DELIVERED': 'secondary'
   };
-  return map[status] || 'status-pending';
+  return map[status] || 'warn';
 };
 
 onMounted(() => {
@@ -63,60 +63,46 @@ onMounted(() => {
             <p class="page-subtitle">Track and manage your fuel delivery requests</p>
           </div>
           <div class="page-actions">
-            <button class="refresh-btn" @click="onRefresh" :disabled="loading">
-              <i class="pi pi-refresh" :class="{ 'spinning': loading }"/>
-            </button>
-            <button class="add-btn" @click="navigateToNew">
-              <i class="pi pi-plus"/><span>New Request</span>
-            </button>
+            <pv-button icon="pi pi-refresh" text rounded class="refresh-btn" :loading="loading" @click="onRefresh" />
+            <pv-button label="New Request" icon="pi pi-plus" class="add-btn" @click="navigateToNew" />
           </div>
         </div>
 
-        <div v-if="errors.length" class="error-banner">
-          <i class="pi pi-exclamation-circle"/>
-          <span>{{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}</span>
-        </div>
+        <pv-message v-if="errors.length" severity="error" class="error-banner">
+          {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
+        </pv-message>
 
-        <div class="table-card">
-          <table class="requests-table">
-            <thead>
-            <tr>
-              <th>Request ID</th>
-              <th>Fuel Type</th>
-              <th>Quantity</th>
-              <th>Delivery Address</th>
-              <th>Delivery Date</th>
-              <th>Status</th>
-              <th class="actions-col"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-if="!loading && requests.length === 0">
-              <td colspan="7" class="empty-row">No requests available</td>
-            </tr>
-            <tr v-for="request in requests" :key="request.id">
-              <td>#{{ request.id }}</td>
-              <td>{{ request.fuelType }}</td>
-              <td>{{ request.quantity }} {{ request.unit }}</td>
-              <td class="address-col">{{ request.deliveryAddress }}</td>
-              <td>{{ request.deliveryDate }}</td>
-              <td>
-                <span class="status-pill" :class="getStatusClass(request.status)">
-                  {{ formatStatus(request.status) }}
-                </span>
-              </td>
-              <td class="actions-col">
-                <button class="row-btn" @click="navigateToEdit(request.id)" :disabled="request.status !== 'PENDING'">
-                  <i class="pi pi-pencil"/>
-                </button>
-                <button class="row-btn row-btn-danger" @click="confirmDelete(request)" :disabled="request.status !== 'PENDING'">
-                  <i class="pi pi-trash"/>
-                </button>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+        <pv-card class="table-card">
+          <template #content>
+            <pv-data-table :value="requests" :loading="loading" responsive-layout="scroll" class="requests-table">
+              <template #empty>
+                <div class="empty-row">No requests available</div>
+              </template>
+              <pv-column field="id" header="Request ID">
+                <template #body="{ data }">#{{ data.id }}</template>
+              </pv-column>
+              <pv-column field="fuelType" header="Fuel Type" />
+              <pv-column header="Quantity">
+                <template #body="{ data }">{{ data.quantity }} {{ data.unit }}</template>
+              </pv-column>
+              <pv-column field="deliveryAddress" header="Delivery Address" class="address-col" />
+              <pv-column field="deliveryDate" header="Delivery Date" />
+              <pv-column field="status" header="Status">
+                <template #body="{ data }">
+                  <pv-tag :value="formatStatus(data.status)" :severity="getStatusSeverity(data.status)" class="status-pill" />
+                </template>
+              </pv-column>
+              <pv-column class="actions-col">
+                <template #body="{ data }">
+                  <div class="row-actions">
+                    <pv-button icon="pi pi-pencil" text rounded class="row-btn" :disabled="data.status !== 'PENDING'" @click="navigateToEdit(data.id)" />
+                    <pv-button icon="pi pi-trash" text rounded class="row-btn row-btn-danger" :disabled="data.status !== 'PENDING'" @click="confirmDelete(data)" />
+                  </div>
+                </template>
+              </pv-column>
+            </pv-data-table>
+          </template>
+        </pv-card>
       </main>
     </div>
 
@@ -243,24 +229,27 @@ onMounted(() => {
 }
 
 .table-card {
-  background: #ffffff; border-radius: 8px;
-  padding: 1.5rem 2rem;
+  border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.requests-table { width: 100%; border-collapse: collapse; }
-.requests-table th {
+.table-card :deep(.p-card-body) { padding: 1.5rem 2rem; }
+.table-card :deep(.p-card-content) { padding: 0; }
+.requests-table :deep(.p-datatable-table) { width: 100%; border-collapse: collapse; }
+.requests-table :deep(.p-datatable-thead > tr > th) {
   text-align: left; font-weight: 600;
   color: #1E3A8A; font-size: 0.95rem;
   padding: 0.75rem 0.5rem;
   border-bottom: 1px solid #E5E7EB;
+  background: #ffffff;
 }
-.requests-table td {
+.requests-table :deep(.p-datatable-tbody > tr > td) {
   padding: 1rem 0.5rem; color: #1f2937; font-size: 0.92rem;
   border-bottom: 1px solid #F3F4F6;
 }
 .empty-row { text-align: center; color: #9CA3AF; padding: 3rem 0 !important; }
 .address-col { color: #6B7280; max-width: 200px; }
 .actions-col { width: 100px; text-align: right; }
+.row-actions { display: flex; justify-content: flex-end; gap: 0.25rem; }
 .row-btn {
   border: none; background: transparent;
   width: 32px; height: 32px; border-radius: 50%;
@@ -269,15 +258,5 @@ onMounted(() => {
 .row-btn:hover { background: #F3F4F6; color: #1E3A8A; }
 .row-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .row-btn-danger:hover:not(:disabled) { color: #DC2626; background: #FEE2E2; }
-.status-pill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-.status-pending { background: #FEF3C7; color: #92400E; }
-.status-approved { background: #DCFCE7; color: #15803D; }
-.status-rejected { background: #FEE2E2; color: #B91C1C; }
-.status-transit { background: #DBEAFE; color: #1E40AF; }
-.status-delivered { background: #E0E7FF; color: #4338CA; }
+.status-pill { font-size: 0.8rem; font-weight: 600; }
 </style>
