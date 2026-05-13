@@ -1,15 +1,17 @@
 <script setup>
-import { onMounted, ref, toRefs } from "vue";
+import { computed, onMounted, ref, toRefs } from "vue";
 import { useI18n } from "vue-i18n";
 import useReportingStore from "../../application/reporting.store.js";
 import useOrderingStore from "../../../ordering/application/ordering.store.js";
-import useCatalogStore from "../../../inventory/application/inventory.store.js";
+import useInventoryStore from "../../../inventory/application/inventory.store.js";
+import pinia from "../../../pinia.js";
 
-const reportingStore = useReportingStore();
-const orderingStore = useOrderingStore();
-const catalogStore = useCatalogStore();
+const reportingStore = useReportingStore(pinia);
+const orderingStore = useOrderingStore(pinia);
+const inventoryStore = useInventoryStore(pinia);
 
-const { totalClients, totalSalesRevenue, activeOrders, clientSalesPerformance } = toRefs(reportingStore);
+const { totalClients, totalSalesRevenue, activeOrders, clientSalesPerformance, loading } = toRefs(reportingStore);
+const { fetchClients, fetchMonthlySales } = reportingStore;
 const { t, locale } = useI18n();
 
 const sidebarCollapsed = ref(false);
@@ -20,9 +22,19 @@ const formatCurrency = (amount) => {
   return `S/ ${(amount / 1000).toFixed(1)}k`;
 };
 
+const sectorOptions = computed(() => [
+  { label: t('reporting.portfolio.all-sectors'), value: 'all' }
+]);
+
+const refreshData = () => {
+  fetchClients();
+  fetchMonthlySales();
+};
+
 onMounted(() => {
+  refreshData();
   if (!orderingStore.requestsLoaded) orderingStore.fetchRequests();
-  if (!catalogStore.productsLoaded) catalogStore.fetchProducts();
+  if (!inventoryStore.productsLoaded) inventoryStore.fetchProducts();
 });
 </script>
 
@@ -38,106 +50,146 @@ onMounted(() => {
             <p class="page-subtitle">{{ t('reporting.portfolio.subtitle') }}</p>
           </div>
           <div class="page-actions">
-            <button class="icon-btn">
-              <i class="pi pi-refresh"/>
-            </button>
+            <pv-button
+                icon="pi pi-refresh"
+                text
+                rounded
+                class="icon-btn"
+                :loading="loading"
+                @click="refreshData"
+            />
           </div>
         </div>
 
         <!-- KPI CARDS -->
         <div class="kpi-grid">
           <!-- Total Clients -->
-          <div class="kpi-card">
-            <div class="kpi-icon blue">
-              <i class="pi pi-users"/>
-            </div>
-            <div class="kpi-content">
-              <div class="kpi-label">{{ t('reporting.portfolio.kpi-clients') }}</div>
-              <div class="kpi-value">{{ totalClients }}</div>
-            </div>
-          </div>
+          <pv-card class="kpi-card">
+            <template #content>
+              <div class="kpi-icon blue">
+                <i class="pi pi-users"/>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">{{ t('reporting.portfolio.kpi-clients') }}</div>
+                <div class="kpi-value">{{ totalClients }}</div>
+              </div>
+            </template>
+          </pv-card>
 
           <!-- Revenue -->
-          <div class="kpi-card">
-            <div class="kpi-icon green">
-              <i class="pi pi-dollar"/>
-            </div>
-            <div class="kpi-content">
-              <div class="kpi-label">{{ t('reporting.portfolio.kpi-revenue') }}</div>
-              <div class="kpi-value">{{ formatCurrency(totalSalesRevenue) }}</div>
-            </div>
-          </div>
+          <pv-card class="kpi-card">
+            <template #content>
+              <div class="kpi-icon green">
+                <i class="pi pi-dollar"/>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">{{ t('reporting.portfolio.kpi-revenue') }}</div>
+                <div class="kpi-value">{{ formatCurrency(totalSalesRevenue) }}</div>
+              </div>
+            </template>
+          </pv-card>
 
           <!-- Active Orders -->
-          <div class="kpi-card">
-            <div class="kpi-icon orange">
-              <i class="pi pi-shopping-cart"/>
-            </div>
-            <div class="kpi-content">
-              <div class="kpi-label">{{ t('reporting.portfolio.kpi-orders') }}</div>
-              <div class="kpi-value">{{ activeOrders }}</div>
-            </div>
-          </div>
+          <pv-card class="kpi-card">
+            <template #content>
+              <div class="kpi-icon orange">
+                <i class="pi pi-shopping-cart"/>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">{{ t('reporting.portfolio.kpi-orders') }}</div>
+                <div class="kpi-value">{{ activeOrders }}</div>
+              </div>
+            </template>
+          </pv-card>
 
           <!-- Growth Rate -->
-          <div class="kpi-card">
-            <div class="kpi-icon pink">
-              <i class="pi pi-chart-line"/>
-            </div>
-            <div class="kpi-content">
-              <div class="kpi-label">{{ t('reporting.portfolio.kpi-growth') }}</div>
-              <div class="kpi-value">--</div>
-            </div>
-          </div>
+          <pv-card class="kpi-card">
+            <template #content>
+              <div class="kpi-icon pink">
+                <i class="pi pi-chart-line"/>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">{{ t('reporting.portfolio.kpi-growth') }}</div>
+                <div class="kpi-value">--</div>
+              </div>
+            </template>
+          </pv-card>
         </div>
 
         <!-- CLIENT PORTFOLIO -->
-        <div class="section-card">
-          <div class="section-header">
-            <h2 class="section-title">{{ t('reporting.portfolio.section-clients') }}</h2>
-            <div class="filter-group">
-              <label>{{ t('reporting.portfolio.filter-sector') }}</label>
-              <select v-model="selectedSector" class="sector-filter">
-                <option value="all">{{ t('reporting.portfolio.all-sectors') }}</option>
-              </select>
+        <pv-card class="section-card">
+          <template #content>
+            <div class="section-header">
+              <h2 class="section-title">{{ t('reporting.portfolio.section-clients') }}</h2>
+              <div class="filter-group">
+                <label>{{ t('reporting.portfolio.filter-sector') }}</label>
+                <pv-select
+                    v-model="selectedSector"
+                    :options="sectorOptions"
+                    option-label="label"
+                    option-value="value"
+                    class="sector-filter"
+                />
+              </div>
             </div>
-          </div>
 
-          <table class="portfolio-table">
-            <thead>
-            <tr>
-              <th>{{ t('reporting.portfolio.col-entity') }}</th>
-              <th>{{ t('reporting.portfolio.col-sector') }}</th>
-              <th>{{ t('reporting.portfolio.col-volume') }}</th>
-              <th>{{ t('reporting.portfolio.col-active') }}</th>
-              <th>{{ t('reporting.portfolio.col-status') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-if="clientSalesPerformance.length === 0">
-              <td colspan="5" class="empty-row">{{ t('reporting.portfolio.no-clients') }}</td>
-            </tr>
-            <tr v-for="client in clientSalesPerformance" :key="client.clientId">
-              <td><strong>{{ client.companyName }}</strong></td>
-              <td>--</td>
-              <td>{{ (client.totalVolume / 1000).toFixed(2) }}</td>
-              <td>--</td>
-              <td>
-                <span class="status-badge active">{{ client.status }}</span>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+            <pv-data-table
+                :value="clientSalesPerformance"
+                :loading="loading"
+                responsive-layout="scroll"
+                class="portfolio-table"
+            >
+              <template #empty>
+                <div class="empty-row">{{ t('reporting.portfolio.no-clients') }}</div>
+              </template>
+              <pv-column
+                  field="companyName"
+                  :header="t('reporting.portfolio.col-entity')"
+              >
+                <template #body="{ data }">
+                  <strong>{{ data.companyName }}</strong>
+                </template>
+              </pv-column>
+              <pv-column :header="t('reporting.portfolio.col-sector')">
+                <template #body>
+                  --
+                </template>
+              </pv-column>
+              <pv-column
+                  field="totalVolume"
+                  :header="t('reporting.portfolio.col-volume')"
+              >
+                <template #body="{ data }">
+                  {{ (data.totalVolume / 1000).toFixed(2) }}
+                </template>
+              </pv-column>
+              <pv-column :header="t('reporting.portfolio.col-active')">
+                <template #body>
+                  --
+                </template>
+              </pv-column>
+              <pv-column
+                  field="status"
+                  :header="t('reporting.portfolio.col-status')"
+              >
+                <template #body="{ data }">
+                  <pv-tag :value="data.status" severity="success" class="status-badge"/>
+                </template>
+              </pv-column>
+            </pv-data-table>
+          </template>
+        </pv-card>
 
         <!-- VOLUME DISTRIBUTION -->
-        <div class="section-card">
-          <h2 class="section-title">{{ t('reporting.portfolio.section-distribution') }}</h2>
-          <div class="chart-placeholder">
-            <i class="pi pi-chart-pie" style="font-size: 3rem; color: #D1D5DB;"/>
-            <p style="color: #9CA3AF; margin-top: 1rem;">Chart visualization will be displayed here</p>
-          </div>
-        </div>
+        <pv-card class="section-card">
+          <template #content>
+            <h2 class="section-title">{{ t('reporting.portfolio.section-distribution') }}</h2>
+            <div class="chart-placeholder">
+              <i class="pi pi-chart-pie chart-placeholder-icon"/>
+              <p class="chart-placeholder-text">Chart visualization will be displayed here</p>
+            </div>
+          </template>
+        </pv-card>
       </main>
     </div>
 </template>
@@ -230,12 +282,16 @@ onMounted(() => {
   margin-bottom: 2rem;
 }
 .kpi-card {
-  background: #ffffff;
   border-radius: 12px;
-  padding: 1.5rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.kpi-card :deep(.p-card-body) {
+  padding: 1.5rem;
+}
+.kpi-card :deep(.p-card-content) {
   display: flex;
   gap: 1rem;
+  padding: 0;
 }
 .kpi-icon {
   width: 56px;
@@ -268,11 +324,15 @@ onMounted(() => {
 
 /* SECTION CARD */
 .section-card {
-  background: #ffffff;
   border-radius: 12px;
-  padding: 2rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   margin-bottom: 1.5rem;
+}
+.section-card :deep(.p-card-body) {
+  padding: 2rem;
+}
+.section-card :deep(.p-card-content) {
+  padding: 0;
 }
 .section-header {
   display: flex;
@@ -297,24 +357,24 @@ onMounted(() => {
   font-weight: 500;
 }
 .sector-filter {
-  border: 1px solid #D1D5DB;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-  cursor: pointer;
+  min-width: 180px;
 }
 
 /* TABLE */
-.portfolio-table { width: 100%; border-collapse: collapse; }
-.portfolio-table th {
+.portfolio-table :deep(.p-datatable-table) {
+  width: 100%;
+  border-collapse: collapse;
+}
+.portfolio-table :deep(.p-datatable-thead > tr > th) {
   text-align: left;
   font-weight: 600;
   color: #1E3A8A;
   font-size: 0.9rem;
   padding: 0.75rem 0.5rem;
   border-bottom: 1px solid #E5E7EB;
+  background: #ffffff;
 }
-.portfolio-table td {
+.portfolio-table :deep(.p-datatable-tbody > tr > td) {
   padding: 1rem 0.5rem;
   color: #1f2937;
   font-size: 0.92rem;
@@ -343,5 +403,13 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
+}
+.chart-placeholder-icon {
+  font-size: 3rem;
+  color: #D1D5DB;
+}
+.chart-placeholder-text {
+  color: #9CA3AF;
+  margin-top: 1rem;
 }
 </style>

@@ -3,13 +3,15 @@ import { onMounted, ref, toRefs } from "vue";
 import { useI18n } from "vue-i18n";
 import useReportingStore from "../../application/reporting.store.js";
 import useOrderingStore from "../../../ordering/application/ordering.store.js";
-import useCatalogStore from "../../../catalog/application/catalog.store.js";
+import useInventoryStore from "../../../inventory/application/inventory.store.js";
+import pinia from "../../../pinia.js";
 
-const reportingStore = useReportingStore();
-const orderingStore = useOrderingStore();
-const catalogStore = useCatalogStore();
+const reportingStore = useReportingStore(pinia);
+const orderingStore = useOrderingStore(pinia);
+const inventoryStore = useInventoryStore(pinia);
 
-const { totalSalesRevenue, avgFulfillmentRate, clientSalesPerformance } = toRefs(reportingStore);
+const { totalSalesRevenue, avgFulfillmentRate, clientSalesPerformance, loading } = toRefs(reportingStore);
+const { fetchClients, fetchMonthlySales } = reportingStore;
 const { t, locale } = useI18n();
 
 const sidebarCollapsed = ref(false);
@@ -23,9 +25,15 @@ const formatPercentage = (value) => {
   return `${value.toFixed(1)}%`;
 };
 
+const refreshData = () => {
+  fetchClients();
+  fetchMonthlySales();
+};
+
 onMounted(() => {
+  refreshData();
   if (!orderingStore.requestsLoaded) orderingStore.fetchRequests();
-  if (!catalogStore.productsLoaded) catalogStore.fetchProducts();
+  if (!inventoryStore.productsLoaded) inventoryStore.fetchProducts();
 });
 </script>
 
@@ -39,89 +47,119 @@ onMounted(() => {
             <p class="page-subtitle">{{ t('reporting.supplier.subtitle') }}</p>
           </div>
           <div class="page-actions">
-            <button class="icon-btn">
-              <i class="pi pi-refresh"/>
-            </button>
-            <button class="export-btn">
-              <i class="pi pi-file-pdf"/>
-              <span>{{ t('reporting.supplier.export-pdf') }}</span>
-            </button>
+            <pv-button
+                icon="pi pi-refresh"
+                text
+                rounded
+                class="icon-btn"
+                :loading="loading"
+                @click="refreshData"
+            />
+            <pv-button
+                :label="t('reporting.supplier.export-pdf')"
+                icon="pi pi-file-pdf"
+                class="export-btn"
+            />
           </div>
         </div>
 
         <!-- KPI CARDS -->
         <div class="kpi-grid">
           <!-- Total Sales Revenue -->
-          <div class="kpi-card">
-            <div class="kpi-icon blue">
-              <i class="pi pi-chart-line"/>
-            </div>
-            <div class="kpi-content">
-              <div class="kpi-label">{{ t('reporting.supplier.kpi-sales') }}</div>
-              <div class="kpi-value">{{ formatCurrency(totalSalesRevenue) }}</div>
-              <div class="kpi-change positive">
-                <i class="pi pi-arrow-up"/>
-                <span>+12.4% {{ t('reporting.supplier.vs-period') }}</span>
+          <pv-card class="kpi-card">
+            <template #content>
+              <div class="kpi-icon blue">
+                <i class="pi pi-chart-line"/>
               </div>
-            </div>
-          </div>
+              <div class="kpi-content">
+                <div class="kpi-label">{{ t('reporting.supplier.kpi-sales') }}</div>
+                <div class="kpi-value">{{ formatCurrency(totalSalesRevenue) }}</div>
+                <div class="kpi-change positive">
+                  <i class="pi pi-arrow-up"/>
+                  <span>+12.4% {{ t('reporting.supplier.vs-period') }}</span>
+                </div>
+              </div>
+            </template>
+          </pv-card>
 
           <!-- Avg Fulfillment Rate -->
-          <div class="kpi-card">
-            <div class="kpi-icon green">
-              <i class="pi pi-check-circle"/>
-            </div>
-            <div class="kpi-content">
-              <div class="kpi-label">{{ t('reporting.supplier.kpi-fulfillment') }}</div>
-              <div class="kpi-value">{{ formatPercentage(avgFulfillmentRate) }}</div>
-              <div class="kpi-target">{{ t('reporting.supplier.target') }}: 95.0%</div>
-            </div>
-          </div>
+          <pv-card class="kpi-card">
+            <template #content>
+              <div class="kpi-icon green">
+                <i class="pi pi-check-circle"/>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">{{ t('reporting.supplier.kpi-fulfillment') }}</div>
+                <div class="kpi-value">{{ formatPercentage(avgFulfillmentRate) }}</div>
+                <div class="kpi-target">{{ t('reporting.supplier.target') }}: 95.0%</div>
+              </div>
+            </template>
+          </pv-card>
 
           <!-- Avg Lead Time -->
-          <div class="kpi-card">
-            <div class="kpi-icon orange">
-              <i class="pi pi-clock"/>
-            </div>
-            <div class="kpi-content">
-              <div class="kpi-label">{{ t('reporting.supplier.kpi-lead-time') }}</div>
-              <div class="kpi-value">--</div>
-            </div>
-          </div>
+          <pv-card class="kpi-card">
+            <template #content>
+              <div class="kpi-icon orange">
+                <i class="pi pi-clock"/>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">{{ t('reporting.supplier.kpi-lead-time') }}</div>
+                <div class="kpi-value">--</div>
+              </div>
+            </template>
+          </pv-card>
         </div>
 
         <!-- CLIENT SALES PERFORMANCE -->
-        <div class="section-card">
-          <div class="section-header">
-            <h2 class="section-title">{{ t('reporting.supplier.section-performance') }}</h2>
-            <a class="view-all-link">
-              <span>{{ t('reporting.supplier.view-all') }}</span>
-              <i class="pi pi-arrow-right"/>
-            </a>
-          </div>
+        <pv-card class="section-card">
+          <template #content>
+            <div class="section-header">
+              <h2 class="section-title">{{ t('reporting.supplier.section-performance') }}</h2>
+              <pv-button
+                  :label="t('reporting.supplier.view-all')"
+                  icon="pi pi-arrow-right"
+                  icon-pos="right"
+                  text
+                  class="view-all-link"
+              />
+            </div>
 
-          <table class="performance-table">
-            <thead>
-            <tr>
-              <th>{{ t('reporting.supplier.col-company') }}</th>
-              <th>{{ t('reporting.supplier.col-volume') }}</th>
-              <th>{{ t('reporting.supplier.col-status') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-if="clientSalesPerformance.length === 0">
-              <td colspan="3" class="empty-row">{{ t('reporting.supplier.no-data') }}</td>
-            </tr>
-            <tr v-for="client in clientSalesPerformance" :key="client.clientId">
-              <td><strong>{{ client.companyName }}</strong></td>
-              <td>{{ client.totalVolume.toLocaleString() }} gallons</td>
-              <td>
-                <span class="status-badge active">{{ client.status }}</span>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+            <pv-data-table
+                :value="clientSalesPerformance"
+                :loading="loading"
+                responsive-layout="scroll"
+                class="performance-table"
+            >
+              <template #empty>
+                <div class="empty-row">{{ t('reporting.supplier.no-data') }}</div>
+              </template>
+              <pv-column
+                  field="companyName"
+                  :header="t('reporting.supplier.col-company')"
+              >
+                <template #body="{ data }">
+                  <strong>{{ data.companyName }}</strong>
+                </template>
+              </pv-column>
+              <pv-column
+                  field="totalVolume"
+                  :header="t('reporting.supplier.col-volume')"
+              >
+                <template #body="{ data }">
+                  {{ data.totalVolume.toLocaleString() }} gallons
+                </template>
+              </pv-column>
+              <pv-column
+                  field="status"
+                  :header="t('reporting.supplier.col-status')"
+              >
+                <template #body="{ data }">
+                  <pv-tag :value="data.status" severity="success" class="status-badge"/>
+                </template>
+              </pv-column>
+            </pv-data-table>
+          </template>
+        </pv-card>
       </main>
 </template>
 
@@ -221,12 +259,16 @@ onMounted(() => {
   margin-bottom: 2rem;
 }
 .kpi-card {
-  background: #ffffff;
   border-radius: 12px;
-  padding: 1.5rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.kpi-card :deep(.p-card-body) {
+  padding: 1.5rem;
+}
+.kpi-card :deep(.p-card-content) {
   display: flex;
   gap: 1rem;
+  padding: 0;
 }
 .kpi-icon {
   width: 56px;
@@ -271,10 +313,14 @@ onMounted(() => {
 
 /* SECTION CARD */
 .section-card {
-  background: #ffffff;
   border-radius: 12px;
-  padding: 2rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.section-card :deep(.p-card-body) {
+  padding: 2rem;
+}
+.section-card :deep(.p-card-content) {
+  padding: 0;
 }
 .section-header {
   display: flex;
@@ -301,16 +347,20 @@ onMounted(() => {
 .view-all-link:hover { text-decoration: underline; }
 
 /* TABLE */
-.performance-table { width: 100%; border-collapse: collapse; }
-.performance-table th {
+.performance-table :deep(.p-datatable-table) {
+  width: 100%;
+  border-collapse: collapse;
+}
+.performance-table :deep(.p-datatable-thead > tr > th) {
   text-align: left;
   font-weight: 600;
   color: #1E3A8A;
   font-size: 0.9rem;
   padding: 0.75rem 0.5rem;
   border-bottom: 1px solid #E5E7EB;
+  background: #ffffff;
 }
-.performance-table td {
+.performance-table :deep(.p-datatable-tbody > tr > td) {
   padding: 1rem 0.5rem;
   color: #1f2937;
   font-size: 0.92rem;
