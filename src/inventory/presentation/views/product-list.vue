@@ -3,20 +3,20 @@ import { useRouter } from "vue-router";
 import { useConfirm } from "primevue/useconfirm";
 import { onMounted, ref, toRefs } from "vue";
 import { useI18n } from "vue-i18n";
-import useCatalogStore from "../../application/catalog.store.js";
+import useInventoryStore from "../../application/inventory.store.js";
 
 const router = useRouter();
 const confirm = useConfirm();
-const store = useCatalogStore();
+const store = useInventoryStore();
 const { products, errors, productsLoaded, loading } = toRefs(store);
 const { fetchProducts, deleteProduct, clearErrors } = store;
 const { t, locale } = useI18n();
 
 const sidebarCollapsed = ref(false);
-const catalogExpanded = ref(true);
+const inventoryExpanded = ref(true);
 
-const navigateToNew = () => router.push({ name: 'catalog-product-new' });
-const navigateToEdit = (id) => router.push({ name: 'catalog-product-edit', params: { id } });
+const navigateToNew = () => router.push({ name: 'inventory-product-new' });
+const navigateToEdit = (id) => router.push({ name: 'inventory-product-edit', params: { id } });
 
 const onRefresh = () => {
   clearErrors();
@@ -50,8 +50,8 @@ onMounted(() => {
       <main class="main-area">
         <div class="page-header">
           <div class="page-title-group">
-            <h1 class="page-title">{{ t('catalog.product-list.title') }}</h1>
-            <p class="page-subtitle">{{ t('catalog.product-list.subtitle') }}</p>
+            <h1 class="page-title">{{ t('inventory.product-list.title') }}</h1>
+            <p class="page-subtitle">{{ t('inventory.product-list.subtitle') }}</p>
           </div>
           <div class="page-actions">
             <button class="refresh-btn" @click="onRefresh" :disabled="loading">
@@ -72,17 +72,17 @@ onMounted(() => {
           <table class="products-table">
             <thead>
             <tr>
-              <th>{{ t('catalog.product-list.col-name') }}</th>
-              <th>{{ t('catalog.product-list.col-fuel') }}</th>
-              <th>{{ t('catalog.product-list.col-price') }}</th>
-              <th>{{ t('catalog.product-list.col-unit') }}</th>
-              <th>{{ t('catalog.product-list.col-desc') }}</th>
+              <th>{{ t('inventory.product-list.col-name') }}</th>
+              <th>{{ t('inventory.product-list.col-fuel') }}</th>
+              <th>{{ t('inventory.product-list.col-price') }}</th>
+              <th>{{ t('inventory.product-list.col-unit') }}</th>
+              <th>{{ t('inventory.product-list.col-desc') }}</th>
               <th class="actions-col"></th>
             </tr>
             </thead>
             <tbody>
             <tr v-if="!loading && products.length === 0">
-              <td colspan="6" class="empty-row">{{ t('catalog.product-list.no-products') }}</td>
+              <td colspan="6" class="empty-row">{{ t('inventory.product-list.no-products') }}</td>
             </tr>
             <tr v-for="product in products" :key="product.id">
               <td>{{ product.name }}</td>
