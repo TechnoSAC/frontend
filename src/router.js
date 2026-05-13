@@ -4,8 +4,7 @@ import catalogRoutes from "./catalog/presentation/catalog-routes.js";
 import { RouterView } from 'vue-router';
 import orderingRoutes from "./ordering/presentation/ordering-routes.js";
 import fulfillmentRoutes from "./fulfillment/presentation/fulfillment-routes.js";
-import reportingRoutes from './reporting/presentation/reporting-routes.js';
-
+import reportingRoutes from "./reporting/presentation/reporting-routes.js";
 // To import when IAM is implemented
 // import iamRoutes from "./iam/presentation/iam-routes.js";
 
@@ -51,8 +50,9 @@ const routes = [
         path: '/reporting',
         children: reportingRoutes
     }
-
 ];
+
+
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
