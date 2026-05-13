@@ -1,6 +1,6 @@
 /**
  * Client Entity
- * Representa un cliente B2B con información de consumo de combustible
+ * Represent a B2B client with fuel consumption information
  */
 export class Client {
     constructor({
@@ -22,14 +22,14 @@ export class Client {
     }
 
     /**
-     * Verifica si el cliente está activo
+     * Verify if the client is active
      */
     isActive() {
         return this.status === 'ACTIVE';
     }
 
     /**
-     * Obtiene el sector formateado
+     * Gets the formatted sector
      */
     getSectorLabel() {
         const sectorMap = {
@@ -43,21 +43,21 @@ export class Client {
     }
 
     /**
-     * Obtiene el costo formateado
+     * Gets the formatted cost
      */
     getFormattedCost() {
         return `S/ ${this.totalCost.toLocaleString('es-PE')}`;
     }
 
     /**
-     * Obtiene el volumen formateado
+     * Gets the formatted volume
      */
     getFormattedVolume() {
         return `${this.totalVolume.toLocaleString('es-PE', { minimumFractionDigits: 1 })} MT`;
     }
 
     /**
-     * Obtiene la fecha de última actividad formateada
+     * Gets the date of last formatted activity
      */
     getFormattedLastActive() {
         return this.lastActive.toLocaleString('en-US', {
