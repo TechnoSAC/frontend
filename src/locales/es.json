@@ -1,13 +1,13 @@
 {
   "option": {
-    "dashboard":         "Panel Principal",
-    "catalog":           "Catálogo",
-    "ordering":          "Pedidos",
-    "fulfillment":       "Despacho",
-    "payment":           "Pagos",
-    "reporting":         "Reportes",
+    "dashboard": "Panel Principal",
+    "catalog": "Catálogo",
+    "ordering": "Pedidos",
+    "fulfillment": "Despacho",
+    "payment": "Pagos",
+    "reporting": "Reportes",
     "product-inventory": "Inventario de Productos",
-    "add-product":       "Agregar Producto"
+    "add-product": "Agregar Producto"
   },
   "home": {
     "title": "Bienvenido a FullTank",
@@ -98,28 +98,7 @@
   "fulfillment": {
     "vehicles": "Vehículos",
     "drivers": "Conductores",
-<<<<<<< HEAD
     "dispatch": "Despacho",
-=======
-    "dispatch": {
-      "title": "Despacho",
-      "subtitle": "Vista general de recursos de flota y entregas activas",
-      "kpi-vehicles": "Vehículos Disponibles",
-      "kpi-drivers": "Conductores Disponibles",
-      "kpi-deliveries": "Entregas Activas",
-      "total": "Total",
-      "completed": "Completadas",
-      "manage-vehicles": "Gestionar Vehículos",
-      "manage-drivers": "Gestionar Conductores",
-      "section-active": "Entregas Activas",
-      "col-order": "ID de Pedido",
-      "col-vehicle": "Vehículo",
-      "col-driver": "Conductor",
-      "col-status": "Estado",
-      "col-scheduled": "Fecha Programada",
-      "no-deliveries": "No hay entregas activas"
-    },
->>>>>>> 7864c0a1d31dc8f19c9e0c8e29c4cbabd1393a59
     "show-all": "Mostrar Todos",
     "available-only": "Solo Disponibles",
     "vehicle-list": {
@@ -143,9 +122,25 @@
       "col-email": "Correo",
       "col-status": "Estado",
       "no-data": "No hay conductores disponibles"
+    },
+    "dispatch-view": {
+      "title": "Despacho",
+      "subtitle": "Vista general de recursos de flota y entregas activas",
+      "kpi-vehicles": "Vehículos Disponibles",
+      "kpi-drivers": "Conductores Disponibles",
+      "kpi-deliveries": "Entregas Activas",
+      "total": "Total",
+      "completed": "Completadas",
+      "manage-vehicles": "Gestionar Vehículos",
+      "manage-drivers": "Gestionar Conductores",
+      "section-active": "Entregas Activas",
+      "col-order": "ID de Pedido",
+      "col-vehicle": "Vehículo",
+      "col-driver": "Conductor",
+      "col-status": "Estado",
+      "col-scheduled": "Fecha Programada",
+      "no-deliveries": "No hay entregas activas"
     }
-<<<<<<< HEAD
-=======
   },
   "reporting": {
     "supplier-dashboard": "Panel de Proveedor",
@@ -184,7 +179,6 @@
       "col-status": "Estado",
       "no-clients": "No hay clientes disponibles"
     }
->>>>>>> 7864c0a1d31dc8f19c9e0c8e29c4cbabd1393a59
   },
   "errors": {
     "fetch": "Error al cargar datos",

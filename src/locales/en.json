@@ -1,13 +1,13 @@
 {
   "option": {
-    "dashboard":         "Dashboard",
-    "catalog":           "Catalog",
-    "ordering":          "Ordering",
-    "fulfillment":       "Fulfillment",
-    "payment":           "Payment",
-    "reporting":         "Reporting",
+    "dashboard": "Dashboard",
+    "catalog": "Catalog",
+    "ordering": "Ordering",
+    "fulfillment": "Fulfillment",
+    "payment": "Payment",
+    "reporting": "Reporting",
     "product-inventory": "Product Inventory",
-    "add-product":       "Add Product"
+    "add-product": "Add Product"
   },
   "home": {
     "title": "Welcome to FullTank",
@@ -98,15 +98,9 @@
   "fulfillment": {
     "vehicles": "Vehicles",
     "drivers": "Drivers",
-<<<<<<< HEAD
     "dispatch": "Dispatch",
     "show-all": "Show All",
     "available-only": "Available Only",
-=======
-    "show-all": "Show All",
-    "available-only": "Available Only",
-
->>>>>>> 7864c0a1d31dc8f19c9e0c8e29c4cbabd1393a59
     "vehicle-list": {
       "title": "Vehicle Fleet",
       "subtitle": "Manage your fuel delivery fleet",
@@ -118,10 +112,6 @@
       "col-status": "Status",
       "no-data": "No vehicles available"
     },
-<<<<<<< HEAD
-=======
-
->>>>>>> 7864c0a1d31dc8f19c9e0c8e29c4cbabd1393a59
     "driver-list": {
       "title": "Driver Registry",
       "subtitle": "Manage authorized drivers for fuel delivery",
@@ -132,11 +122,8 @@
       "col-email": "Email",
       "col-status": "Status",
       "no-data": "No drivers available"
-<<<<<<< HEAD
-=======
     },
-
-    "dispatch": {
+    "dispatch-view": {
       "title": "Dispatch",
       "subtitle": "Overview of fleet resources and active deliveries",
       "kpi-vehicles": "Available Vehicles",
@@ -191,7 +178,6 @@
       "col-active": "Last Active",
       "col-status": "Status",
       "no-clients": "No clients available"
->>>>>>> 7864c0a1d31dc8f19c9e0c8e29c4cbabd1393a59
     }
   },
   "errors": {
