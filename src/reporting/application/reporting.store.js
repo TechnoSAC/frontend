@@ -142,3 +142,5 @@ const useReportingStore = defineStore('reporting', () => {
         activeClients
     };
 });
+
+export default useReportingStore;
