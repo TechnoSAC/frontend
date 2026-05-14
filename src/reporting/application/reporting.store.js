@@ -67,11 +67,13 @@ const useReportingStore = defineStore('reporting', () => {
     }
 
     // Computed — KPIs for General Report
-    const totalSalesRevenue = computed(() =>
-        monthlySales.value.reduce((sum, month) => sum + month.revenue, 0)
-    );
+    const avgFulfillmentRate = computed(() => {
+        const total = allClients.value.length;
+        if (total === 0) return 0;
+        const paid = allClients.value.filter(c => c.status === 'PAID').length;
+        return Math.round((paid / total) * 1000) / 10; // one decimal
+    });
 
-    const avgFulfillmentRate = computed(() => 98.2);
     const avgLeadTime = computed(() => 4.2);
 
     // Computed — KPIs for Clients Report (always from allClients, unaffected by filter)
@@ -81,10 +83,14 @@ const useReportingStore = defineStore('reporting', () => {
         allClients.value.reduce((sum, c) => sum + (c.totalCost ?? 0), 0)
     );
 
-    const growthRate = computed(() => 12.4);
+    /** Count of clients whose payment is complete. */
+    const paidOrders = computed(() =>
+        allClients.value.filter(c => c.status === 'PAID').length
+    );
 
-    // Kept for backward compatibility with clients-report.vue
-    const activeOrders = computed(() => 65);
+    // Alias kept for views that haven't migrated yet
+    const activeOrders = paidOrders;
+    const totalSalesRevenue = totalRevenue;
 
     // Computed — Sector Distribution from allClients (unaffected by table filter)
     const sectorDistribution = computed(() => {
@@ -126,8 +132,9 @@ const useReportingStore = defineStore('reporting', () => {
         // KPIs — Clients Report
         totalClients,
         totalRevenue,
+        totalSalesRevenue,
+        paidOrders,
         activeOrders,
-        growthRate,
 
         // Computed
         clientSalesPerformance,

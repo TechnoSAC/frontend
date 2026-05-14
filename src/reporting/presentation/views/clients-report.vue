@@ -1,80 +1,54 @@
 <template>
   <div class="clients-report-container">
-    <!-- Header -->
     <div class="report-header">
       <div>
         <h1 class="report-title">{{ $t('reporting.clients.title') }}</h1>
         <p class="report-subtitle">{{ $t('reporting.clients.subtitle') }}</p>
       </div>
-      <Button
-          icon="pi pi-refresh"
-          rounded
-          text
-          @click="refreshData"
-      />
+      <pv-button icon="pi pi-refresh" rounded text @click="refreshData" />
     </div>
 
-    <!-- KPI Cards -->
     <div class="kpi-grid">
-      <Card class="kpi-card">
+      <pv-card class="kpi-card">
         <template #content>
-          <div class="kpi-icon" style="background: #6366f1;">
-            <i class="pi pi-users"></i>
-          </div>
+          <div class="kpi-icon" style="background: #6366f1;"><i class="pi pi-users"></i></div>
           <div class="kpi-info">
             <span class="kpi-label">{{ $t('reporting.clients.kpi-clients') }}</span>
             <h2 class="kpi-value">{{ reportingStore.totalClients }}</h2>
           </div>
         </template>
-      </Card>
+      </pv-card>
 
-      <Card class="kpi-card">
+      <pv-card class="kpi-card">
         <template #content>
-          <div class="kpi-icon" style="background: #10b981;">
-            <i class="pi pi-dollar"></i>
-          </div>
+          <div class="kpi-icon" style="background: #10b981;"><i class="pi pi-dollar"></i></div>
           <div class="kpi-info">
             <span class="kpi-label">{{ $t('reporting.clients.kpi-revenue') }}</span>
             <h2 class="kpi-value">S/ {{ formattedRevenue }}</h2>
           </div>
         </template>
-      </Card>
+      </pv-card>
 
-      <Card class="kpi-card">
+      <pv-card class="kpi-card">
         <template #content>
-          <div class="kpi-icon" style="background: #f59e0b;">
-            <i class="pi pi-shopping-cart"></i>
-          </div>
+          <div class="kpi-icon" style="background: #f59e0b;"><i class="pi pi-check-circle"></i></div>
           <div class="kpi-info">
             <span class="kpi-label">{{ $t('reporting.clients.kpi-orders') }}</span>
-            <h2 class="kpi-value">{{ reportingStore.activeOrders }}</h2>
+            <h2 class="kpi-value">{{ reportingStore.paidOrders }}</h2>
           </div>
         </template>
-      </Card>
-
-      <Card class="kpi-card">
-        <template #content>
-          <div class="kpi-icon" style="background: #ec4899;">
-            <i class="pi pi-chart-line"></i>
-          </div>
-          <div class="kpi-info">
-            <span class="kpi-label">{{ $t('reporting.clients.kpi-growth') }}</span>
-            <h2 class="kpi-value">+{{ reportingStore.growthRate }}%</h2>
-          </div>
-        </template>
-      </Card>
+      </pv-card>
     </div>
 
-    <!-- Client Portfolio Table -->
-    <Card class="table-card">
+    <pv-card class="table-card">
       <template #header>
         <div class="table-header">
           <h3>{{ $t('reporting.clients.section-clients') }}</h3>
-          <Dropdown
+          <pv-select
               v-model="selectedSector"
               :options="sectorOptions"
-              optionLabel="label"
-              optionValue="value"
+              option-label="label"
+              option-value="value"
               :placeholder="$t('reporting.clients.filter-sector')"
               class="sector-filter"
               @change="onSectorChange"
@@ -82,74 +56,49 @@
         </div>
       </template>
       <template #content>
-        <DataTable
+        <pv-data-table
             :value="reportingStore.clients"
             :loading="reportingStore.loading"
-            responsiveLayout="scroll"
+            responsive-layout="scroll"
             paginator
             :rows="10"
         >
-          <Column
-              field="companyName"
-              :header="$t('reporting.clients.col-entity')"
-          ></Column>
+          <pv-column field="companyName" :header="$t('reporting.clients.col-entity')" />
 
-          <Column
-              field="sector"
-              :header="$t('reporting.clients.col-sector')"
-          >
-            <template #body="slotProps">
-              <Tag
-                  :value="$t(`reporting.clients.sector-${slotProps.data.sector.toLowerCase()}`)"
-                  :severity="getSectorSeverity(slotProps.data.sector)"
+          <pv-column field="sector" :header="$t('reporting.clients.col-sector')">
+            <template #body="{ data }">
+              <pv-tag
+                  :value="$t(`reporting.clients.sector-${data.sector.toLowerCase()}`)"
+                  :severity="getSectorSeverity(data.sector)"
               />
             </template>
-          </Column>
+          </pv-column>
 
-          <Column
-              field="totalVolume"
-              :header="$t('reporting.clients.col-volume')"
-          >
-            <template #body="slotProps">
-              {{ slotProps.data.getFormattedVolume() }}
-            </template>
-          </Column>
+          <pv-column field="totalVolume" :header="$t('reporting.clients.col-volume')">
+            <template #body="{ data }">{{ data.getFormattedVolume() }}</template>
+          </pv-column>
 
-          <Column
-              field="totalCost"
-              :header="$t('reporting.clients.col-cost')"
-          >
-            <template #body="slotProps">
-              {{ slotProps.data.getFormattedCost() }}
-            </template>
-          </Column>
+          <pv-column field="totalCost" :header="$t('reporting.clients.col-cost')">
+            <template #body="{ data }">{{ data.getFormattedCost() }}</template>
+          </pv-column>
 
-          <Column
-              field="lastActive"
-              :header="$t('reporting.clients.col-active')"
-          >
-            <template #body="slotProps">
-              {{ slotProps.data.getFormattedLastActive() }}
-            </template>
-          </Column>
+          <pv-column field="lastActive" :header="$t('reporting.clients.col-active')">
+            <template #body="{ data }">{{ data.getFormattedLastActive() }}</template>
+          </pv-column>
 
-          <Column
-              field="status"
-              :header="$t('reporting.clients.col-status')"
-          >
-            <template #body="slotProps">
-              <Tag
-                  :value="$t(`reporting.clients.status-${slotProps.data.status.toLowerCase()}`)"
-                  :severity="getStatusSeverity(slotProps.data.status)"
+          <pv-column field="status" :header="$t('reporting.clients.col-status')">
+            <template #body="{ data }">
+              <pv-tag
+                  :value="$t(`reporting.clients.status-${data.status.toLowerCase()}`)"
+                  :severity="getStatusSeverity(data.status)"
               />
             </template>
-          </Column>
-        </DataTable>
+          </pv-column>
+        </pv-data-table>
       </template>
-    </Card>
+    </pv-card>
 
-    <!-- Volume Distribution by Sector Chart -->
-    <Card class="chart-card">
+    <pv-card class="chart-card">
       <template #header>
         <h3 class="chart-title">{{ $t('reporting.clients.section-distribution') }}</h3>
       </template>
@@ -158,7 +107,7 @@
           <Chart type="bar" :data="sectorChartData" :options="sectorChartOptions" />
         </div>
       </template>
-    </Card>
+    </pv-card>
   </div>
 </template>
 
@@ -166,14 +115,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import useReportingStore from '../../application/reporting.store.js';
-import Card from 'primevue/card';
-import Button from 'primevue/button';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Tag from 'primevue/tag';
-import Dropdown from 'primevue/dropdown';
 import Chart from 'primevue/chart';
-import {$t} from "@primeuix/styled";
 
 const { t } = useI18n();
 const reportingStore = useReportingStore();
@@ -192,7 +134,6 @@ const formattedRevenue = computed(() =>
     reportingStore.totalRevenue.toLocaleString('es-PE')
 );
 
-// Sector Chart Data
 const sectorChartData = computed(() => {
   const distribution = reportingStore.sectorDistribution;
   return {
@@ -212,14 +153,12 @@ const sectorChartOptions = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
-    legend: {
-      display: false
-    },
+    legend: { display: false },
     tooltip: {
       callbacks: {
         label: (context) => {
-          const distribution = reportingStore.sectorDistribution[context.dataIndex];
-          return `${distribution.getFormattedVolume()} (${distribution.getFormattedPercentage()})`;
+          const d = reportingStore.sectorDistribution[context.dataIndex];
+          return `${d.getFormattedVolume()} (${d.getFormattedPercentage()})`;
         }
       }
     }
@@ -227,32 +166,19 @@ const sectorChartOptions = {
   scales: {
     x: {
       beginAtZero: true,
-      ticks: {
-        callback: (value) => `${(value / 1000).toFixed(0)}K MT`
-      }
+      ticks: { callback: (value) => `${(value / 1000).toFixed(0)}K MT` }
     }
   }
 };
 
 function getSectorSeverity(sector) {
-  const severityMap = {
-    TRANSPORT: 'info',
-    MINING: 'warn',
-    CONSTRUCTION: 'danger',
-    MARITIME: 'secondary',
-    LOGISTICS: 'success'
-  };
-  return severityMap[sector] || 'info';
+  const map = { TRANSPORT: 'info', MINING: 'warn', CONSTRUCTION: 'danger', MARITIME: 'secondary', LOGISTICS: 'success' };
+  return map[sector] || 'info';
 }
 
 function getStatusSeverity(status) {
-  const severityMap = {
-    ACTIVE: 'success',
-    PENDING: 'warn',
-    INACTIVE: 'secondary',
-    REVIEW: 'info'
-  };
-  return severityMap[status] || 'info';
+  const map = { ACTIVE: 'success', PENDING: 'warn', INACTIVE: 'secondary', REVIEW: 'info' };
+  return map[status] || 'info';
 }
 
 async function onSectorChange() {
@@ -276,135 +202,42 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.clients-report-container {
-  padding: 2rem;
-  background: #f8fafc;
-  min-height: 100vh;
-}
+.clients-report-container { padding: 2rem; background: #f8fafc; min-height: 100vh; }
 
 .report-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;
 }
-
-.report-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0;
-}
-
-.report-subtitle {
-  color: #64748b;
-  margin: 0.5rem 0 0 0;
-  max-width: 800px;
-}
+.report-title { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0; }
+.report-subtitle { color: #64748b; margin: 0.5rem 0 0 0; max-width: 800px; }
 
 .kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem;
 }
-
-.kpi-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.kpi-card :deep(.p-card-body) {
-  padding: 1.5rem;
-}
-
-.kpi-card :deep(.p-card-content) {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  padding: 0;
-}
-
+.kpi-card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.kpi-card :deep(.p-card-body) { padding: 1.5rem; }
+.kpi-card :deep(.p-card-content) { display: flex; gap: 1rem; align-items: center; padding: 0; }
 .kpi-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.75rem;
-  flex-shrink: 0;
+  width: 56px; height: 56px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 1.75rem; flex-shrink: 0;
 }
+.kpi-info { flex: 1; }
+.kpi-label { font-size: 0.875rem; color: #64748b; text-transform: uppercase; font-weight: 500; display: block; }
+.kpi-value { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0.25rem 0 0 0; }
 
-.kpi-info {
-  flex: 1;
+.table-card, .chart-card {
+  background: white; border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem;
 }
-
-.kpi-label {
-  font-size: 0.875rem;
-  color: #64748b;
-  text-transform: uppercase;
-  font-weight: 500;
-  display: block;
-}
-
-.kpi-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0.25rem 0 0 0;
-}
-
-.table-card,
-.chart-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
+.table-card :deep(.p-card-body), .chart-card :deep(.p-card-body) { padding: 0; }
+.table-card :deep(.p-card-content), .chart-card :deep(.p-card-content) { padding: 0; }
 
 .table-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
+  display: flex; justify-content: space-between; align-items: center; padding: 1.5rem;
 }
+.table-header h3 { margin: 0; font-size: 1.25rem; font-weight: 600; color: #1e293b; }
+.sector-filter { min-width: 200px; }
 
-.table-header h3 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.sector-filter {
-  min-width: 200px;
-}
-
-.chart-title {
-  padding: 1.5rem;
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.horizontal-chart-container {
-  height: 300px;
-  padding: 0 1.5rem 1.5rem;
-}
-
-@media (max-width: 1024px) {
-  .kpi-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .kpi-grid {
-    grid-template-columns: 1fr;
-  }
-}
+.chart-title { padding: 1.5rem; margin: 0; font-size: 1.25rem; font-weight: 600; color: #1e293b; }
+.horizontal-chart-container { height: 300px; padding: 0 1.5rem 1.5rem; }
 </style>

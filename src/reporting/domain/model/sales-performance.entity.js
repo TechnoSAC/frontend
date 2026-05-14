@@ -1,34 +1,24 @@
-/**
- * SalesPerformance Entity
- * Represents a customer's sales performance
- */
 export class SalesPerformance {
-    constructor({
-                    companyName,
-                    totalVolume,
-                    status
-                }) {
+    constructor({ companyName, totalVolume, status, revenue }) {
         this.companyName = companyName;
         this.totalVolume = totalVolume;
         this.status = status;
+        this.revenue = revenue ?? 0;
     }
 
-    /**
-     * Gets the formatted volume
-     */
     getFormattedVolume() {
         return `${this.totalVolume.toLocaleString('es-PE', { minimumFractionDigits: 1 })} MT`;
     }
 
-    /**
-     * Get the status badge
-     */
+    getFormattedRevenue() {
+        return `S/ ${this.revenue.toLocaleString('es-PE')}`;
+    }
+
     getStatusBadge() {
-        const badgeMap = {
-            ACTIVE: { severity: 'success', label: 'Active' },
-            PENDING: { severity: 'warn', label: 'Pending' },
-            INACTIVE: { severity: 'secondary', label: 'Inactive' }
+        const map = {
+            PAID:    { severity: 'success', label: 'Paid' },
+            PENDING: { severity: 'warn',    label: 'Pending' },
         };
-        return badgeMap[this.status] || { severity: 'info', label: this.status };
+        return map[this.status] ?? { severity: 'info', label: this.status };
     }
 }

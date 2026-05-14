@@ -3,11 +3,9 @@ import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import Chart from 'primevue/chart';
 import useReportingStore from "../../application/reporting.store.js";
-import useOrderingStore from "../../../ordering/application/ordering.store.js";
 import pinia from "../../../pinia.js";
 
 const reportingStore = useReportingStore(pinia);
-const orderingStore = useOrderingStore(pinia);
 
 const { t } = useI18n();
 const selectedSector = ref('all');
@@ -24,8 +22,8 @@ const sectorOptions = computed(() => [
 const formatCurrency = (amount) => `S/ ${(amount / 1000).toFixed(1)}k`;
 
 const getStatusSeverity = (status) => {
-  const map = { ACTIVE: 'success', INACTIVE: 'secondary', PENDING: 'warn', REVIEW: 'info' };
-  return map[status] || 'info';
+  const map = { PAID: 'success', PENDING: 'warn' };
+  return map[status] || 'secondary';
 };
 
 const getSectorSeverity = (sector) => {
@@ -77,7 +75,6 @@ const refreshData = () => {
 
 onMounted(() => {
   refreshData();
-  if (!orderingStore.ordersLoaded) orderingStore.fetchOrders();
 });
 </script>
 
@@ -129,20 +126,10 @@ onMounted(() => {
 
           <pv-card class="kpi-card">
             <template #content>
-              <div class="kpi-icon orange"><i class="pi pi-shopping-cart"/></div>
+              <div class="kpi-icon orange"><i class="pi pi-check-circle"/></div>
               <div class="kpi-content">
                 <div class="kpi-label">{{ t('reporting.portfolio.kpi-orders') }}</div>
-                <div class="kpi-value">{{ orderingStore.activeOrders.length }}</div>
-              </div>
-            </template>
-          </pv-card>
-
-          <pv-card class="kpi-card">
-            <template #content>
-              <div class="kpi-icon pink"><i class="pi pi-chart-line"/></div>
-              <div class="kpi-content">
-                <div class="kpi-label">{{ t('reporting.portfolio.kpi-growth') }}</div>
-                <div class="kpi-value">+{{ reportingStore.growthRate }}%</div>
+                <div class="kpi-value">{{ reportingStore.paidOrders }}</div>
               </div>
             </template>
           </pv-card>

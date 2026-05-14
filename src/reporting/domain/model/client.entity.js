@@ -25,7 +25,7 @@ export class Client {
      * Verify if the client is active
      */
     isActive() {
-        return this.status === 'ACTIVE';
+        return this.status === 'PAID';
     }
 
     /**

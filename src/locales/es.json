@@ -151,8 +151,7 @@
       "subtitle": "Gestiona tu cartera de clientes B2B, monitorea el consumo de combustible y rastrea el volumen histórico de pedidos",
       "kpi-clients": "Total de Clientes",
       "kpi-revenue": "Ingresos",
-      "kpi-orders": "Pedidos Activos",
-      "kpi-growth": "Tasa de Crecimiento",
+      "kpi-orders": "Pedidos Pagados",
       "section-clients": "Cartera de Clientes",
       "section-distribution": "Distribución de Volumen por Sector",
       "filter-sector": "Filtrar por Sector",
@@ -163,6 +162,32 @@
       "col-active": "Última Actividad",
       "col-status": "Estado",
       "no-clients": "No hay clientes disponibles"
+    },
+    "clients": {
+      "kpi-clients": "Total de Clientes",
+      "kpi-revenue": "Ingresos",
+      "kpi-orders": "Pedidos Pagados",
+      "section-clients": "Cartera de Clientes",
+      "section-distribution": "Distribucion de Volumen por Sector",
+      "filter-sector": "Filtrar por Sector",
+      "all-sectors": "Todos los Sectores",
+      "col-entity": "Entidad Empresarial",
+      "col-sector": "Sector",
+      "col-volume": "Volumen Total (TM)",
+      "col-cost": "Costo Total",
+      "col-active": "Ultima Actividad",
+      "col-status": "Estado",
+      "no-clients": "No hay clientes disponibles",
+      "sector-transport": "Transporte",
+      "sector-mining": "Mineria",
+      "sector-construction": "Construccion",
+      "sector-maritime": "Maritimo",
+      "sector-logistics": "Logistica",
+      "status-paid": "Pagado",
+      "status-pending": "Pendiente"
+    },
+    "general": {
+      "col-revenue": "Ingresos"
     }
   },
   "errors": {
