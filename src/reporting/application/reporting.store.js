@@ -103,7 +103,7 @@ const useReportingStore = defineStore('reporting', () => {
         clients.value
             .map(client => ClientAssembler.toSalesPerformance(client))
             .sort((a, b) => b.totalVolume - a.totalVolume)
-            .slice(0, 10)
+            .slice(0, 4)
     );
 
     const activeClients = computed(() =>
@@ -124,15 +124,12 @@ const useReportingStore = defineStore('reporting', () => {
         fetchClientsBySector,
         filterBySector,
 
-        // KPIs — General Report
+        // KPIs
+        totalRevenue,
         totalSalesRevenue,
         avgFulfillmentRate,
         avgLeadTime,
-
-        // KPIs — Clients Report
         totalClients,
-        totalRevenue,
-        totalSalesRevenue,
         paidOrders,
         activeOrders,
 

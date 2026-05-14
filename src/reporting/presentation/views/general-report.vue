@@ -148,7 +148,7 @@ const formattedTotalRevenue = computed(() =>
 );
 
 function navigateToClients() {
-  router.push('/reporting/clients');
+  router.push('/reporting/portfolio');
 }
 
 onMounted(async () => {

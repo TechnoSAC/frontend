@@ -4,7 +4,7 @@
     "ordering": "Ordering",
     "fulfillment": "Fulfillment",
     "payment": "Payment",
-    "reporting": "Reporting",
+    "reporting": "Reporting & Analytics",
     "product-inventory": "Product Inventory",
     "add-product": "Add Product",
     "inventory": "Inventory"
@@ -128,10 +128,10 @@
     }
   },
   "reporting": {
-    "supplier-dashboard": "Supplier Dashboard",
-    "client-portfolio": "Client Portfolio",
+    "supplier-dashboard": "Main Reports",
+    "client-portfolio": "Your Client's Analytics",
     "supplier": {
-      "title": "Reports",
+      "title": "Main Reports",
       "subtitle": "Comprehensive overview of your sales performance",
       "export-pdf": "Export PDF",
       "kpi-sales": "Total Sales Revenue",
@@ -144,10 +144,11 @@
       "col-company": "Company Name",
       "col-volume": "Total Volume",
       "col-status": "Status",
-      "no-data": "No client data available"
+      "no-data": "No client data available",
+      "col-revenue": "Revenue"
     },
     "portfolio": {
-      "title": "Supplier Clients Reports",
+      "title": "Your Client's Analytics",
       "subtitle": "Manage your B2B client portfolio, monitor fuel consumption, and track historical order volume",
       "kpi-clients": "Total Clients",
       "kpi-revenue": "Revenue",
@@ -161,7 +162,8 @@
       "col-volume": "Total Volume (MT)",
       "col-active": "Last Active",
       "col-status": "Status",
-      "no-clients": "No clients available"
+      "no-clients": "No clients available",
+      "col-revenue": "Revenue"
     },
     "clients": {
       "kpi-clients": "Total Clients",

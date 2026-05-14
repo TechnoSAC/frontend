@@ -19,7 +19,7 @@ const sectorOptions = computed(() => [
   { label: 'Logistics',    value: 'LOGISTICS' },
 ]);
 
-const formatCurrency = (amount) => `S/ ${(amount / 1000).toFixed(1)}k`;
+const formatCurrency = (amount) => `S/ ${Number(amount).toLocaleString('en-US')}`;
 
 const getStatusSeverity = (status) => {
   const map = { PAID: 'success', PENDING: 'warn' };
@@ -172,6 +172,12 @@ onMounted(() => {
               <pv-column field="sector" :header="t('reporting.portfolio.col-sector')">
                 <template #body="{ data }">
                   <pv-tag :value="data.sector" :severity="getSectorSeverity(data.sector)" />
+                </template>
+              </pv-column>
+
+              <pv-column field="totalCost" :header="t('reporting.portfolio.col-revenue')">
+                <template #body="{ data }">
+                  {{ data.getFormattedCost() }}
                 </template>
               </pv-column>
 
