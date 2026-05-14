@@ -83,6 +83,7 @@ const isActive = (to) => route.path === to || route.path.startsWith(to + '/');
           <i class="pi pi-bars"/>
         </button>
         <img src="/fulltank-logo.png" alt="FullTank" class="brand-logo"/>
+        <span class="brand-name">FullTank</span>
       </div>
       <div class="topbar-right">
         <div class="lang-switch">
@@ -165,6 +166,7 @@ const isActive = (to) => route.path === to || route.path.startsWith(to + '/');
 }
 .topbar-left { display: flex; align-items: center; gap: .75rem; }
 .brand-logo  { height: 36px; object-fit: contain; }
+.brand-name  { font-size: 1.1rem; font-weight: 700; color: #1E3A8A; letter-spacing: -0.3px; }
 .topbar-right { display: flex; align-items: center; gap: 1rem; }
 .lang-switch { display: flex; background: #EFF2F7; border-radius: 999px; padding: 4px; }
 .lang-btn {
