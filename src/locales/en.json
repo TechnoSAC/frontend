@@ -85,7 +85,7 @@
     "drivers": "Drivers",
     "dispatch": "Dispatch",
     "dispatch-view": {
-      "title": "Dispatch Dashboard",
+      "title": "Dispatch",
       "subtitle": "Monitor active deliveries, available vehicles and drivers in real time",
       "kpi-vehicles": "Available Vehicles",
       "kpi-drivers": "Available Drivers",
