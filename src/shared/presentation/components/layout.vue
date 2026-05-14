@@ -39,6 +39,7 @@ const navItems = [
     icon: 'pi pi-truck',
     label: 'option.fulfillment',
     children: [
+      { label: 'fulfillment.dispatch', to: '/fulfillment/dispatch' },
       { label: 'fulfillment.vehicles', to: '/fulfillment/vehicles' },
       { label: 'fulfillment.drivers',  to: '/fulfillment/drivers' },
     ]
