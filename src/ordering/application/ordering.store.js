@@ -7,6 +7,41 @@ import { Request } from "../domain/model/request.entity.js";
 import { Order } from "../domain/model/order.entity.js";
 
 const orderingApi = new OrderingApi();
+const useOrdersEndpoint = !import.meta.env.PROD;
+
+const requestOrderStatusMap = {
+    APPROVED: 'CREATED',
+    IN_TRANSIT: 'DISPATCHED',
+    DELIVERED: 'DELIVERED',
+    CLOSED: 'CLOSED',
+};
+
+function isMissingOrdersEndpoint(error) {
+    return error?.response?.status === 404;
+}
+
+function orderFromRequest(request) {
+    return new Order({
+        id: request.id,
+        requestId: request.id,
+        clientId: request.clientId,
+        providerId: request.providerId,
+        fuelType: request.fuelType,
+        quantity: request.quantity,
+        unit: request.unit,
+        totalAmount: 0,
+        deliveryAddress: request.deliveryAddress,
+        status: requestOrderStatusMap[request.status] ?? 'CREATED',
+        createdAt: request.createdAt,
+        updatedAt: request.updatedAt ?? request.createdAt,
+    });
+}
+
+function ordersFromRequests(requests) {
+    return requests
+        .filter(request => requestOrderStatusMap[request.status])
+        .map(orderFromRequest);
+}
 
 const useOrderingStore = defineStore('ordering', () => {
 
@@ -120,11 +155,37 @@ const useOrderingStore = defineStore('ordering', () => {
     // ── Order actions ───────────────────────────────────────────────────────
     function fetchOrders() {
         loading.value = true;
+        if (!useOrdersEndpoint) {
+            orderingApi.getRequests().then(response => {
+                requests.value = RequestAssembler.toEntitiesFromResponse(response);
+                requestsLoaded.value = true;
+                orders.value = ordersFromRequests(requests.value);
+                ordersLoaded.value = true;
+            }).catch(error => {
+                errors.value.push(error);
+            }).finally(() => {
+                loading.value = false;
+            });
+            return;
+        }
+
         orderingApi.getOrders().then(response => {
             orders.value = OrderAssembler.toEntitiesFromResponse(response);
             ordersLoaded.value = true;
         }).catch(error => {
-            errors.value.push(error);
+            if (!isMissingOrdersEndpoint(error)) {
+                errors.value.push(error);
+                return;
+            }
+
+            return orderingApi.getRequests().then(response => {
+                requests.value = RequestAssembler.toEntitiesFromResponse(response);
+                requestsLoaded.value = true;
+                orders.value = ordersFromRequests(requests.value);
+                ordersLoaded.value = true;
+            }).catch(requestsError => {
+                errors.value.push(requestsError);
+            });
         }).finally(() => {
             loading.value = false;
         });
@@ -136,29 +197,64 @@ const useOrderingStore = defineStore('ordering', () => {
     }
 
     function addOrder(order) {
+        if (!useOrdersEndpoint) {
+            orders.value.push(new Order({ ...order, id: order.id ?? order.requestId }));
+            ordersLoaded.value = true;
+            return;
+        }
+
         orderingApi.createOrder(order).then(response => {
             const newOrder = OrderAssembler.toEntityFromResource(response.data);
             orders.value.push(newOrder);
         }).catch(error => {
+            if (isMissingOrdersEndpoint(error)) {
+                orders.value.push(new Order({ ...order, id: order.id ?? order.requestId }));
+                ordersLoaded.value = true;
+                return;
+            }
             errors.value.push(error);
         });
     }
 
     function updateOrder(order) {
+        if (!useOrdersEndpoint) {
+            const updated = new Order({ ...order });
+            const index = orders.value.findIndex(o => o.id === updated.id);
+            if (index !== -1) orders.value[index] = updated;
+            return;
+        }
+
         orderingApi.updateOrder(order).then(response => {
             const updated = OrderAssembler.toEntityFromResource(response.data);
             const index = orders.value.findIndex(o => o.id === updated.id);
             if (index !== -1) orders.value[index] = updated;
         }).catch(error => {
+            if (isMissingOrdersEndpoint(error)) {
+                const updated = new Order({ ...order });
+                const index = orders.value.findIndex(o => o.id === updated.id);
+                if (index !== -1) orders.value[index] = updated;
+                return;
+            }
             errors.value.push(error);
         });
     }
 
     function deleteOrder(order) {
+        if (!useOrdersEndpoint) {
+            const index = orders.value.findIndex(o => o.id === order.id);
+            if (index !== -1) orders.value.splice(index, 1);
+            return;
+        }
+
         orderingApi.deleteOrder(order.id).then(() => {
             const index = orders.value.findIndex(o => o.id === order.id);
             if (index !== -1) orders.value.splice(index, 1);
         }).catch(error => {
+            if (isMissingOrdersEndpoint(error)) {
+                const index = orders.value.findIndex(o => o.id === order.id);
+                if (index !== -1) orders.value.splice(index, 1);
+                return;
+            }
             errors.value.push(error);
         });
     }
