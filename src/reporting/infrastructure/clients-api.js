@@ -3,7 +3,10 @@
  * Maneja las peticiones HTTP relacionadas con clientes
  */
 
-const API_BASE_URL = 'http://localhost:10000';
+const API_BASE_URL =
+    import.meta.env.PROD
+        ? 'https://json-server-1-1uka.onrender.com'
+        : import.meta.env.VITE_FULLTANK_API_URL;
 
 export const ClientsApi = {
     /**
