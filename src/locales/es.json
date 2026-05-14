@@ -85,7 +85,7 @@
     "drivers": "Conductores",
     "dispatch": "Despacho",
     "dispatch-view": {
-      "title": "Panel de Despacho",
+      "title": "Despacho",
       "subtitle": "Monitorea entregas activas, vehículos y conductores disponibles en tiempo real",
       "kpi-vehicles": "Vehículos Disponibles",
       "kpi-drivers": "Conductores Disponibles",
