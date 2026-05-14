@@ -11,6 +11,7 @@ const store   = useOrderingStore();
 const { t }   = useI18n();
 
 onMounted(() => {
+  store.clearErrors();
   if (!store.ordersLoaded) store.fetchOrders();
 });
 
