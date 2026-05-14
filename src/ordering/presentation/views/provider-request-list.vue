@@ -39,6 +39,7 @@ const confirmReject = (request) => {
 };
 
 onMounted(() => {
+  clearErrors();
   if (!requestsLoaded.value) fetchRequests();
 });
 </script>
