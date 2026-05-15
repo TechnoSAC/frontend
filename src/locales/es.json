@@ -4,7 +4,7 @@
     "ordering": "Pedidos",
     "fulfillment": "Despacho",
     "payment": "Pagos",
-    "reporting": "Reportes",
+    "reporting": "Reportes & Analítica",
     "product-inventory": "Inventario de Productos",
     "add-product": "Agregar Producto",
     "inventory": "Inventario"
@@ -128,10 +128,10 @@
     }
   },
   "reporting": {
-    "supplier-dashboard": "Panel de Proveedor",
-    "client-portfolio": "Cartera de Clientes",
+    "supplier-dashboard": "Reportes Principales",
+    "client-portfolio": "Analítica de Clientes",
     "supplier": {
-      "title": "Reportes",
+      "title": "Reportes Principales",
       "subtitle": "Vista general completa de tu desempeño de ventas",
       "export-pdf": "Exportar PDF",
       "kpi-sales": "Ingresos Totales por Ventas",
@@ -144,15 +144,15 @@
       "col-company": "Nombre de Empresa",
       "col-volume": "Volumen Total",
       "col-status": "Estado",
-      "no-data": "No hay datos de clientes disponibles"
+      "no-data": "No hay datos de clientes disponibles",
+      "col-revenue": "Ingresos"
     },
     "portfolio": {
-      "title": "Reportes de Clientes Proveedor",
+      "title": "Analítica de Clientes",
       "subtitle": "Gestiona tu cartera de clientes B2B, monitorea el consumo de combustible y rastrea el volumen histórico de pedidos",
       "kpi-clients": "Total de Clientes",
       "kpi-revenue": "Ingresos",
-      "kpi-orders": "Pedidos Activos",
-      "kpi-growth": "Tasa de Crecimiento",
+      "kpi-orders": "Pedidos Pagados",
       "section-clients": "Cartera de Clientes",
       "section-distribution": "Distribución de Volumen por Sector",
       "filter-sector": "Filtrar por Sector",
@@ -162,7 +162,34 @@
       "col-volume": "Volumen Total (TM)",
       "col-active": "Última Actividad",
       "col-status": "Estado",
-      "no-clients": "No hay clientes disponibles"
+      "no-clients": "No hay clientes disponibles",
+      "col-revenue": "Ingresos"
+    },
+    "clients": {
+      "kpi-clients": "Total de Clientes",
+      "kpi-revenue": "Ingresos",
+      "kpi-orders": "Pedidos Pagados",
+      "section-clients": "Cartera de Clientes",
+      "section-distribution": "Distribucion de Volumen por Sector",
+      "filter-sector": "Filtrar por Sector",
+      "all-sectors": "Todos los Sectores",
+      "col-entity": "Entidad Empresarial",
+      "col-sector": "Sector",
+      "col-volume": "Volumen Total (TM)",
+      "col-cost": "Costo Total",
+      "col-active": "Ultima Actividad",
+      "col-status": "Estado",
+      "no-clients": "No hay clientes disponibles",
+      "sector-transport": "Transporte",
+      "sector-mining": "Mineria",
+      "sector-construction": "Construccion",
+      "sector-maritime": "Maritimo",
+      "sector-logistics": "Logistica",
+      "status-paid": "Pagado",
+      "status-pending": "Pendiente"
+    },
+    "general": {
+      "col-revenue": "Ingresos"
     }
   },
   "errors": {

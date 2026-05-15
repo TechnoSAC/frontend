@@ -1,9 +1,3 @@
-/**
- * Application service store for the `Reporting` bounded context.
- * Manages clients data, sales metrics, and sector distributions using DDD architecture.
- *
- * @module useReportingStore
- */
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { ClientsApi } from '../infrastructure/clients-api.js';
@@ -12,7 +6,8 @@ import { ClientAssembler } from '../infrastructure/client.assembler.js';
 
 const useReportingStore = defineStore('reporting', () => {
     // State
-    const clients = ref([]);
+    const allClients = ref([]);  // unfiltered — source of truth for KPIs & chart
+    const clients = ref([]);     // filtered view for the table
     const monthlySales = ref([]);
     const loading = ref(false);
     const error = ref(null);
@@ -23,7 +18,9 @@ const useReportingStore = defineStore('reporting', () => {
         error.value = null;
         try {
             const data = await ClientsApi.getAllClients();
-            clients.value = ClientAssembler.toClientList(data);
+            const list = ClientAssembler.toClientList(data);
+            allClients.value = list;
+            clients.value = list;
         } catch (err) {
             error.value = err.message;
             console.error('Error fetching clients:', err);
@@ -60,61 +57,62 @@ const useReportingStore = defineStore('reporting', () => {
         }
     }
 
-    // Computed - KPIs for General Report
-    const totalSalesRevenue = computed(() => {
-        return monthlySales.value.reduce((sum, month) => sum + month.revenue, 0);
-    });
+    /** Client-side sector filter — no HTTP call. */
+    function filterBySector(sector) {
+        if (sector === 'all') {
+            clients.value = allClients.value;
+        } else {
+            clients.value = allClients.value.filter(c => c.sector === sector);
+        }
+    }
 
+    // Computed — KPIs for General Report
     const avgFulfillmentRate = computed(() => {
-        // Mock calculation - in production. it comes from another source
-        return 98.2;
+        const total = allClients.value.length;
+        if (total === 0) return 0;
+        const paid = allClients.value.filter(c => c.status === 'PAID').length;
+        return Math.round((paid / total) * 1000) / 10; // one decimal
     });
 
-    const avgLeadTime = computed(() => {
-        // Mock calculation - in production. it comes from another source
-        return 4.2;
+    const avgLeadTime = computed(() => 4.2);
+
+    // Computed — KPIs for Clients Report (always from allClients, unaffected by filter)
+    const totalClients = computed(() => allClients.value.length);
+
+    const totalRevenue = computed(() =>
+        allClients.value.reduce((sum, c) => sum + (c.totalCost ?? 0), 0)
+    );
+
+    /** Count of clients whose payment is complete. */
+    const paidOrders = computed(() =>
+        allClients.value.filter(c => c.status === 'PAID').length
+    );
+
+    // Alias kept for views that haven't migrated yet
+    const activeOrders = paidOrders;
+    const totalSalesRevenue = totalRevenue;
+
+    // Computed — Sector Distribution from allClients (unaffected by table filter)
+    const sectorDistribution = computed(() => {
+        if (allClients.value.length === 0) return [];
+        return ClientAssembler.toSectorDistribution(allClients.value);
     });
 
-    // Computed - KPIs for Clients Report
-    const totalClients = computed(() => {
-        return clients.value.length;
-    });
-
-    const totalRevenue = computed(() => {
-        return clients.value.reduce((sum, client) => sum + client.totalCost, 0);
-    });
-
-    const activeOrders = computed(() => {
-        // Mock - in production. it comes from ordering BC
-        return 65;
-    });
-
-    const growthRate = computed(() => {
-        // Mock calculation - in production. it calculates with history records
-        return 12.4;
-    });
-
-    // Computed - Sales Performance (top clients for table)
-    const clientSalesPerformance = computed(() => {
-        return clients.value
+    // Computed — Sales Performance (top 10 of filtered view)
+    const clientSalesPerformance = computed(() =>
+        clients.value
             .map(client => ClientAssembler.toSalesPerformance(client))
             .sort((a, b) => b.totalVolume - a.totalVolume)
-            .slice(0, 10); // Top 10
-    });
+            .slice(0, 4)
+    );
 
-    // Computed - Sector Distribution
-    const sectorDistribution = computed(() => {
-        if (clients.value.length === 0) return [];
-        return ClientAssembler.toSectorDistribution(clients.value);
-    });
-
-    // Computed - Active clients only
-    const activeClients = computed(() => {
-        return clients.value.filter(client => client.isActive());
-    });
+    const activeClients = computed(() =>
+        allClients.value.filter(client => client.isActive())
+    );
 
     return {
         // State
+        allClients,
         clients,
         monthlySales,
         loading,
@@ -124,22 +122,21 @@ const useReportingStore = defineStore('reporting', () => {
         fetchClients,
         fetchMonthlySales,
         fetchClientsBySector,
+        filterBySector,
 
-        // KPIs - General Report
+        // KPIs
+        totalRevenue,
         totalSalesRevenue,
         avgFulfillmentRate,
         avgLeadTime,
-
-        // KPIs - Clients Report
         totalClients,
-        totalRevenue,
+        paidOrders,
         activeOrders,
-        growthRate,
 
         // Computed
         clientSalesPerformance,
         sectorDistribution,
-        activeClients
+        activeClients,
     };
 });
 

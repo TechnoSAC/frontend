@@ -32,7 +32,8 @@ export const ClientAssembler = {
         return new SalesPerformance({
             companyName: client.companyName,
             totalVolume: client.totalVolume,
-            status: client.status
+            status: client.status,
+            revenue: client.totalCost ?? 0,
         });
     },
 
