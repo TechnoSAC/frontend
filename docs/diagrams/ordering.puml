@@ -1,0 +1,125 @@
+@startuml Ordering_BC
+title Ordering — Bounded Context
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor White
+    BorderColor #555
+    ArrowColor #555
+    FontName Arial
+}
+
+' ─── domain ───────────────────────────────────────────────
+package "domain" #EAF3DE {
+    class Request {
+        + id : number | string | null
+        + clientId : number | string | null
+        + providerId : number | string | null
+        + fuelType : string
+        + quantity : number
+        + unit : string
+        + deliveryAddress : string
+        + deliveryDate : string
+        + status : string
+        + createdAt : string | null
+    }
+
+    class Order {
+        + id : number | string | null
+        + requestId : number | string | null
+        + clientId : number | string | null
+        + providerId : number | string | null
+        + fuelType : string
+        + quantity : number
+        + unit : string
+        + totalAmount : number
+        + deliveryAddress : string
+        + status : string
+        + dispatchedAt : string | null
+        + deliveredAt : string | null
+        + closedAt : string | null
+        + createdAt : string | null
+        + updatedAt : string | null
+    }
+
+    Order ..> Request : <<created from>>
+}
+
+' ─── infrastructure ───────────────────────────────────────
+package "infrastructure" #E6F1FB {
+    class RequestAssembler {
+        {static} + toEntityFromResource(resource) : Request
+        {static} + toEntitiesFromResponse(response) : Request[]
+    }
+
+    class OrderAssembler {
+        {static} + toEntityFromResource(resource) : Order
+        {static} + toEntitiesFromResponse(response) : Order[]
+    }
+
+    class OrderingApi {
+        - requestsEndpoint : BaseEndpoint
+        - ordersEndpoint : BaseEndpoint
+        --
+        + getRequests() : Promise<AxiosResponse>
+        + getRequestById(id) : Promise<AxiosResponse>
+        + createRequest(resource) : Promise<AxiosResponse>
+        + updateRequest(resource) : Promise<AxiosResponse>
+        + deleteRequest(id) : Promise<AxiosResponse>
+        + getOrders() : Promise<AxiosResponse>
+        + getOrderById(id) : Promise<AxiosResponse>
+        + createOrder(resource) : Promise<AxiosResponse>
+        + updateOrder(resource) : Promise<AxiosResponse>
+        + deleteOrder(id) : Promise<AxiosResponse>
+    }
+}
+
+' ─── application ──────────────────────────────────────────
+package "application" #FAEEDA {
+    class useOrderingStore <<Pinia Store>> {
+        + requests : Ref<Request[]>
+        + requestsLoaded : Ref<boolean>
+        + orders : Ref<Order[]>
+        + ordersLoaded : Ref<boolean>
+        + loading : Ref<boolean>
+        + errors : Ref<Error[]>
+        + pendingRequests : ComputedRef<Request[]>
+        + approvedRequests : ComputedRef<Request[]>
+        + activeOrders : ComputedRef<Order[]>
+        + closedOrders : ComputedRef<Order[]>
+        --
+        + fetchRequests() : void
+        + addRequest(request) : void
+        + updateRequest(request) : void
+        + deleteRequest(request) : void
+        + fetchOrders() : void
+        + addOrder(order) : void
+        + updateOrder(order) : void
+        + clearErrors() : void
+    }
+}
+
+' ─── presentation ─────────────────────────────────────────
+package "presentation" #FBEAF0 {
+    class "order-list.vue"            <<View>>
+    class "order-detail.vue"          <<View>>
+    class "request-form.vue"          <<View>>
+    class "provider-request-list.vue" <<View>>
+}
+
+' ─── relations ────────────────────────────────────────────
+RequestAssembler ..> Request          : <<creates>>
+OrderAssembler   ..> Order            : <<creates>>
+OrderingApi      --|> BaseApi         : extends
+useOrderingStore --> OrderingApi      : uses
+useOrderingStore --> RequestAssembler : uses
+useOrderingStore --> OrderAssembler   : uses
+useOrderingStore ..> Request          : manages
+useOrderingStore ..> Order            : manages
+"order-list.vue"            ..> useOrderingStore : injects
+"order-detail.vue"          ..> useOrderingStore : injects
+"request-form.vue"          ..> useOrderingStore : injects
+"provider-request-list.vue" ..> useOrderingStore : injects
+
+@enduml

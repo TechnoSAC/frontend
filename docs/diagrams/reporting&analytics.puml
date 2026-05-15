@@ -1,0 +1,123 @@
+@startuml Reporting_BC
+title Reporting — Bounded Context
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor White
+    BorderColor #555
+    ArrowColor #555
+    FontName Arial
+}
+
+' ─── domain ───────────────────────────────────────────────
+package "domain" #EAF3DE {
+    class Client {
+        + id : number | string
+        + companyName : string
+        + sector : string
+        + totalVolume : number
+        + totalCost : number
+        + lastActive : Date
+        + status : string
+        --
+        + isActive() : boolean
+        + getSectorLabel() : string
+        + getFormattedCost() : string
+        + getFormattedVolume() : string
+        + getFormattedLastActive() : string
+    }
+
+    class SalesPerformance {
+        + companyName : string
+        + totalVolume : number
+        + status : string
+        + revenue : number
+        --
+        + getFormattedVolume() : string
+        + getFormattedRevenue() : string
+        + getStatusBadge() : Object
+    }
+
+    class SectorDistribution {
+        + sector : string
+        + totalVolume : number
+        + percentage : number
+        --
+        + getSectorLabel() : string
+        + getFormattedVolume() : string
+        + getFormattedPercentage() : string
+        + getChartColor() : string
+    }
+}
+
+' ─── infrastructure ───────────────────────────────────────
+package "infrastructure" #E6F1FB {
+    class ClientAssembler {
+        {static} + toClient(dto) : Client
+        {static} + toClientList(dtos) : Client[]
+        {static} + toSalesPerformance(client) : SalesPerformance
+        {static} + toSectorDistribution(clients) : SectorDistribution[]
+    }
+
+    class ClientsApi {
+        {static} + getAllClients() : Promise<Object[]>
+        {static} + getClientById(id) : Promise<Object>
+        {static} + getClientsBySector(sector) : Promise<Object[]>
+    }
+
+    class SalesApi {
+        {static} + getMonthlySales() : Promise<Object[]>
+    }
+}
+
+' ─── application ──────────────────────────────────────────
+package "application" #FAEEDA {
+    class useReportingStore <<Pinia Store>> {
+        + allClients : Ref<Client[]>
+        + clients : Ref<Client[]>
+        + monthlySales : Ref<Object[]>
+        + loading : Ref<boolean>
+        + error : Ref<string | null>
+        + avgFulfillmentRate : ComputedRef<number>
+        + avgLeadTime : ComputedRef<number>
+        + totalClients : ComputedRef<number>
+        + totalRevenue : ComputedRef<number>
+        + paidOrders : ComputedRef<number>
+        + activeOrders : ComputedRef<number>
+        + totalSalesRevenue : ComputedRef<number>
+        + sectorDistribution : ComputedRef<SectorDistribution[]>
+        + clientSalesPerformance : ComputedRef<SalesPerformance[]>
+        + activeClients : ComputedRef<Client[]>
+        --
+        + fetchClients() : Promise<void>
+        + fetchMonthlySales() : Promise<void>
+        + fetchClientsBySector(sector) : Promise<void>
+        + filterBySector(sector) : void
+    }
+}
+
+' ─── presentation ─────────────────────────────────────────
+package "presentation" #FBEAF0 {
+    class "clients-report.vue"    <<View>>
+    class "client-portfolio.vue"  <<View>>
+    class "general-report.vue"    <<View>>
+    class "supplier-dashboard.vue" <<View>>
+}
+
+' ─── relations ────────────────────────────────────────────
+ClientAssembler ..> Client              : <<creates>>
+ClientAssembler ..> SalesPerformance    : <<creates>>
+ClientAssembler ..> SectorDistribution  : <<creates>>
+useReportingStore --> ClientsApi        : uses
+useReportingStore --> SalesApi          : uses
+useReportingStore --> ClientAssembler   : uses
+useReportingStore ..> Client            : manages
+useReportingStore ..> SalesPerformance  : computes
+useReportingStore ..> SectorDistribution: computes
+"clients-report.vue"     ..> useReportingStore : injects
+"client-portfolio.vue"   ..> useReportingStore : injects
+"general-report.vue"     ..> useReportingStore : injects
+"supplier-dashboard.vue" ..> useReportingStore : injects
+
+@enduml
