@@ -1,0 +1,114 @@
+@startuml Fulfillment_BC
+title Fulfillment — Bounded Context
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor White
+    BorderColor #555
+    ArrowColor #555
+    FontName Arial
+}
+
+' ─── domain ───────────────────────────────────────────────
+package "domain" #EAF3DE {
+    class Driver {
+        + id : number | string | null
+        + name : string
+        + licenseNumber : string
+        + phone : string
+        + email : string
+        + status : string
+    }
+
+    class Vehicle {
+        + id : number | string | null
+        + plate : string
+        + brand : string
+        + model : string
+        + capacity : number
+        + unit : string
+        + status : string
+    }
+}
+
+' ─── infrastructure ───────────────────────────────────────
+package "infrastructure" #E6F1FB {
+    class DriverAssembler {
+        {static} + toEntityFromResource(resource) : Driver
+        {static} + toEntitiesFromResponse(response) : Driver[]
+    }
+
+    class VehicleAssembler {
+        {static} + toEntityFromResource(resource) : Vehicle
+        {static} + toEntitiesFromResponse(response) : Vehicle[]
+    }
+
+    class FulfillmentApi {
+        - vehiclesEndpoint : BaseEndpoint
+        - driversEndpoint : BaseEndpoint
+        --
+        + getVehicles() : Promise<AxiosResponse>
+        + getVehicleById(id) : Promise<AxiosResponse>
+        + createVehicle(resource) : Promise<AxiosResponse>
+        + updateVehicle(resource) : Promise<AxiosResponse>
+        + deleteVehicle(id) : Promise<AxiosResponse>
+        + getDrivers() : Promise<AxiosResponse>
+        + getDriverById(id) : Promise<AxiosResponse>
+        + createDriver(resource) : Promise<AxiosResponse>
+        + updateDriver(resource) : Promise<AxiosResponse>
+        + deleteDriver(id) : Promise<AxiosResponse>
+    }
+}
+
+' ─── application ──────────────────────────────────────────
+package "application" #FAEEDA {
+    class useFulfillmentStore <<Pinia Store>> {
+        + vehicles : Ref<Vehicle[]>
+        + drivers : Ref<Driver[]>
+        + errors : Ref<Error[]>
+        + vehiclesLoaded : Ref<boolean>
+        + driversLoaded : Ref<boolean>
+        + loading : Ref<boolean>
+        + vehiclesCount : ComputedRef<number>
+        + driversCount : ComputedRef<number>
+        --
+        + fetchVehicles() : void
+        + getVehicleById(id) : Vehicle | undefined
+        + addVehicle(vehicle) : void
+        + updateVehicle(vehicle) : void
+        + deleteVehicle(vehicle) : void
+        + fetchDrivers() : void
+        + getDriverById(id) : Driver | undefined
+        + addDriver(driver) : void
+        + updateDriver(driver) : void
+        + deleteDriver(driver) : void
+        + clearErrors() : void
+    }
+}
+
+' ─── presentation ─────────────────────────────────────────
+package "presentation" #FBEAF0 {
+    class "vehicle-list.vue"  <<View>>
+    class "vehicle-form.vue"  <<View>>
+    class "driver-list.vue"   <<View>>
+    class "driver-form.vue"   <<View>>
+    class "dispatch-view.vue" <<View>>
+}
+
+' ─── relations ────────────────────────────────────────────
+DriverAssembler  ..> Driver             : <<creates>>
+VehicleAssembler ..> Vehicle            : <<creates>>
+FulfillmentApi   --|> BaseApi           : extends
+useFulfillmentStore --> FulfillmentApi  : uses
+useFulfillmentStore --> DriverAssembler : uses
+useFulfillmentStore --> VehicleAssembler: uses
+useFulfillmentStore ..> Driver          : manages
+useFulfillmentStore ..> Vehicle         : manages
+"vehicle-list.vue"  ..> useFulfillmentStore : injects
+"vehicle-form.vue"  ..> useFulfillmentStore : injects
+"driver-list.vue"   ..> useFulfillmentStore : injects
+"driver-form.vue"   ..> useFulfillmentStore : injects
+"dispatch-view.vue" ..> useFulfillmentStore : injects
+
+@enduml
