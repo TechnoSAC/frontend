@@ -71,7 +71,13 @@ const expanded = ref(
 
 const toggle = (key) => { expanded.value[key] = !expanded.value[key]; };
 
-const isActive = (to) => route.path === to || route.path.startsWith(to + '/');
+const isActive = (to) => {
+  if (route.path === to) return true;
+  const suffix = route.path.slice(to.length);
+  // Extend match only when the next segment is an ID (starts with a digit),
+  // not a named segment like 'new' — prevents /products matching /products/new.
+  return suffix.startsWith('/') && /^\/\d/.test(suffix);
+};
 </script>
 
 <template>
