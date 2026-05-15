@@ -2,54 +2,66 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Chart from 'primevue/chart';
-import useDashboardStore from '../../application/dashboard.store.js';
+import useOrderingStore from '../../../ordering/application/ordering.store.js';
+import pinia from '../../../pinia.js';
 
 const router = useRouter();
-const store  = useDashboardStore();
+const orderingStore = useOrderingStore(pinia);
 
-onMounted(() => store.fetchDashboardData());
+onMounted(() => {
+  if (!orderingStore.ordersLoaded) orderingStore.fetchOrders();
+});
+
+// ── Fuel KPI ───────────────────────────────────────────────────────────────
+const LITERS_PER_GALLON = 3.78541;
+const fuelUnit = ref('LITERS');
+
+const totalFuelLiters = computed(() =>
+  orderingStore.activeOrders.reduce((sum, o) => {
+    if (o.unit === 'LITERS')   return sum + Number(o.quantity);
+    if (o.unit === 'GALLONS')  return sum + Number(o.quantity) * LITERS_PER_GALLON;
+    return sum;
+  }, 0)
+);
+
+const totalFuelGallons = computed(() => totalFuelLiters.value / LITERS_PER_GALLON);
+
+const totalFuelDisplay = computed(() =>
+  fuelUnit.value === 'GALLONS'
+    ? Math.round(totalFuelGallons.value).toLocaleString('en-US')
+    : Math.round(totalFuelLiters.value).toLocaleString('en-US')
+);
 
 // ── Trend Chart ────────────────────────────────────────────────────────────
-const selectedPeriod = ref('weekly');
+const selectedPeriod = ref('monthly');
 
 const datasets = {
   daily: {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    week1:  [3200, 4100, 5800, 6200, 4900, 2100, 1800],
-    week2:  [2800, 3600, 4200, 7100, 5300, 2400, 1600],
+    values: [8500, 12000, 9800, 15500, 11200, 6800, 4200],
   },
   weekly: {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-    week1:  [12000, 15000, 22000, 18000, 25000, 9000, 7000, 14000, 11000, 19000, 21000, 13000],
-    week2:  [9000, 11000, 16000, 28000, 13000, 6000, 5000, 17000, 8000, 23000, 30000, 10000],
+    labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10'],
+    values: [42000, 38000, 51000, 47000, 62000, 55000, 48000, 71000, 65000, 58000],
   },
   monthly: {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    week1:  [68000, 72000, 89000, 95000, 115000, 43940],
-    week2:  [55000, 80000, 76000, 102000, 98000, 61000],
-  }
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    values: [68000, 72000, 89000, 95000, 115000, 43940, 78000, 82000, 91000, 105000, 88000, 62000],
+  },
 };
 
 const chartData = computed(() => {
   const d = datasets[selectedPeriod.value];
+  const last = d.values.length - 1;
   return {
     labels: d.labels,
-    datasets: [
-      {
-        data: d.week1,
-        backgroundColor: d.week1.map((_, i) => i % 5 === 3 ? '#1a2e6b' : '#adc4e8'),
-        borderRadius: 6,
-        borderSkipped: false,
-        barPercentage: 0.45,
-      },
-      {
-        data: d.week2,
-        backgroundColor: d.week2.map((_, i) => i % 5 === 0 ? '#2563eb' : '#d4e4f7'),
-        borderRadius: 6,
-        borderSkipped: false,
-        barPercentage: 0.45,
-      }
-    ]
+    datasets: [{
+      data: d.values,
+      backgroundColor: d.values.map((_, i) => i === last ? '#1a2e6b' : '#adc4e8'),
+      borderRadius: 6,
+      borderSkipped: false,
+      barPercentage: 0.55,
+    }],
   };
 });
 
@@ -59,38 +71,32 @@ const chartOptions = {
   plugins: { legend: { display: false } },
   scales: {
     x: { grid: { display: false }, ticks: { color: '#8b9ab5', font: { size: 11 } } },
-    y: { display: false, beginAtZero: true }
-  }
+    y: { display: false, beginAtZero: true },
+  },
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function formatVolume(quantity, unit) {
-  return `${Number(quantity).toLocaleString()} ${unit === 'LITERS' ? 'L' : unit}`;
+  return `${Number(quantity).toLocaleString('en-US')} ${unit === 'LITERS' ? 'L' : 'gal'}`;
 }
 
-function formatEta(req) {
-  if (['DELIVERED', 'CLOSED'].includes(req.status)) return 'Completed';
-  if (req.deliveryDate) {
-    const d = new Date(req.deliveryDate);
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+function formatEta(order) {
+  if (order.status === 'DELIVERED' || order.status === 'CLOSED') return 'Completed';
+  if (order.status === 'DISPATCHED') return 'In Transit';
+  if (order.createdAt) {
+    return new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
   return '—';
 }
 
 function getStatusSeverity(status) {
-  const map = {
-    PENDING:    'warn',
-    APPROVED:   'success',
-    REJECTED:   'danger',
-    DISPATCHED: 'info',
-    DELIVERED:  'success',
-  };
+  const map = { CREATED: 'info', DISPATCHED: 'warn', DELIVERED: 'success', CLOSED: 'secondary' };
   return map[status] ?? 'secondary';
 }
 
-const goToOrders   = () => router.push('/ordering/pending');
-const goToReports  = () => router.push('/reporting/supplier');
-const viewRequest  = (req) => router.push(`/ordering/requests`);
+const goToOrders  = () => router.push('/ordering/orders');
+const goToReports = () => router.push('/reporting/supplier');
+const viewOrder   = (order) => router.push(`/ordering/orders/${order.id}`);
 </script>
 
 <template>
@@ -106,32 +112,43 @@ const viewRequest  = (req) => router.push(`/ordering/requests`);
 
     <!-- KPI Cards -->
     <div class="kpi-row">
+
+      <!-- Total Fuel Selling -->
       <pv-card class="kpi-card">
         <template #content>
           <div class="kpi-inner">
-            <div class="kpi-icon fuel">
-              <i class="pi pi-bolt"/>
-            </div>
+            <div class="kpi-icon fuel"><i class="pi pi-bolt"/></div>
             <div class="kpi-info">
               <span class="kpi-label">TOTAL FUEL SELLING</span>
               <span class="kpi-value">
-                {{ store.totalFuelDisplay }}
-                <span class="kpi-unit">Liters</span>
+                {{ totalFuelDisplay }}
+                <span class="kpi-unit">{{ fuelUnit === 'LITERS' ? 'L' : 'gal' }}</span>
               </span>
+              <div class="unit-toggle">
+                <button
+                    class="unit-btn"
+                    :class="{ active: fuelUnit === 'LITERS' }"
+                    @click="fuelUnit = 'LITERS'"
+                >L</button>
+                <button
+                    class="unit-btn"
+                    :class="{ active: fuelUnit === 'GALLONS' }"
+                    @click="fuelUnit = 'GALLONS'"
+                >gal</button>
+              </div>
             </div>
           </div>
         </template>
       </pv-card>
 
-      <pv-card class="kpi-card">
+      <!-- Active Orders count -->
+      <pv-card class="kpi-card" style="cursor:pointer" @click="goToOrders">
         <template #content>
           <div class="kpi-inner">
-            <div class="kpi-icon orders">
-              <i class="pi pi-file-edit"/>
-            </div>
+            <div class="kpi-icon orders"><i class="pi pi-truck"/></div>
             <div class="kpi-info">
-              <span class="kpi-label">PENDING REQUESTS</span>
-              <span class="kpi-value">{{ store.pendingRequests }}</span>
+              <span class="kpi-label">ACTIVE ORDERS</span>
+              <span class="kpi-value">{{ orderingStore.activeOrders.length }}</span>
             </div>
           </div>
         </template>
@@ -151,7 +168,7 @@ const viewRequest  = (req) => router.push(`/ordering/requests`);
               :options="[
                 { label: 'Daily',   value: 'daily'   },
                 { label: 'Weekly',  value: 'weekly'  },
-                { label: 'Monthly', value: 'monthly' }
+                { label: 'Monthly', value: 'monthly' },
               ]"
               option-label="label"
               option-value="value"
@@ -164,16 +181,16 @@ const viewRequest  = (req) => router.push(`/ordering/requests`);
       </template>
     </pv-card>
 
-    <!-- Active Requests Table -->
+    <!-- Active Orders Table -->
     <pv-card class="orders-card">
       <template #content>
         <div class="orders-header">
           <div>
-            <div class="orders-title">Active Requests</div>
+            <div class="orders-title">Active Orders</div>
             <div class="orders-subtitle">Track real-time fuel deliveries and scheduled refills.</div>
           </div>
           <pv-button
-              label="View all requests"
+              label="View all orders"
               icon="pi pi-arrow-right"
               icon-pos="right"
               outlined
@@ -183,12 +200,12 @@ const viewRequest  = (req) => router.push(`/ordering/requests`);
         </div>
 
         <pv-data-table
-            :value="store.activeRequests"
-            :loading="store.loading"
+            :value="orderingStore.activeOrders"
+            :loading="orderingStore.loading"
             striped-rows
             class="orders-table"
         >
-          <pv-column field="id" header="Request ID">
+          <pv-column field="id" header="Order ID">
             <template #body="{ data }">
               <span class="order-id">#FT-{{ String(data.id).padStart(3, '0') }}</span>
             </template>
@@ -207,7 +224,7 @@ const viewRequest  = (req) => router.push(`/ordering/requests`);
             </template>
           </pv-column>
 
-          <pv-column field="deliveryDate" header="ETA">
+          <pv-column field="status" header="ETA">
             <template #body="{ data }">
               <span class="eta-text">{{ formatEta(data) }}</span>
             </template>
@@ -219,20 +236,20 @@ const viewRequest  = (req) => router.push(`/ordering/requests`);
             </template>
           </pv-column>
 
-          <pv-column header="Actions">
+          <pv-column header="">
             <template #body="{ data }">
               <pv-button
                   icon="pi pi-eye"
                   text
                   rounded
                   severity="secondary"
-                  @click="viewRequest(data)"
+                  @click="viewOrder(data)"
               />
             </template>
           </pv-column>
 
           <template #empty>
-            <div class="no-data">No active requests</div>
+            <div class="no-data">No active orders</div>
           </template>
         </pv-data-table>
       </template>
@@ -243,35 +260,21 @@ const viewRequest  = (req) => router.push(`/ordering/requests`);
 
 <style scoped>
 .dashboard-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  background: #f4f6fb;
-  min-height: 100%;
+  display: flex; flex-direction: column; gap: 20px;
+  background: #f4f6fb; min-height: 100%;
 }
 
-/* Header */
 .page-title    { font-size: 28px; font-weight: 700; color: #1a2744; margin: 0; }
 .page-subtitle { font-size: 14px; color: #8b9ab5; margin: 4px 0 0; }
 
 /* KPI Row */
 .kpi-row { display: flex; gap: 16px; flex-wrap: wrap; }
-
-.kpi-card { flex: 0 0 auto; min-width: 240px; }
-
-.kpi-inner {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 4px 0;
-}
-
+.kpi-card { flex: 0 0 auto; min-width: 260px; }
+.kpi-inner { display: flex; align-items: flex-start; gap: 16px; padding: 4px 0; }
 .kpi-icon {
-  width: 44px; height: 44px;
-  border-radius: 10px;
+  width: 44px; height: 44px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  font-size: 20px;
+  flex-shrink: 0; font-size: 20px;
 }
 .kpi-icon.fuel   { background: #e8f0fd; color: #2563eb; }
 .kpi-icon.orders { background: #e6f7f1; color: #059669; }
@@ -281,15 +284,23 @@ const viewRequest  = (req) => router.push(`/ordering/requests`);
 .kpi-value { font-size: 30px; font-weight: 700; color: #1a2744; line-height: 1.1; margin-top: 4px; }
 .kpi-unit  { font-size: 14px; font-weight: 400; color: #8b9ab5; margin-left: 4px; }
 
+/* Unit toggle */
+.unit-toggle {
+  display: flex; gap: 4px; margin-top: 8px;
+}
+.unit-btn {
+  padding: 2px 10px; border-radius: 999px; border: 1px solid #d1d5db;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  background: #fff; color: #6b7280; transition: all 0.15s;
+}
+.unit-btn.active { background: #1a2e6b; color: #fff; border-color: #1a2e6b; }
+.unit-btn:hover:not(.active) { background: #f3f4f6; }
+
 /* Chart */
 .chart-card { transition: box-shadow 0.2s; }
 .chart-card:hover { box-shadow: 0 4px 16px rgba(37,99,235,0.12); }
-
 .chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
+  display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;
 }
 .chart-title    { font-size: 18px; font-weight: 600; color: #1a2744; }
 .chart-subtitle { font-size: 13px; color: #8b9ab5; margin-top: 2px; }
@@ -297,17 +308,13 @@ const viewRequest  = (req) => router.push(`/ordering/requests`);
 
 /* Orders table */
 .orders-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
+  display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;
 }
 .orders-title    { font-size: 18px; font-weight: 600; color: #1a2744; }
 .orders-subtitle { font-size: 13px; color: #8b9ab5; margin-top: 2px; }
+.view-all-btn    { font-size: 13px; }
 
-.view-all-btn { font-size: 13px; }
-
-.order-id        { font-weight: 700; color: #1a2e6b; font-size: 14px; font-family: 'Courier New', monospace; }
+.order-id         { font-weight: 700; color: #1a2e6b; font-size: 14px; font-family: 'Courier New', monospace; }
 .destination-main { display: block; font-weight: 600; color: #1a2744; font-size: 14px; }
 .destination-sub  { display: block; font-size: 11px; color: #8b9ab5; margin-top: 1px; }
 .volume-text      { font-weight: 600; color: #1a2744; }
