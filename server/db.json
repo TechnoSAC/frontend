@@ -1,0 +1,445 @@
+{
+  "inventory": [
+    {
+      "id": 1,
+      "name": "Gasoline 84",
+      "type": "GASOLINE_84",
+      "description": "Regular 84 octane gasoline",
+      "pricePerLiter": 12.5,
+      "unit": "LITERS"
+    },
+    {
+      "id": 2,
+      "name": "Gasoline 90",
+      "type": "GASOLINE_90",
+      "description": "Standard 90 octane gasoline",
+      "pricePerLiter": 13.5,
+      "unit": "LITERS"
+    },
+    {
+      "id": 3,
+      "name": "Gasoline 95",
+      "type": "GASOLINE_95",
+      "description": "Premium 95 octane gasoline",
+      "pricePerLiter": 15.2,
+      "unit": "LITERS"
+    },
+    {
+      "id": 4,
+      "name": "Gasoline 97",
+      "type": "GASOLINE_97",
+      "description": "Super premium 97 octane gasoline",
+      "pricePerLiter": 16.8,
+      "unit": "LITERS"
+    },
+    {
+      "id": 5,
+      "name": "Diesel B5",
+      "type": "DIESEL_B5",
+      "description": "Bio-diesel blend B5",
+      "pricePerLiter": 14.3,
+      "unit": "LITERS"
+    },
+    {
+      "id": 6,
+      "name": "GLP",
+      "type": "GLP",
+      "description": "Liquefied petroleum gas",
+      "pricePerLiter": 8.9,
+      "unit": "LITERS"
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "clientId": 1,
+      "providerId": 1,
+      "fuelType": "DIESEL_B5",
+      "quantity": 800,
+      "unit": "GALLONS",
+      "deliveryAddress": "Av. Industrial 234, Callao, Lima",
+      "deliveryDate": "2025-02-10",
+      "status": "APPROVED",
+      "createdAt": "2025-01-28T08:15:00Z"
+    },
+    {
+      "id": 2,
+      "clientId": 2,
+      "providerId": 1,
+      "fuelType": "GASOLINE_90",
+      "quantity": 500,
+      "unit": "GALLONS",
+      "deliveryAddress": "Jr. Los Álamos 890, San Isidro, Lima",
+      "deliveryDate": "2025-02-12",
+      "status": "PENDING",
+      "createdAt": "2025-01-29T10:40:00Z"
+    },
+    {
+      "id": 3,
+      "clientId": 3,
+      "providerId": 1,
+      "fuelType": "GLP",
+      "quantity": 300,
+      "unit": "GALLONS",
+      "deliveryAddress": "Carretera Central Km 45, Huancayo",
+      "deliveryDate": "2025-02-15",
+      "status": "PENDING",
+      "createdAt": "2025-01-30T14:00:00Z"
+    },
+    {
+      "id": 4,
+      "clientId": 4,
+      "providerId": 1,
+      "fuelType": "GASOLINE_95",
+      "quantity": 400,
+      "unit": "GALLONS",
+      "deliveryAddress": "Av. La Marina 1200, San Miguel, Lima",
+      "deliveryDate": "2025-02-05",
+      "status": "APPROVED",
+      "createdAt": "2025-01-25T09:00:00Z"
+    },
+    {
+      "id": 5,
+      "clientId": 5,
+      "providerId": 1,
+      "fuelType": "DIESEL_B5",
+      "quantity": 1200,
+      "unit": "LITERS",
+      "deliveryAddress": "Zona Industrial Norte, Trujillo",
+      "deliveryDate": "2025-02-08",
+      "status": "APPROVED",
+      "createdAt": "2025-01-26T11:20:00Z"
+    },
+    {
+      "id": 6,
+      "clientId": 2,
+      "providerId": 1,
+      "fuelType": "GASOLINE_84",
+      "quantity": 200,
+      "unit": "GALLONS",
+      "deliveryAddress": "Jr. Los Álamos 890, San Isidro, Lima",
+      "deliveryDate": "2025-01-20",
+      "status": "REJECTED",
+      "createdAt": "2025-01-18T07:30:00Z"
+    },
+    {
+      "id": 7,
+      "clientId": 6,
+      "providerId": 1,
+      "fuelType": "GASOLINE_90",
+      "quantity": 600,
+      "unit": "GALLONS",
+      "deliveryAddress": "Puerto Matarani, Arequipa",
+      "deliveryDate": "2025-01-30",
+      "status": "APPROVED",
+      "createdAt": "2025-01-22T13:00:00Z"
+    },
+    {
+      "id": 8,
+      "clientId": 1,
+      "providerId": 1,
+      "fuelType": "DIESEL_B5",
+      "quantity": 950,
+      "unit": "GALLONS",
+      "deliveryAddress": "Av. Industrial 234, Callao, Lima",
+      "deliveryDate": "2025-01-15",
+      "status": "APPROVED",
+      "createdAt": "2025-01-10T08:00:00Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": 2,
+      "requestId": 5,
+      "clientId": 5,
+      "providerId": 1,
+      "fuelType": "DIESEL_B5",
+      "quantity": 1200,
+      "unit": "LITERS",
+      "totalAmount": 17160,
+      "deliveryAddress": "Zona Industrial Norte, Trujillo",
+      "status": "CREATED",
+      "dispatchedAt": null,
+      "deliveredAt": null,
+      "closedAt": null,
+      "createdAt": "2025-01-26T11:25:00Z",
+      "updatedAt": "2025-01-26T11:25:00Z"
+    },
+    {
+      "id": 3,
+      "requestId": 7,
+      "clientId": 6,
+      "providerId": 1,
+      "fuelType": "GASOLINE_90",
+      "quantity": 600,
+      "unit": "GALLONS",
+      "totalAmount": 8100,
+      "deliveryAddress": "Puerto Matarani, Arequipa",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2025-01-24T07:00:00Z",
+      "deliveredAt": null,
+      "closedAt": null,
+      "createdAt": "2025-01-22T13:05:00Z",
+      "updatedAt": "2025-01-24T07:00:00Z"
+    },
+    {
+      "id": 4,
+      "requestId": 8,
+      "clientId": 1,
+      "providerId": 1,
+      "fuelType": "DIESEL_B5",
+      "quantity": 950,
+      "unit": "GALLONS",
+      "totalAmount": 13585,
+      "deliveryAddress": "Av. Industrial 234, Callao, Lima",
+      "status": "DELIVERED",
+      "dispatchedAt": "2025-01-12T06:30:00Z",
+      "deliveredAt": "2025-01-15T14:00:00Z",
+      "closedAt": null,
+      "createdAt": "2025-01-10T08:05:00Z",
+      "updatedAt": "2025-01-15T14:00:00Z"
+    },
+    {
+      "id": 5,
+      "requestId": 8,
+      "clientId": 1,
+      "providerId": 1,
+      "fuelType": "GASOLINE_90",
+      "quantity": 750,
+      "unit": "GALLONS",
+      "totalAmount": 10125,
+      "deliveryAddress": "Av. Industrial 234, Callao, Lima",
+      "status": "CLOSED",
+      "dispatchedAt": "2024-12-20T07:00:00Z",
+      "deliveredAt": "2024-12-22T15:00:00Z",
+      "closedAt": "2024-12-23T09:00:00Z",
+      "createdAt": "2024-12-18T10:00:00Z",
+      "updatedAt": "2024-12-23T09:00:00Z"
+    },
+    {
+      "id": 6,
+      "requestId": 1,
+      "clientId": 1,
+      "providerId": 1,
+      "fuelType": "DIESEL_B5",
+      "quantity": 800,
+      "unit": "GALLONS",
+      "totalAmount": 0,
+      "deliveryAddress": "Av. Industrial 234, Callao, Lima",
+      "status": "CREATED",
+      "dispatchedAt": null,
+      "deliveredAt": null,
+      "closedAt": null,
+      "createdAt": "2026-05-13T23:49:57.386Z",
+      "updatedAt": "2026-05-13T23:49:57.386Z"
+    }
+  ],
+  "vehicles": [
+    {
+      "id": 1,
+      "plate": "ABC-123",
+      "brand": "Volvo",
+      "model": "FH16",
+      "capacity": 12000,
+      "unit": "LITERS",
+      "status": "AVAILABLE"
+    },
+    {
+      "id": 2,
+      "plate": "DEF-456",
+      "brand": "Mercedes",
+      "model": "Actros",
+      "capacity": 15000,
+      "unit": "LITERS",
+      "status": "AVAILABLE"
+    },
+    {
+      "id": 3,
+      "plate": "GHI-789",
+      "brand": "Scania",
+      "model": "R450",
+      "capacity": 10000,
+      "unit": "LITERS",
+      "status": "IN_USE"
+    },
+    {
+      "id": 4,
+      "plate": "JKL-012",
+      "brand": "DAF",
+      "model": "XF 480",
+      "capacity": 18000,
+      "unit": "LITERS",
+      "status": "MAINTENANCE"
+    }
+  ],
+  "drivers": [
+    {
+      "id": 1,
+      "name": "Carlos Pérez",
+      "licenseNumber": "Q12345678",
+      "phone": "+51 999 123 456",
+      "email": "c.perez@fulltank.com",
+      "status": "AVAILABLE"
+    },
+    {
+      "id": 2,
+      "name": "María López",
+      "licenseNumber": "Q87654321",
+      "phone": "+51 999 654 321",
+      "email": "m.lopez@fulltank.com",
+      "status": "AVAILABLE"
+    },
+    {
+      "id": 3,
+      "name": "Jorge Quispe",
+      "licenseNumber": "Q11223344",
+      "phone": "+51 999 112 233",
+      "email": "j.quispe@fulltank.com",
+      "status": "ON_ROUTE"
+    },
+    {
+      "id": 4,
+      "name": "Ana Villanueva",
+      "licenseNumber": "Q44332211",
+      "phone": "+51 999 443 322",
+      "email": "a.villanueva@fulltank.com",
+      "status": "AVAILABLE"
+    }
+  ],
+  "clients": [
+    {
+      "id": 1,
+      "companyName": "Transportes del Sur S.A.",
+      "sector": "TRANSPORT",
+      "totalVolume": 18450,
+      "totalCost": 221400,
+      "lastActive": "2025-01-28T08:00:00Z",
+      "status": "PAID"
+    },
+    {
+      "id": 2,
+      "companyName": "Minería Andina Corp.",
+      "sector": "MINING",
+      "totalVolume": 32100.5,
+      "totalCost": 385200,
+      "lastActive": "2025-01-27T10:30:00Z",
+      "status": "PAID"
+    },
+    {
+      "id": 3,
+      "companyName": "Constructora Lima E.I.R.L.",
+      "sector": "CONSTRUCTION",
+      "totalVolume": 9870,
+      "totalCost": 118440,
+      "lastActive": "2025-01-20T14:00:00Z",
+      "status": "PAID"
+    },
+    {
+      "id": 4,
+      "companyName": "Navieros del Pacífico S.A.",
+      "sector": "MARITIME",
+      "totalVolume": 25600,
+      "totalCost": 307200,
+      "lastActive": "2025-01-25T09:00:00Z",
+      "status": "PAID"
+    },
+    {
+      "id": 5,
+      "companyName": "Logística Express Peru",
+      "sector": "LOGISTICS",
+      "totalVolume": 14200,
+      "totalCost": 170400,
+      "lastActive": "2025-01-26T11:00:00Z",
+      "status": "PAID"
+    },
+    {
+      "id": 6,
+      "companyName": "Pesquera Oceánica S.A.C.",
+      "sector": "MARITIME",
+      "totalVolume": 8900,
+      "totalCost": 106800,
+      "lastActive": "2025-01-22T13:00:00Z",
+      "status": "PAID"
+    },
+    {
+      "id": 7,
+      "companyName": "Minas del Centro Corp.",
+      "sector": "MINING",
+      "totalVolume": 21300,
+      "totalCost": 255600,
+      "lastActive": "2025-01-15T07:00:00Z",
+      "status": "PENDING"
+    },
+    {
+      "id": 8,
+      "companyName": "Carga Rápida S.R.L.",
+      "sector": "LOGISTICS",
+      "totalVolume": 6700,
+      "totalCost": 80400,
+      "lastActive": "2025-01-10T09:00:00Z",
+      "status": "PENDING"
+    }
+  ],
+  "monthlySales": [
+    {
+      "id": 1,
+      "month": "January",
+      "revenue": 68000
+    },
+    {
+      "id": 2,
+      "month": "February",
+      "revenue": 72000
+    },
+    {
+      "id": 3,
+      "month": "March",
+      "revenue": 89000
+    },
+    {
+      "id": 4,
+      "month": "April",
+      "revenue": 95000
+    },
+    {
+      "id": 5,
+      "month": "May",
+      "revenue": 115000
+    },
+    {
+      "id": 6,
+      "month": "June",
+      "revenue": 108000
+    },
+    {
+      "id": 7,
+      "month": "July",
+      "revenue": 132000
+    },
+    {
+      "id": 8,
+      "month": "August",
+      "revenue": 121000
+    },
+    {
+      "id": 9,
+      "month": "September",
+      "revenue": 98000
+    },
+    {
+      "id": 10,
+      "month": "October",
+      "revenue": 143000
+    },
+    {
+      "id": 11,
+      "month": "November",
+      "revenue": 156000
+    },
+    {
+      "id": 12,
+      "month": "December",
+      "revenue": 178000
+    }
+  ]
+}

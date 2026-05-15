@@ -1,0 +1,271 @@
+<script setup>
+import { useRoute, useRouter } from "vue-router";
+import { computed, onMounted, ref, toRefs } from "vue";
+import { useI18n } from "vue-i18n";
+import useInventoryStore from "../../application/inventory.store.js";
+import { Product } from "../../domain/model/product.entity.js";
+
+const route = useRoute();
+const router = useRouter();
+const store = useInventoryStore();
+const { errors, productsLoaded } = toRefs(store);
+const { addProduct, updateProduct, fetchProducts, getProductById } = store;
+const { t } = useI18n();
+
+const isEdit = computed(() => !!route.params.id);
+
+const fuelTypeOptions = [
+  { label: 'Gasoline 84',   value: 'GASOLINE_84' },
+  { label: 'Gasoline 90',   value: 'GASOLINE_90' },
+  { label: 'Gasoline 95',   value: 'GASOLINE_95' },
+  { label: 'Gasoline 97',   value: 'GASOLINE_97' },
+  { label: 'Diesel B5',     value: 'DIESEL_B5' },
+  { label: 'GLP',           value: 'GLP' }
+];
+
+const unitOptions = [
+  { label: 'Gallons', value: 'GALLONS' },
+  { label: 'Liters',  value: 'LITERS' }
+];
+
+const form = ref({
+  name: '',
+  type: '',
+  description: '',
+  pricePerLiter: 0,
+  unit: 'GALLONS'
+});
+
+onMounted(() => {
+  if (isEdit.value) {
+    if (!productsLoaded.value) {
+      fetchProducts();
+      setTimeout(loadProductIntoForm, 300);
+    } else {
+      loadProductIntoForm();
+    }
+  }
+});
+
+const loadProductIntoForm = () => {
+  const product = getProductById(route.params.id);
+  if (product) {
+    form.value.name = product.name;
+    form.value.type = product.type;
+    form.value.description = product.description;
+    form.value.pricePerLiter = product.pricePerLiter;
+    form.value.unit = product.unit;
+  }
+};
+
+const navigateBack = () => router.push({ name: 'inventory-products' });
+
+const saveProduct = () => {
+  const product = new Product({
+    id: isEdit.value ? route.params.id : null,
+    name: form.value.name,
+    type: form.value.type,
+    description: form.value.description,
+    pricePerLiter: Number(form.value.pricePerLiter),
+    unit: form.value.unit
+  });
+  if (isEdit.value) updateProduct(product);
+  else addProduct(product);
+  navigateBack();
+};
+</script>
+
+<template>
+  <div>
+        <div class="page-header">
+          <h1 class="page-title">{{ isEdit ? t('inventory.product-form.title-edit') : t('inventory.product-form.title-create') }}</h1>
+          <p class="page-subtitle">{{ isEdit ? t('inventory.product-form.subtitle-edit') : t('inventory.product-form.subtitle-create') }}</p>
+        </div>
+
+        <pv-message v-if="errors.length" severity="error" class="error-banner">
+          {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
+        </pv-message>
+
+        <pv-card class="form-card">
+          <template #content>
+        <form class="form-content" @submit.prevent="saveProduct">
+          <!-- Product Name -->
+          <div class="field-group">
+            <div class="field-icon"><i class="pi pi-tag"/></div>
+            <div class="field-content">
+              <label>{{ t('inventory.product-form.field-name') }}<span class="req">*</span></label>
+              <pv-input-text v-model="form.name" class="text-input" required/>
+            </div>
+          </div>
+
+          <!-- Fuel Type -->
+          <div class="field-group">
+            <div class="field-icon"><i class="pi pi-bolt"/></div>
+            <div class="field-content">
+              <label>{{ t('inventory.product-form.field-fuel') }}<span class="req">*</span></label>
+              <pv-select
+                  v-model="form.type"
+                  :options="fuelTypeOptions"
+                  option-label="label"
+                  option-value="value"
+                  :placeholder="t('inventory.product-form.select-fuel')"
+                  class="select-input"
+                  required
+              />
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="field-group field-group-textarea">
+            <div class="field-icon"><i class="pi pi-file"/></div>
+            <div class="field-content">
+              <label>{{ t('inventory.product-form.field-desc') }}<span class="req">*</span></label>
+              <pv-textarea v-model="form.description" rows="3" class="textarea-input" required/>
+            </div>
+          </div>
+
+          <!-- Price + Unit -->
+          <div class="field-row">
+            <div class="field-group field-group-half">
+              <div class="field-icon"><i class="pi pi-money-bill"/></div>
+              <div class="field-content">
+                <label>{{ t('inventory.product-form.field-price') }}<span class="req">*</span></label>
+                <div class="price-input-wrapper">
+                  <span class="prefix">S/</span>
+                  <pv-input-number
+                      v-model="form.pricePerLiter"
+                      :min="0"
+                      :min-fraction-digits="2"
+                      :max-fraction-digits="2"
+                      class="text-input price-input"
+                      input-class="text-input-native"
+                      required
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="field-group field-group-half">
+              <div class="field-icon"><i class="pi pi-list"/></div>
+              <div class="field-content">
+                <label>{{ t('inventory.product-form.field-unit') }}<span class="req">*</span></label>
+                <pv-select v-model="form.unit" :options="unitOptions" option-label="label" option-value="value" class="select-input" required/>
+              </div>
+            </div>
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="form-actions">
+            <pv-button type="button" :label="t('inventory.product-form.cancel')" outlined class="btn-secondary" @click="navigateBack" />
+            <pv-button type="submit" :label="isEdit ? t('inventory.product-form.update') : t('inventory.product-form.save')" icon="pi pi-save" class="btn-primary" />
+          </div>
+        </form>
+          </template>
+        </pv-card>
+  </div>
+</template>
+
+<style scoped>
+.page-header { margin-bottom: 1.5rem; }
+.page-title { font-size: 1.75rem; font-weight: 700; color: #1E3A8A; margin: 0; }
+.page-subtitle { color: #6B7280; font-size: 0.9rem; margin: 0.25rem 0 0 0; }
+
+.error-banner {
+  background: #FEE2E2; border: 1px solid #FCA5A5;
+  color: #B91C1C; padding: 1rem 1.25rem;
+  border-radius: 8px;
+  display: flex; align-items: center; gap: 0.75rem;
+  margin-bottom: 1.25rem; font-size: 0.95rem;
+}
+
+.form-card {
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.form-card :deep(.p-card-body) {
+  padding: 2rem;
+}
+.form-card :deep(.p-card-content) {
+  padding: 0;
+}
+.form-content {
+  display: flex; flex-direction: column; gap: 1.25rem;
+}
+.field-group {
+  display: flex; align-items: stretch; gap: 0.5rem;
+  border: 1px solid #D1D5DB; border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: border-color 0.2s; background: #ffffff;
+}
+.field-group:focus-within { border-color: #1E3A8A; }
+.field-icon {
+  display: flex; align-items: center;
+  color: #6B7280; font-size: 1.1rem;
+  padding-right: 0.5rem;
+}
+.field-content {
+  display: flex; flex-direction: column;
+  flex: 1; padding: 0.25rem 0;
+}
+.field-content label {
+  font-size: 0.78rem; color: #6B7280;
+  font-weight: 500; margin-bottom: 0.15rem;
+}
+.req { color: #DC2626; margin-left: 2px; }
+.text-input, .select-input, .textarea-input,
+.text-input :deep(.p-inputtext),
+.select-input :deep(.p-select-label),
+.textarea-input,
+.text-input-native {
+  border: none; outline: none;
+  padding: 0.25rem 0;
+  font-size: 0.95rem; font-family: inherit;
+  color: #1f2937; width: 100%; background: transparent;
+  box-shadow: none;
+}
+.text-input :deep(.p-inputnumber-input) {
+  border: none;
+  padding: 0.25rem 0;
+  background: transparent;
+  box-shadow: none;
+}
+.textarea-input { resize: vertical; min-height: 60px; box-shadow: none; }
+.select-input {
+  cursor: pointer;
+  width: 100%;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+.select-input :deep(.p-select-dropdown) {
+  color: #6B7280;
+}
+.field-row { display: flex; gap: 1rem; }
+.field-group-half { flex: 1; }
+.price-input-wrapper {
+  display: flex; align-items: center;
+  gap: 0.5rem; width: 100%;
+}
+.prefix {
+  color: #6B7280; font-size: 0.95rem; font-weight: 500;
+}
+.price-input { flex: 1; text-align: left; }
+
+.form-actions {
+  display: flex; justify-content: flex-end;
+  gap: 0.75rem; margin-top: 1rem;
+}
+.btn-secondary {
+  background: #ffffff; color: #475569;
+  border: 1px solid #D1D5DB;
+  padding: 0.6rem 1.5rem; border-radius: 8px;
+  font-weight: 600; cursor: pointer; font-size: 0.9rem;
+}
+.btn-secondary:hover { background: #F3F4F6; }
+.btn-primary {
+  background: #1E3A8A; color: #ffffff;
+  border: none; padding: 0.6rem 1.5rem;
+  border-radius: 8px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;
+}
+.btn-primary:hover { background: #1E40AF; }
+</style>
