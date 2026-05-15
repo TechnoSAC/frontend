@@ -27,23 +27,28 @@ Built with **Vue 3**, **Vite**, **PrimeVue 4**, **Pinia**, **Vue Router 5**, and
 ```
 src/
 ├── dashboard/            # Dashboard BC
+│   ├── application/
+│   ├── infrastructure/
 │   └── presentation/     # Routes + views
 ├── inventory/            # Product inventory BC
-│   ├── domain/model/
-│   ├── application/      # Pinia store
-│   ├── infrastructure/   # API adapter + assembler
+│   ├── domain/
+│   ├── application/
+│   ├── infrastructure/
 │   └── presentation/     # Routes + views
 ├── ordering/             # Fuel request ordering BC
-│   ├── domain/model/
+│   ├── domain/
 │   ├── application/
 │   ├── infrastructure/
 │   └── presentation/
 ├── fulfillment/          # Fleet and driver management BC
-│   ├── domain/model/
+│   ├── domain/
 │   ├── application/
 │   ├── infrastructure/
 │   └── presentation/
 ├── reporting/            # Reporting BC
+│   ├── domain/
+│   ├── application/
+│   ├── infrastructure/
 │   └── presentation/
 ├── shared/               # Cross-cutting infrastructure and layout
 │   ├── infrastructure/   # BaseApi, BaseEndpoint
