@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const fulltankApi = import.meta.env.VITE_FULLTANK_API_URL;
+const fulltankApi =
+    import.meta.env.PROD
+        ? 'https://json-server-1-1uka.onrender.com'
+        : import.meta.env.VITE_FULLTANK_API_URL;
 
 /**
  * Shared infrastructure base class that owns the configured Axios client.
@@ -15,8 +18,7 @@ export class BaseApi {
     /** Initializes the shared Axios client with environment-driven configuration. */
     constructor() {
         this.#http = axios.create({
-            baseURL: fulltankApi,
-            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            baseURL: fulltankApi
         });
     }
 

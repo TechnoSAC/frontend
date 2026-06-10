@@ -1,0 +1,61 @@
+@startuml Dashboard_BC
+title Dashboard — Bounded Context
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor White
+    BorderColor #555
+    ArrowColor #555
+    FontName Arial
+}
+
+' ─── domain ───────────────────────────────────────────────
+package "domain" #EAF3DE {
+    note "Sin entidades propias.\nAgrega datos de Inventory BC\ny Ordering BC." as N1
+}
+
+' ─── infrastructure ───────────────────────────────────────
+package "infrastructure" #E6F1FB {
+    class DashboardApi {
+        - inventoryEndpoint : BaseEndpoint
+        - requestsEndpoint : BaseEndpoint
+        --
+        + getInventory() : Promise<AxiosResponse>
+        + getRequests() : Promise<AxiosResponse>
+    }
+}
+
+' ─── application ──────────────────────────────────────────
+package "application" #FAEEDA {
+    class useDashboardStore <<Pinia Store>> {
+        + totalFuelLiters : Ref<number>
+        + pendingRequests : Ref<number>
+        + activeRequests : Ref<Object[]>
+        + loading : Ref<boolean>
+        + errors : Ref<Error[]>
+        + totalFuelDisplay : ComputedRef<string>
+        --
+        + fetchDashboardData() : void
+        + clearErrors() : void
+    }
+}
+
+' ─── presentation ─────────────────────────────────────────
+package "presentation" #FBEAF0 {
+    class "dashboard.vue" <<View>>
+}
+
+' ─── relations ────────────────────────────────────────────
+DashboardApi      --|> BaseApi           : extends
+useDashboardStore --> DashboardApi       : uses
+"dashboard.vue"   ..> useDashboardStore  : injects
+
+' cross-context note
+note bottom of DashboardApi
+  Consume endpoints de
+  Inventory BC (/inventory)
+  y Ordering BC (/requests)
+end note
+
+@enduml

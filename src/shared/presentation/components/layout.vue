@@ -10,6 +10,13 @@ const sidebarCollapsed = ref(false);
 
 const navItems = [
   {
+    key: 'dashboard',
+    icon: 'pi pi-home',
+    label: 'option.dashboard',
+    to: '/dashboard',
+    children: []
+  },
+  {
     key: 'inventory',
     icon: 'pi pi-box',
     label: 'option.inventory',
@@ -24,7 +31,7 @@ const navItems = [
     label: 'option.ordering',
     children: [
       { label: 'ordering.pending-requests', to: '/ordering/pending' },
-      { label: 'ordering.my-requests',      to: '/ordering/requests' },
+      { label: 'ordering.orders',           to: '/ordering/orders' },
     ]
   },
   {
@@ -32,6 +39,7 @@ const navItems = [
     icon: 'pi pi-truck',
     label: 'option.fulfillment',
     children: [
+      { label: 'fulfillment.dispatch', to: '/fulfillment/dispatch' },
       { label: 'fulfillment.vehicles', to: '/fulfillment/vehicles' },
       { label: 'fulfillment.drivers',  to: '/fulfillment/drivers' },
     ]
@@ -63,7 +71,13 @@ const expanded = ref(
 
 const toggle = (key) => { expanded.value[key] = !expanded.value[key]; };
 
-const isActive = (to) => route.path === to || route.path.startsWith(to + '/');
+const isActive = (to) => {
+  if (route.path === to) return true;
+  const suffix = route.path.slice(to.length);
+  // Extend match only when the next segment is an ID (starts with a digit),
+  // not a named segment like 'new' — prevents /products matching /products/new.
+  return suffix.startsWith('/') && /^\/\d/.test(suffix);
+};
 </script>
 
 <template>
@@ -75,6 +89,7 @@ const isActive = (to) => route.path === to || route.path.startsWith(to + '/');
           <i class="pi pi-bars"/>
         </button>
         <img src="/fulltank-logo.png" alt="FullTank" class="brand-logo"/>
+        <span class="brand-name">FullTank</span>
       </div>
       <div class="topbar-right">
         <div class="lang-switch">
@@ -94,33 +109,46 @@ const isActive = (to) => route.path === to || route.path.startsWith(to + '/');
       <aside class="sidebar" :class="{ collapsed: sidebarCollapsed }">
         <nav>
           <template v-for="item in navItems" :key="item.key">
-            <div
+            <router-link
+                v-if="item.to && !item.children.length"
+                :to="item.to"
                 class="nav-item"
                 :class="{ 'nav-item--active': route.path.startsWith('/' + item.key) }"
-                @click="toggle(item.key)"
+                style="text-decoration:none"
             >
               <i :class="item.icon"/>
               <span v-if="!sidebarCollapsed">{{ t(item.label) }}</span>
-              <i
-                  v-if="item.children.length && !sidebarCollapsed"
-                  class="pi chevron"
-                  :class="expanded[item.key] ? 'pi-chevron-up' : 'pi-chevron-down'"
-              />
-            </div>
+            </router-link>
 
-            <transition name="slide">
-              <div v-if="expanded[item.key] && !sidebarCollapsed && item.children.length" class="sub-nav">
-                <router-link
-                    v-for="child in item.children"
-                    :key="child.to"
-                    :to="child.to"
-                    class="sub-item"
-                    :class="{ 'sub-item--active': isActive(child.to) }"
-                >
-                  {{ t(child.label) }}
-                </router-link>
+            <template v-else>
+              <div
+                  class="nav-item"
+                  :class="{ 'nav-item--active': route.path.startsWith('/' + item.key) }"
+                  @click="toggle(item.key)"
+              >
+                <i :class="item.icon"/>
+                <span v-if="!sidebarCollapsed">{{ t(item.label) }}</span>
+                <i
+                    v-if="item.children.length && !sidebarCollapsed"
+                    class="pi chevron"
+                    :class="expanded[item.key] ? 'pi-chevron-up' : 'pi-chevron-down'"
+                />
               </div>
-            </transition>
+
+              <transition name="slide">
+                <div v-if="expanded[item.key] && !sidebarCollapsed && item.children.length" class="sub-nav">
+                  <router-link
+                      v-for="child in item.children"
+                      :key="child.to"
+                      :to="child.to"
+                      class="sub-item"
+                      :class="{ 'sub-item--active': isActive(child.to) }"
+                  >
+                    {{ t(child.label) }}
+                  </router-link>
+                </div>
+              </transition>
+            </template>
           </template>
         </nav>
       </aside>
@@ -144,6 +172,7 @@ const isActive = (to) => route.path === to || route.path.startsWith(to + '/');
 }
 .topbar-left { display: flex; align-items: center; gap: .75rem; }
 .brand-logo  { height: 36px; object-fit: contain; }
+.brand-name  { font-size: 1.1rem; font-weight: 700; color: #1E3A8A; letter-spacing: -0.3px; }
 .topbar-right { display: flex; align-items: center; gap: 1rem; }
 .lang-switch { display: flex; background: #EFF2F7; border-radius: 999px; padding: 4px; }
 .lang-btn {
