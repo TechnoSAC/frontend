@@ -1,15 +1,16 @@
 // Lazy-loaded components
-const supplierDashboard = () => import('./views/supplier-dashboard.vue');
-const clientPortfolio = () => import('./views/client-portfolio.vue');
+const providerReport = () => import('./views/provider-report.vue');
+const buyerReport = () => import('./views/buyer-report.vue');
 
 /**
  * Reporting presentation routes mounted under `/reporting`.
+ * Provider: unified sales & customer analytics. Buyer: spending analytics.
  *
  * @type {import('vue-router').RouteRecordRaw[]}
  */
 const reportingRoutes = [
-    { path: 'supplier', name: 'reporting-supplier', component: supplierDashboard, meta: { title: 'Main Reports' } },
-    { path: 'portfolio', name: 'reporting-portfolio', component: clientPortfolio, meta: { title: "Your Client's Analytics" } }
+    { path: 'provider', name: 'reporting-provider', component: providerReport, meta: { title: 'Reports & Analytics' } },
+    { path: 'buyer', name: 'reporting-buyer', component: buyerReport, meta: { title: 'My Reports' } },
 ];
 
 export default reportingRoutes;
