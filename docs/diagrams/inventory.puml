@@ -1,0 +1,76 @@
+@startuml Inventory_BC
+title Inventory — Bounded Context
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor White
+    BorderColor #555
+    ArrowColor #555
+    FontName Arial
+}
+
+' ─── domain ───────────────────────────────────────────────
+package "domain" #EAF3DE {
+    class Product {
+        + id : number | string | null
+        + name : string
+        + type : string
+        + description : string
+        + pricePerLiter : number
+        + unit : string
+    }
+}
+
+' ─── infrastructure ───────────────────────────────────────
+package "infrastructure" #E6F1FB {
+    class ProductAssembler {
+        {static} + toEntityFromResource(resource) : Product
+        {static} + toEntitiesFromResponse(response) : Product[]
+    }
+
+    class InventoryApi {
+        - inventoryEndpoint : BaseEndpoint
+        --
+        + getProducts() : Promise<AxiosResponse>
+        + getProductById(id) : Promise<AxiosResponse>
+        + createProduct(resource) : Promise<AxiosResponse>
+        + updateProduct(resource) : Promise<AxiosResponse>
+        + deleteProduct(id) : Promise<AxiosResponse>
+    }
+}
+
+' ─── application ──────────────────────────────────────────
+package "application" #FAEEDA {
+    class useInventoryStore <<Pinia Store>> {
+        + products : Ref<Product[]>
+        + errors : Ref<Error[]>
+        + productsLoaded : Ref<boolean>
+        + loading : Ref<boolean>
+        + productsCount : ComputedRef<number>
+        --
+        + fetchProducts() : void
+        + getProductById(id) : Product | undefined
+        + addProduct(product) : void
+        + updateProduct(product) : void
+        + deleteProduct(product) : void
+        + clearErrors() : void
+    }
+}
+
+' ─── presentation ─────────────────────────────────────────
+package "presentation" #FBEAF0 {
+    class "product-list.vue" <<View>>
+    class "product-form.vue" <<View>>
+}
+
+' ─── relations ────────────────────────────────────────────
+ProductAssembler ..> Product          : <<creates>>
+InventoryApi     --|> BaseApi         : extends
+useInventoryStore --> InventoryApi    : uses
+useInventoryStore --> ProductAssembler: uses
+useInventoryStore ..> Product         : manages
+"product-list.vue" ..> useInventoryStore : injects
+"product-form.vue" ..> useInventoryStore : injects
+
+@enduml

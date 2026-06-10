@@ -1,7 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "./shared/presentation/views/home.vue";
-import catalogRoutes from "./catalog/presentation/catalog-routes.js";
+import inventoryRoutes from "./inventory/presentation/inventory-routes.js";
 import { RouterView } from 'vue-router';
+import orderingRoutes from "./ordering/presentation/ordering-routes.js";
+import fulfillmentRoutes from "./fulfillment/presentation/fulfillment-routes.js";
+import reportingRoutes from "./reporting/presentation/reporting-routes.js";
+import dashboardRoutes from "./dashboard/presentation/dashboard-routes.js";
 // To import when IAM is implemented
 // import iamRoutes from "./iam/presentation/iam-routes.js";
 
@@ -10,7 +14,7 @@ const about = () => import('./shared/presentation/views/about.vue');
 const pageNotFound = () => import('./shared/presentation/views/page-not-found.vue');
 
 // Lazy-loaded BC routes (uncomment as each BC is implemented)
-// const catalogRoutes      = () => import('./catalog/presentation/catalog-routes.js');
+// const inventoryRoutes = () => import('./inventory/presentation/inventory-routes.js');
 // const orderingRoutes     = () => import('./ordering/presentation/ordering-routes.js');
 // const fulfillmentRoutes  = () => import('./fulfillment/presentation/fulfillment-routes.js');
 // const paymentRoutes      = () => import('./payment/presentation/payment-routes.js');
@@ -23,7 +27,7 @@ const routes = [
     { path: '/home',          name: 'home',         component: Home,   meta: { title: 'Home' } },
     { path: '/about',         name: 'about',        component: about,  meta: { title: 'About' } },
     { path: '/iam',           name: 'iam',          children: iamRoutes },
-    { path: '/catalog',       name: 'catalog',      children: catalogRoutes },
+    { path: '/inventory',       name: 'inventory',      children: inventoryRoutes },
     { path: '/ordering',      name: 'ordering',     children: orderingRoutes },
     { path: '/fulfillment',   name: 'fulfillment',  children: fulfillmentRoutes },
     { path: '/payment',       name: 'payment',      children: paymentRoutes },
@@ -38,10 +42,16 @@ const routes = [
 const routes = [
     { path: '/home', name: 'home', component: Home, meta: { title: 'Home' } },
     { path: '/about', name: 'about', component: about, meta: { title: 'About' } },
-    { path: '/', redirect: '/home' },
+    { path: '/', redirect: '/dashboard' },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: pageNotFound, meta: { title: 'Page Not Found' } },
-    { path: '/catalog', component: RouterView, children: catalogRoutes }
+    { path: '/dashboard', component: RouterView, children: dashboardRoutes },
+    { path: '/inventory', component: RouterView, children: inventoryRoutes },
+    { path: '/ordering', children: orderingRoutes },
+    { path: '/fulfillment', children: fulfillmentRoutes },
+    { path: '/reporting', children: reportingRoutes }
 ];
+
+
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),

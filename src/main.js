@@ -33,7 +33,7 @@ import {
     ConfirmationService,
     ConfirmDialog, DataTable, Dialog,
     DialogService, Drawer, FileUpload, FloatLabel, IconField, InputIcon, InputNumber, InputText, Menu,
-    Rating, Row, Select, SelectButton, Tag, Textarea, Toast,
+    Message, Rating, Row, Select, SelectButton, Tag, Textarea, Toast,
     ToastService, Toolbar, Tooltip
 } from "primevue";
 import i18n from "./i18n.js";
@@ -63,6 +63,7 @@ createApp(App)
     .component('pv-input-number', InputNumber)
     .component('pv-input-text', InputText)
     .component('pv-menu', Menu)
+    .component('pv-message', Message)
     .component('pv-rating', Rating)
     .component('pv-row', Row)
     .component('pv-select', Select)
