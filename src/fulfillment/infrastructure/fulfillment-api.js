@@ -3,6 +3,7 @@ import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
 const vehiclesEndpointPath = import.meta.env.VITE_VEHICLES_ENDPOINT_PATH;
 const driversEndpointPath = import.meta.env.VITE_DRIVERS_ENDPOINT_PATH;
+const deliveriesEndpointPath = import.meta.env.VITE_DELIVERIES_ENDPOINT_PATH;
 
 /**
  * Infrastructure adapter for Fulfillment HTTP endpoints.
@@ -15,17 +16,36 @@ export class FulfillmentApi extends BaseApi {
     #vehiclesEndpoint;
     /** @type {BaseEndpoint} */
     #driversEndpoint;
+    /** @type {BaseEndpoint} */
+    #deliveriesEndpoint;
 
-    /** Creates endpoint clients for vehicles and drivers resources. */
+    /** Creates endpoint clients for vehicles, drivers and deliveries resources. */
     constructor() {
         super();
         this.#vehiclesEndpoint = new BaseEndpoint(this, vehiclesEndpointPath);
         this.#driversEndpoint = new BaseEndpoint(this, driversEndpointPath);
+        this.#deliveriesEndpoint = new BaseEndpoint(this, deliveriesEndpointPath);
+    }
+
+    // DELIVERIES
+    getDeliveries() {
+        return this.#deliveriesEndpoint.getAll();
+    }
+
+    createDelivery(resource) {
+        return this.#deliveriesEndpoint.create(resource);
+    }
+
+    updateDelivery(resource) {
+        if (String(resource.status).toLowerCase() === 'delivered') {
+            return this.http.post(`${deliveriesEndpointPath}/${resource.id}/complete`);
+        }
+        return Promise.resolve({ status: 200, data: resource });
     }
 
     // VEHICLES
-    getVehicles() {
-        return this.#vehiclesEndpoint.getAll();
+    getVehicles(providerId) {
+        return this.http.get(`${vehiclesEndpointPath}/provider/${providerId}`);
     }
 
     getVehicleById(id) {
@@ -45,8 +65,8 @@ export class FulfillmentApi extends BaseApi {
     }
 
     // DRIVERS
-    getDrivers() {
-        return this.#driversEndpoint.getAll();
+    getDrivers(providerId) {
+        return this.http.get(`${driversEndpointPath}/provider/${providerId}`);
     }
 
     getDriverById(id) {
