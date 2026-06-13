@@ -27,7 +27,7 @@ const buyerNav = [
   { key: 'ordering',     icon: 'pi pi-shopping-cart', label: 'option.ordering', children: [
       { label: 'ordering.my-requests', to: '/ordering/my-requests' },
       { label: 'ordering.my-orders',   to: '/ordering/my-orders' },
-    ]},
+  ]},
   { key: 'payment',      icon: 'pi pi-credit-card',  label: 'option.payment',   to: '/payment', children: [] },
   { key: 'notification', icon: 'pi pi-bell',         label: 'option.notifications', to: '/notification', children: [] },
   { key: 'reporting',    icon: 'pi pi-chart-bar',    label: 'option.reporting', to: '/reporting/buyer', children: [] },
@@ -40,11 +40,11 @@ const providerNav = [
       { label: 'ordering.pending-requests', to: '/ordering/pending' },
       { label: 'ordering.orders',           to: '/ordering/orders' },
       { label: 'ordering.collections',      to: '/ordering/collections' },
-    ]},
+  ]},
   { key: 'fulfillment',  icon: 'pi pi-truck', label: 'option.fulfillment', children: [
       { label: 'fulfillment.vehicles', to: '/fulfillment/vehicles' },
       { label: 'fulfillment.drivers',  to: '/fulfillment/drivers' },
-    ]},
+  ]},
   { key: 'notification', icon: 'pi pi-bell',      label: 'option.notifications', to: '/notification', children: [] },
   { key: 'reporting',    icon: 'pi pi-chart-bar', label: 'option.reporting', to: '/reporting/provider', children: [] },
 ];
@@ -72,8 +72,8 @@ const isActive = (to) => {
 // ── Identity & notifications ────────────────────────────────────────────────
 const unreadCount = computed(() => {
   const list = iamStore.isProvider
-      ? notificationStore.forProvider(iamStore.currentProviderId)
-      : notificationStore.forBuyer(iamStore.currentCompanyId);
+    ? notificationStore.forProvider(iamStore.currentProviderId)
+    : notificationStore.forBuyer(iamStore.currentCompanyId);
   return list.filter(n => !n.read).length;
 });
 
