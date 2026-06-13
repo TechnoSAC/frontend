@@ -1,5 +1,5 @@
-import { BaseApi } from "../../../../../../../../Downloads/TrabajoWebCompleto (1)/TrabajoWebCompleto/fronted-copia/src/shared/infrastructure/base-api.js";
-import { BaseEndpoint } from "../../../../../../../../Downloads/TrabajoWebCompleto (1)/TrabajoWebCompleto/fronted-copia/src/shared/infrastructure/base-endpoint.js";
+import { BaseApi } from "../../shared/infrastructure/base-api.js";
+import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
 const requestsEndpointPath = import.meta.env.VITE_REQUESTS_ENDPOINT_PATH;
 const ordersEndpointPath   = import.meta.env.VITE_ORDERS_ENDPOINT_PATH;
