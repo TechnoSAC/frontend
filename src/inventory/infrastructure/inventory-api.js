@@ -2,6 +2,7 @@ import { BaseApi } from "../../shared/infrastructure/base-api.js";
 import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
 const inventoryEndpointPath = import.meta.env.VITE_INVENTORY_ENDPOINT_PATH;
+const inventoryMovementsPath = import.meta.env.VITE_INVENTORY_MOVEMENTS_ENDPOINT_PATH;
 
 /**
  * Infrastructure adapter for Inventory HTTP endpoints.
@@ -12,11 +13,24 @@ const inventoryEndpointPath = import.meta.env.VITE_INVENTORY_ENDPOINT_PATH;
 export class InventoryApi extends BaseApi {
     /** @type {BaseEndpoint} */
     #inventoryEndpoint;
+    /** @type {BaseEndpoint} */
+    #movementsEndpoint;
 
     /** Creates endpoint client for the inventory resource. */
     constructor() {
         super();
         this.#inventoryEndpoint = new BaseEndpoint(this, inventoryEndpointPath);
+        this.#movementsEndpoint = new BaseEndpoint(this, inventoryMovementsPath);
+    }
+
+    /** @returns {Promise<import('axios').AxiosResponse>} */
+    getMovements() {
+        return this.#movementsEndpoint.getAll();
+    }
+
+    /** @param {Object} resource @returns {Promise<import('axios').AxiosResponse>} */
+    createMovement(resource) {
+        return this.#movementsEndpoint.create(resource);
     }
 
     /**
