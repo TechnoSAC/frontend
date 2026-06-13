@@ -7,6 +7,7 @@ export class Vehicle {
     /**
      * @param {Object} params - Entity attributes.
      * @param {number|string|null} [params.id=null] - Vehicle identifier.
+     * @param {number|string|null} [params.providerId=null] - Owning provider.
      * @param {string} [params.plate=''] - License plate.
      * @param {string} [params.brand=''] - Vehicle brand.
      * @param {string} [params.model=''] - Vehicle model.
@@ -16,6 +17,7 @@ export class Vehicle {
      */
     constructor({
                     id = null,
+                    providerId = null,
                     plate = '',
                     brand = '',
                     model = '',
@@ -24,6 +26,7 @@ export class Vehicle {
                     status = 'AVAILABLE'
                 }) {
         this.id = id;
+        this.providerId = providerId;
         this.plate = plate;
         this.brand = brand;
         this.model = model;
