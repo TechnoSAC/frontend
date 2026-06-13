@@ -13,7 +13,6 @@ import useIamStore from '../../../iam/application/iam.store.js';
 import useAnalyticsStore from '../../application/analytics.store.js';
 import { fuelTypeLabel } from '../../../shared/domain/fuel-types.js';
 import { money } from '../../../shared/domain/helpers.js';
-import { orderStatusSeverity } from '../../../shared/domain/order-status.js';
 import {
   financialDate,
   isPaidOrder,
@@ -217,9 +216,6 @@ const doughnutOptions = { responsive: true, maintainAspectRatio: false, plugins:
           </pv-column>
           <pv-column :header="t('reporting.provider.col-revenue')">
             <template #body="{ data }">{{ money(data.totalCost) }}</template>
-          </pv-column>
-          <pv-column :header="t('common.status')">
-            <template #body="{ data }"><pv-tag :value="data.status" :severity="data.status === 'PAID' ? 'success' : 'warn'"/></template>
           </pv-column>
           <template #empty><div class="empty-row">{{ t('common.no-data') }}</div></template>
         </pv-data-table>
