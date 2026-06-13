@@ -27,14 +27,19 @@ const useInventoryStore = defineStore('inventory', () => {
 
     function fetchProducts() {
         loading.value = true;
-        inventoryApi.getProducts().then(response => {
-            products.value = ProductAssembler.toEntitiesFromResponse(response);
-            productsLoaded.value = true;
-        }).catch(error => {
-            errors.value.push(error);
-        }).finally(() => {
-            loading.value = false;
-        });
+        return inventoryApi.getProducts()
+            .then(response => {
+                products.value = ProductAssembler.toEntitiesFromResponse(response);
+                productsLoaded.value = true;
+                return products.value;
+            })
+            .catch(error => {
+                errors.value.push(error);
+                return [];
+            })
+            .finally(() => {
+                loading.value = false;
+            });
     }
 
     function getProductById(id) {
@@ -43,31 +48,197 @@ const useInventoryStore = defineStore('inventory', () => {
     }
 
     function addProduct(product) {
-        inventoryApi.createProduct(product).then(response => {
+        return inventoryApi.createProduct(product).then(response => {
             const newProduct = ProductAssembler.toEntityFromResource(response.data);
             products.value.push(newProduct);
+            return newProduct;
         }).catch(error => {
             errors.value.push(error);
+            return null;
         });
     }
 
     function updateProduct(product) {
-        inventoryApi.updateProduct(product).then(response => {
+        return inventoryApi.updateProduct(product).then(response => {
             const updated = ProductAssembler.toEntityFromResource(response.data);
             const index = products.value.findIndex(p => p.id === updated.id);
             if (index !== -1) products.value[index] = updated;
+            return updated;
         }).catch(error => {
             errors.value.push(error);
+            return null;
         });
     }
 
     function deleteProduct(product) {
-        inventoryApi.deleteProduct(product.id).then(() => {
+        return inventoryApi.deleteProduct(product.id).then(() => {
             const index = products.value.findIndex(p => p.id === product.id);
             if (index !== -1) products.value.splice(index, 1);
+            return true;
         }).catch(error => {
             errors.value.push(error);
+            return false;
         });
+    }
+
+    // ── Stock & movements (Inventory BC) ──────────────────────────────────
+    /** @type {import('vue').Ref<Array>} */
+    const movements = ref([]);
+
+    /** @type {import('vue').ComputedRef<Product[]>} */
+    const lowStockItems = computed(() => products.value.filter(p => p.isLowStock()));
+
+    /** @param {number} providerId @returns {Product[]} */
+    function forProvider(providerId) {
+        return products.value.filter(p => p.providerId === providerId);
+    }
+
+    /**
+     * Finds an active stock item by provider and fuel type. Used by the
+     * coordination service to check availability before accepting a request.
+     * @param {number} providerId
+     * @param {string} fuelType
+     * @returns {Product|undefined}
+     */
+    function normalizeFuelType(value) {
+        const text = String(value ?? '').trim().toUpperCase();
+        const labels = {
+            'GASOHOL 84': 'GASOLINE_84',
+            'GASOHOL 90': 'GASOLINE_90',
+            'GASOHOL 95': 'GASOLINE_95',
+            'GASOHOL 97': 'GASOLINE_97',
+            'DIESEL B5': 'DIESEL_B5',
+            'LPG (GLP)': 'GLP',
+            'CNG (GNV)': 'GNV',
+        };
+        return labels[text] ?? text;
+    }
+
+    function findItem(providerId, fuelType) {
+        return products.value.find(p =>
+            Number(p.providerId) === Number(providerId) &&
+            normalizeFuelType(p.type) === normalizeFuelType(fuelType)
+        );
+    }
+
+    function fetchMovements() {
+        return inventoryApi.getMovements()
+            .then(response => { movements.value = Array.isArray(response.data) ? response.data : []; })
+            .catch(error => { errors.value.push(error); });
+    }
+
+    /**
+     * Reserves stock for an accepted order (commits it so it can't be promised
+     * twice). Physical stock is untouched until dispatch; only `reserved` grows.
+     * @param {number} itemId
+     * @param {number} quantity - Amount in the item's unit (liters).
+     * @returns {Promise<void>}
+     */
+    async function reserveStock(itemId, quantity) {
+        const item = products.value.find(p => p.id === itemId);
+        if (!item) return;
+        const updated = new Product({ ...item, reserved: item.reserved + Math.round(Number(quantity)) });
+        const index = products.value.findIndex(p => p.id === itemId);
+        if (index !== -1) products.value[index] = updated;
+        try {
+            await inventoryApi.updateProduct(updated);
+        } catch (error) {
+            errors.value.push(error);
+        }
+    }
+
+    /**
+     * Releases a previously reserved amount (e.g. when an accepted order is
+     * cancelled before dispatch). Physical stock is untouched.
+     * @param {number} itemId
+     * @param {number} quantity - Amount in the item's unit (liters).
+     * @returns {Promise<void>}
+     */
+    async function releaseReservation(itemId, quantity) {
+        const item = products.value.find(p => p.id === itemId);
+        if (!item) return;
+        const updated = new Product({ ...item, reserved: Math.max(0, item.reserved - Math.round(Number(quantity))) });
+        const index = products.value.findIndex(p => p.id === itemId);
+        if (index !== -1) products.value[index] = updated;
+        try {
+            await inventoryApi.updateProduct(updated);
+        } catch (error) {
+            errors.value.push(error);
+        }
+    }
+
+    /**
+     * Decreases stock for an item and records an OUT movement. Used at dispatch:
+     * also releases the matching reservation (the reserved fuel is now shipped).
+     * @param {number} itemId
+     * @param {number} quantity - Amount in the item's unit (liters).
+     * @param {string} reason
+     * @param {number|null} orderId
+     * @returns {Promise<void>}
+     */
+    async function decreaseStock(itemId, quantity, reason, orderId = null) {
+        const item = products.value.find(p => p.id === itemId);
+        if (!item) return;
+        const qty = Math.round(Number(quantity));
+        const newStock = Math.max(0, item.stock - qty);
+        const newReserved = Math.max(0, item.reserved - qty);
+        const updated = new Product({ ...item, stock: newStock, reserved: newReserved });
+        const index = products.value.findIndex(p => p.id === itemId);
+        if (index !== -1) products.value[index] = updated;
+
+        try {
+            await inventoryApi.updateProduct(updated);
+        } catch (error) {
+            errors.value.push(error);
+        }
+
+        const movement = {
+            inventoryItemId: itemId,
+            providerId: item.providerId,
+            type: 'OUT',
+            quantity: qty,
+            reason,
+            orderId,
+            createdAt: new Date().toISOString(),
+        };
+        inventoryApi.createMovement(movement)
+            .then(res => movements.value.push(res.data ?? movement))
+            .catch(() => movements.value.push(movement));
+    }
+
+    /**
+     * Simulates an automatic stock replenishment: fills the tank back up to its
+     * capacity, marks it ACTIVE and records an IN movement.
+     * @param {Product} item
+     * @returns {Promise<Product>}
+     */
+    async function refillStock(item) {
+        const target = item.capacity > 0 ? item.capacity : item.stock + 10000;
+        const added = Math.max(0, target - item.stock);
+        const updated = new Product({ ...item, stock: target, status: 'ACTIVE' });
+        const index = products.value.findIndex(p => p.id === item.id);
+        if (index !== -1) products.value[index] = updated;
+
+        try {
+            await inventoryApi.updateProduct(updated);
+        } catch (error) {
+            errors.value.push(error);
+        }
+
+        const movement = {
+            inventoryItemId: item.id,
+            providerId: item.providerId,
+            type: 'IN',
+            quantity: Math.round(added),
+            reason: 'Manual refill',
+            orderId: null,
+            createdAt: new Date().toISOString(),
+        };
+        inventoryApi.createMovement(movement)
+            .then(res => movements.value.push(res.data ?? movement))
+            .catch(() => movements.value.push(movement));
+
+        return updated;
     }
 
     function clearErrors() {
@@ -76,15 +247,24 @@ const useInventoryStore = defineStore('inventory', () => {
 
     return {
         products,
+        movements,
         errors,
         productsLoaded,
         loading,
         productsCount,
+        lowStockItems,
+        forProvider,
+        findItem,
         fetchProducts,
+        fetchMovements,
         getProductById,
         addProduct,
         updateProduct,
         deleteProduct,
+        reserveStock,
+        releaseReservation,
+        decreaseStock,
+        refillStock,
         clearErrors
     };
 });
