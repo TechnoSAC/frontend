@@ -4,10 +4,13 @@ import { computed, onMounted, ref, toRefs } from "vue";
 import { useI18n } from "vue-i18n";
 import useFulfillmentStore from "../../application/fulfillment.store.js";
 import { Vehicle } from "../../domain/model/vehicle.entity.js";
+import useIamStore from "../../../iam/application/iam.store.js";
+import pinia from "../../../pinia.js";
 
 const route = useRoute();
 const router = useRouter();
 const store = useFulfillmentStore();
+const iamStore = useIamStore(pinia);
 const { errors, vehiclesLoaded } = toRefs(store);
 const { addVehicle, updateVehicle, fetchVehicles, getVehicleById } = store;
 const { t } = useI18n();
@@ -34,14 +37,10 @@ const form = ref({
   status: 'AVAILABLE'
 });
 
-onMounted(() => {
+onMounted(async () => {
   if (isEdit.value) {
-    if (!vehiclesLoaded.value) {
-      fetchVehicles();
-      setTimeout(loadVehicleIntoForm, 300);
-    } else {
-      loadVehicleIntoForm();
-    }
+    await fetchVehicles(iamStore.currentProviderId);
+    loadVehicleIntoForm();
   }
 });
 
@@ -62,6 +61,7 @@ const navigateBack = () => router.push({ name: 'fulfillment-vehicles' });
 const saveVehicle = () => {
   const vehicle = new Vehicle({
     id: isEdit.value ? route.params.id : null,
+    providerId: iamStore.currentProviderId,
     plate: form.value.plate,
     brand: form.value.brand,
     model: form.value.model,

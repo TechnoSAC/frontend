@@ -4,10 +4,13 @@ import { useConfirm } from "primevue/useconfirm";
 import { onMounted, ref, computed, toRefs } from "vue";
 import { useI18n } from "vue-i18n";
 import useFulfillmentStore from "../../application/fulfillment.store.js";
+import useIamStore from "../../../iam/application/iam.store.js";
+import pinia from "../../../pinia.js";
 
 const router = useRouter();
 const confirm = useConfirm();
 const store = useFulfillmentStore();
+const iamStore = useIamStore(pinia);
 const { vehicles, errors, vehiclesLoaded, loading } = toRefs(store);
 const { fetchVehicles, deleteVehicle, clearErrors } = store;
 const { t } = useI18n();
@@ -23,7 +26,7 @@ const navigateToEdit = (id) => router.push({ name: 'fulfillment-vehicle-edit', p
 
 const onRefresh = () => {
   clearErrors();
-  fetchVehicles();
+  fetchVehicles(iamStore.currentProviderId);
 };
 
 const confirmDelete = (vehicle) => {
@@ -45,93 +48,92 @@ const getStatusSeverity = (status) => {
 };
 
 onMounted(() => {
-  if (!vehiclesLoaded.value) fetchVehicles();
+  fetchVehicles(iamStore.currentProviderId);
 });
 </script>
 
 <template>
   <div>
-        <div class="page-header">
-          <div class="page-title-group">
-            <h1 class="page-title">{{ t('fulfillment.vehicle-list.title') }}</h1>
-            <p class="page-subtitle">{{ t('fulfillment.vehicle-list.subtitle') }}</p>
-          </div>
-          <div class="page-actions">
-            <pv-button
-                :label="t('fulfillment.show-all')"
-                icon="pi pi-list"
-                class="filter-btn"
-                :class="{ 'filter-active': !showAvailableOnly }"
-                @click="showAvailableOnly = false"
-            />
-            <pv-button
-                :label="t('fulfillment.available-only')"
-                icon="pi pi-check-circle"
-                class="filter-btn"
-                :class="{ 'filter-active': showAvailableOnly }"
-                @click="showAvailableOnly = true"
-            />
-            <pv-button
-                icon="pi pi-refresh"
-                text
-                rounded
-                class="refresh-btn"
-                :loading="loading"
-                @click="onRefresh"
-            />
-            <pv-button
-                :label="t('fulfillment.vehicle-list.register')"
-                icon="pi pi-plus"
-                class="add-btn"
-                @click="navigateToNew"
-            />
-          </div>
-        </div>
+    <div class="page-header">
+      <div class="page-title-group">
+        <h1 class="page-title">{{ t('fulfillment.vehicle-list.title') }}</h1>
+        <p class="page-subtitle">{{ t('fulfillment.vehicle-list.subtitle') }}</p>
+      </div>
+      <div class="page-actions">
+        <pv-button
+            :label="t('fulfillment.show-all')"
+            icon="pi pi-list"
+            class="filter-btn"
+            :class="{ 'filter-active': !showAvailableOnly }"
+            @click="showAvailableOnly = false"
+        />
+        <pv-button
+            :label="t('fulfillment.available-only')"
+            icon="pi pi-check-circle"
+            class="filter-btn"
+            :class="{ 'filter-active': showAvailableOnly }"
+            @click="showAvailableOnly = true"
+        />
+        <pv-button
+            icon="pi pi-refresh"
+            text
+            rounded
+            class="refresh-btn"
+            :loading="loading"
+            @click="onRefresh"
+        />
+        <pv-button
+            :label="t('fulfillment.vehicle-list.register')"
+            icon="pi pi-plus"
+            class="add-btn"
+            @click="navigateToNew"
+        />
+      </div>
+    </div>
 
-        <pv-message v-if="errors.length" severity="error" class="error-banner">
-          {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
-        </pv-message>
+    <pv-message v-if="errors.length" severity="error" class="error-banner">
+      {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
+    </pv-message>
 
-        <pv-card class="table-card">
-          <template #content>
-            <pv-data-table
-                :value="filteredVehicles"
-                :loading="loading"
-                responsive-layout="scroll"
-                class="vehicles-table"
-            >
-              <template #empty>
-                <div class="empty-row">{{ t('fulfillment.vehicle-list.no-data') }}</div>
-              </template>
-              <pv-column field="plate" :header="t('fulfillment.vehicle-list.col-plate')">
-                <template #body="{ data }">
-                  <strong>{{ data.plate }}</strong>
-                </template>
-              </pv-column>
-              <pv-column field="brand" :header="t('fulfillment.vehicle-list.col-brand')" />
-              <pv-column field="model" :header="t('fulfillment.vehicle-list.col-model')" />
-              <pv-column field="capacity" :header="t('fulfillment.vehicle-list.col-capacity')">
-                <template #body="{ data }">
-                  {{ data.capacity.toLocaleString() }} {{ data.unit }}
-                </template>
-              </pv-column>
-              <pv-column field="status" :header="t('fulfillment.vehicle-list.col-status')">
-                <template #body="{ data }">
-                  <pv-tag :value="data.status" :severity="getStatusSeverity(data.status)" class="status-pill" />
-                </template>
-              </pv-column>
-              <pv-column class="actions-col">
-                <template #body="{ data }">
-                  <div class="row-actions">
-                    <pv-button icon="pi pi-pencil" text rounded class="row-btn" @click="navigateToEdit(data.id)" />
-                    <pv-button icon="pi pi-times" text rounded class="row-btn row-btn-danger" @click="confirmDelete(data)" />
-                  </div>
-                </template>
-              </pv-column>
-            </pv-data-table>
+    <pv-card class="table-card">
+      <template #content>
+        <pv-data-table
+            :value="filteredVehicles"
+            :loading="loading"
+            responsive-layout="scroll"
+            class="vehicles-table"
+        >
+          <template #empty>
+            <div class="empty-row">{{ t('fulfillment.vehicle-list.no-data') }}</div>
           </template>
-        </pv-card>
-    <pv-confirm-dialog/>
+          <pv-column field="plate" :header="t('fulfillment.vehicle-list.col-plate')">
+            <template #body="{ data }">
+              <strong>{{ data.plate }}</strong>
+            </template>
+          </pv-column>
+          <pv-column field="brand" :header="t('fulfillment.vehicle-list.col-brand')" />
+          <pv-column field="model" :header="t('fulfillment.vehicle-list.col-model')" />
+          <pv-column field="capacity" :header="t('fulfillment.vehicle-list.col-capacity')">
+            <template #body="{ data }">
+              {{ data.capacity.toLocaleString() }} {{ data.unit }}
+            </template>
+          </pv-column>
+          <pv-column field="status" :header="t('fulfillment.vehicle-list.col-status')">
+            <template #body="{ data }">
+              <pv-tag :value="data.status" :severity="getStatusSeverity(data.status)" class="status-pill" />
+            </template>
+          </pv-column>
+          <pv-column class="actions-col">
+            <template #body="{ data }">
+              <div class="row-actions">
+                <pv-button icon="pi pi-pencil" text rounded class="row-btn" @click="navigateToEdit(data.id)" />
+                <pv-button icon="pi pi-times" text rounded class="row-btn row-btn-danger" @click="confirmDelete(data)" />
+              </div>
+            </template>
+          </pv-column>
+        </pv-data-table>
+      </template>
+    </pv-card>
   </div>
 </template>
 

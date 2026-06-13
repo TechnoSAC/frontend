@@ -4,10 +4,13 @@ import { computed, onMounted, ref, toRefs } from "vue";
 import { useI18n } from "vue-i18n";
 import useFulfillmentStore from "../../application/fulfillment.store.js";
 import { Driver } from "../../domain/model/driver.entity.js";
+import useIamStore from "../../../iam/application/iam.store.js";
+import pinia from "../../../pinia.js";
 
 const route = useRoute();
 const router = useRouter();
 const store = useFulfillmentStore();
+const iamStore = useIamStore(pinia);
 const { errors, driversLoaded } = toRefs(store);
 const { addDriver, updateDriver, fetchDrivers, getDriverById } = store;
 const { t } = useI18n();
@@ -27,14 +30,10 @@ const form = ref({
   status: 'AVAILABLE'
 });
 
-onMounted(() => {
+onMounted(async () => {
   if (isEdit.value) {
-    if (!driversLoaded.value) {
-      fetchDrivers();
-      setTimeout(loadDriverIntoForm, 300);
-    } else {
-      loadDriverIntoForm();
-    }
+    await fetchDrivers(iamStore.currentProviderId);
+    loadDriverIntoForm();
   }
 });
 
@@ -54,6 +53,7 @@ const navigateBack = () => router.push({ name: 'fulfillment-drivers' });
 const saveDriver = () => {
   const driver = new Driver({
     id: isEdit.value ? route.params.id : null,
+    providerId: iamStore.currentProviderId,
     name: form.value.name,
     licenseNumber: form.value.licenseNumber,
     phone: form.value.phone,

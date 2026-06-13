@@ -4,10 +4,13 @@ import { useConfirm } from "primevue/useconfirm";
 import { onMounted, ref, computed, toRefs } from "vue";
 import { useI18n } from "vue-i18n";
 import useFulfillmentStore from "../../application/fulfillment.store.js";
+import useIamStore from "../../../iam/application/iam.store.js";
+import pinia from "../../../pinia.js";
 
 const router = useRouter();
 const confirm = useConfirm();
 const store = useFulfillmentStore();
+const iamStore = useIamStore(pinia);
 const { drivers, errors, driversLoaded, loading } = toRefs(store);
 const { fetchDrivers, deleteDriver, clearErrors } = store;
 const { t } = useI18n();
@@ -23,7 +26,7 @@ const navigateToEdit = (id) => router.push({ name: 'fulfillment-driver-edit', pa
 
 const onRefresh = () => {
   clearErrors();
-  fetchDrivers();
+  fetchDrivers(iamStore.currentProviderId);
 };
 
 const confirmDelete = (driver) => {
@@ -44,89 +47,88 @@ const getStatusSeverity = (status) => {
 };
 
 onMounted(() => {
-  if (!driversLoaded.value) fetchDrivers();
+  fetchDrivers(iamStore.currentProviderId);
 });
 </script>
 
 <template>
   <div>
-        <div class="page-header">
-          <div class="page-title-group">
-            <h1 class="page-title">{{ t('fulfillment.driver-list.title') }}</h1>
-            <p class="page-subtitle">{{ t('fulfillment.driver-list.subtitle') }}</p>
-          </div>
-          <div class="page-actions">
-            <pv-button
-                :label="t('fulfillment.show-all')"
-                icon="pi pi-list"
-                class="filter-btn"
-                :class="{ 'filter-active': !showAvailableOnly }"
-                @click="showAvailableOnly = false"
-            />
-            <pv-button
-                :label="t('fulfillment.available-only')"
-                icon="pi pi-check-circle"
-                class="filter-btn"
-                :class="{ 'filter-active': showAvailableOnly }"
-                @click="showAvailableOnly = true"
-            />
-            <pv-button
-                icon="pi pi-refresh"
-                text
-                rounded
-                class="refresh-btn"
-                :loading="loading"
-                @click="onRefresh"
-            />
-            <pv-button
-                :label="t('fulfillment.driver-list.register')"
-                icon="pi pi-plus"
-                class="add-btn"
-                @click="navigateToNew"
-            />
-          </div>
-        </div>
+    <div class="page-header">
+      <div class="page-title-group">
+        <h1 class="page-title">{{ t('fulfillment.driver-list.title') }}</h1>
+        <p class="page-subtitle">{{ t('fulfillment.driver-list.subtitle') }}</p>
+      </div>
+      <div class="page-actions">
+        <pv-button
+            :label="t('fulfillment.show-all')"
+            icon="pi pi-list"
+            class="filter-btn"
+            :class="{ 'filter-active': !showAvailableOnly }"
+            @click="showAvailableOnly = false"
+        />
+        <pv-button
+            :label="t('fulfillment.available-only')"
+            icon="pi pi-check-circle"
+            class="filter-btn"
+            :class="{ 'filter-active': showAvailableOnly }"
+            @click="showAvailableOnly = true"
+        />
+        <pv-button
+            icon="pi pi-refresh"
+            text
+            rounded
+            class="refresh-btn"
+            :loading="loading"
+            @click="onRefresh"
+        />
+        <pv-button
+            :label="t('fulfillment.driver-list.register')"
+            icon="pi pi-plus"
+            class="add-btn"
+            @click="navigateToNew"
+        />
+      </div>
+    </div>
 
-        <pv-message v-if="errors.length" severity="error" class="error-banner">
-          {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
-        </pv-message>
+    <pv-message v-if="errors.length" severity="error" class="error-banner">
+      {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
+    </pv-message>
 
-        <pv-card class="table-card">
-          <template #content>
-            <pv-data-table
-                :value="filteredDrivers"
-                :loading="loading"
-                responsive-layout="scroll"
-                class="drivers-table"
-            >
-              <template #empty>
-                <div class="empty-row">{{ t('fulfillment.driver-list.no-data') }}</div>
-              </template>
-              <pv-column field="name" :header="t('fulfillment.driver-list.col-name')">
-                <template #body="{ data }">
-                  <strong>{{ data.name }}</strong>
-                </template>
-              </pv-column>
-              <pv-column field="licenseNumber" :header="t('fulfillment.driver-list.col-license')" />
-              <pv-column field="phone" :header="t('fulfillment.driver-list.col-phone')" />
-              <pv-column field="email" :header="t('fulfillment.driver-list.col-email')" />
-              <pv-column field="status" :header="t('fulfillment.driver-list.col-status')">
-                <template #body="{ data }">
-                  <pv-tag :value="data.status" :severity="getStatusSeverity(data.status)" class="status-pill" />
-                </template>
-              </pv-column>
-              <pv-column class="actions-col">
-                <template #body="{ data }">
-                  <div class="row-actions">
-                    <pv-button icon="pi pi-pencil" text rounded class="row-btn" @click="navigateToEdit(data.id)" />
-                    <pv-button icon="pi pi-times" text rounded class="row-btn row-btn-danger" @click="confirmDelete(data)" />
-                  </div>
-                </template>
-              </pv-column>
-            </pv-data-table>
+    <pv-card class="table-card">
+      <template #content>
+        <pv-data-table
+            :value="filteredDrivers"
+            :loading="loading"
+            responsive-layout="scroll"
+            class="drivers-table"
+        >
+          <template #empty>
+            <div class="empty-row">{{ t('fulfillment.driver-list.no-data') }}</div>
           </template>
-        </pv-card>
-    <pv-confirm-dialog/>
+          <pv-column field="name" :header="t('fulfillment.driver-list.col-name')">
+            <template #body="{ data }">
+              <strong>{{ data.name }}</strong>
+            </template>
+          </pv-column>
+          <pv-column field="licenseNumber" :header="t('fulfillment.driver-list.col-license')" />
+          <pv-column field="phone" :header="t('fulfillment.driver-list.col-phone')" />
+          <pv-column field="email" :header="t('fulfillment.driver-list.col-email')" />
+          <pv-column field="status" :header="t('fulfillment.driver-list.col-status')">
+            <template #body="{ data }">
+              <pv-tag :value="data.status" :severity="getStatusSeverity(data.status)" class="status-pill" />
+            </template>
+          </pv-column>
+          <pv-column class="actions-col">
+            <template #body="{ data }">
+              <div class="row-actions">
+                <pv-button icon="pi pi-pencil" text rounded class="row-btn" @click="navigateToEdit(data.id)" />
+                <pv-button icon="pi pi-times" text rounded class="row-btn row-btn-danger" @click="confirmDelete(data)" />
+              </div>
+            </template>
+          </pv-column>
+        </pv-data-table>
+      </template>
+    </pv-card>
   </div>
 </template>
 
