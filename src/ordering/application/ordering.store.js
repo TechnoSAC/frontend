@@ -7,13 +7,13 @@ import { Request } from "../domain/model/request.entity.js";
 import { Order } from "../domain/model/order.entity.js";
 
 const orderingApi = new OrderingApi();
-const useOrdersEndpoint = !import.meta.env.PROD;
+const useOrdersEndpoint = true;
 
 const requestOrderStatusMap = {
-    APPROVED: 'CREATED',
+    APPROVED: 'ACCEPTED',
     IN_TRANSIT: 'DISPATCHED',
-    DELIVERED: 'DELIVERED',
-    CLOSED: 'CLOSED',
+    DELIVERED: 'PENDING_PAYMENT',
+    CLOSED: 'PAID',
 };
 
 function isMissingOrdersEndpoint(error) {
@@ -64,11 +64,11 @@ const useOrderingStore = defineStore('ordering', () => {
 
     /** @type {import('vue').ComputedRef<Order[]>} */
     const activeOrders = computed(() =>
-        orders.value.filter(o => o.status === 'CREATED' || o.status === 'DISPATCHED')
+        orders.value.filter(o => ['ACCEPTED', 'DISPATCHED', 'PENDING_PAYMENT'].includes(o.status))
     );
     /** @type {import('vue').ComputedRef<Order[]>} */
     const closedOrders = computed(() =>
-        orders.value.filter(o => o.status === 'CLOSED')
+        orders.value.filter(o => o.status === 'PAID' || o.status === 'CLOSED')
     );
 
     // ── Shared state ────────────────────────────────────────────────────────
@@ -99,21 +99,25 @@ const useOrderingStore = defineStore('ordering', () => {
     }
 
     function addRequest(request) {
-        orderingApi.createRequest(request).then(response => {
+        return orderingApi.createRequest(request).then(response => {
             const newRequest = RequestAssembler.toEntityFromResource(response.data);
             requests.value.push(newRequest);
+            return newRequest;
         }).catch(error => {
             errors.value.push(error);
+            return null;
         });
     }
 
     function updateRequest(request) {
-        orderingApi.updateRequest(request).then(response => {
+        return orderingApi.updateRequest(request).then(response => {
             const updated = RequestAssembler.toEntityFromResource(response.data);
             const index = requests.value.findIndex(r => r.id === updated.id);
             if (index !== -1) requests.value[index] = updated;
+            return updated;
         }).catch(error => {
             errors.value.push(error);
+            return null;
         });
     }
 
@@ -197,45 +201,25 @@ const useOrderingStore = defineStore('ordering', () => {
     }
 
     function addOrder(order) {
-        if (!useOrdersEndpoint) {
-            orders.value.push(new Order({ ...order, id: order.id ?? order.requestId }));
-            ordersLoaded.value = true;
-            return;
-        }
-
-        orderingApi.createOrder(order).then(response => {
+        return orderingApi.createOrder(order).then(response => {
             const newOrder = OrderAssembler.toEntityFromResource(response.data);
             orders.value.push(newOrder);
+            return newOrder;
         }).catch(error => {
-            if (isMissingOrdersEndpoint(error)) {
-                orders.value.push(new Order({ ...order, id: order.id ?? order.requestId }));
-                ordersLoaded.value = true;
-                return;
-            }
             errors.value.push(error);
+            return null;
         });
     }
 
     function updateOrder(order) {
-        if (!useOrdersEndpoint) {
-            const updated = new Order({ ...order });
-            const index = orders.value.findIndex(o => o.id === updated.id);
-            if (index !== -1) orders.value[index] = updated;
-            return;
-        }
-
-        orderingApi.updateOrder(order).then(response => {
+        return orderingApi.updateOrder(order).then(response => {
             const updated = OrderAssembler.toEntityFromResource(response.data);
             const index = orders.value.findIndex(o => o.id === updated.id);
             if (index !== -1) orders.value[index] = updated;
+            return updated;
         }).catch(error => {
-            if (isMissingOrdersEndpoint(error)) {
-                const updated = new Order({ ...order });
-                const index = orders.value.findIndex(o => o.id === updated.id);
-                if (index !== -1) orders.value[index] = updated;
-                return;
-            }
             errors.value.push(error);
+            return null;
         });
     }
 
@@ -259,6 +243,194 @@ const useOrderingStore = defineStore('ordering', () => {
         });
     }
 
+    // ── Segment-scoped read models ────────────────────────────────────────
+    /** @param {number} companyId @returns {Request[]} */
+    function requestsForBuyer(companyId) {
+        return requests.value.filter(r => (r.companyId ?? r.clientId) === companyId);
+    }
+    /** @param {number} companyId @returns {Order[]} */
+    function ordersForBuyer(companyId) {
+        return orders.value.filter(o => (o.companyId ?? o.clientId) === companyId);
+    }
+    /** @param {number} providerId @returns {Request[]} */
+    function requestsForProvider(providerId) {
+        return requests.value.filter(r => r.providerId === providerId);
+    }
+    /** @param {number} providerId @returns {Order[]} */
+    function ordersForProvider(providerId) {
+        return orders.value.filter(o => o.providerId === providerId);
+    }
+
+    // ── Async actions used by the coordination service ────────────────────
+    /**
+     * Creates a request and returns the persisted entity (Promise-based).
+     * @param {Object} payload
+     * @returns {Promise<Request|null>}
+     */
+    async function createRequestAsync(payload) {
+        const draft = new Request({ status: 'PENDING', createdAt: new Date().toISOString(), ...payload });
+        try {
+            const response = await orderingApi.createRequest(draft);
+            const created = RequestAssembler.toEntityFromResource(response.data);
+            requests.value.push(created);
+            return created;
+        } catch (error) {
+            errors.value.push(error);
+            return null;
+        }
+    }
+
+    /** @param {Request} request @returns {Promise<void>} */
+    async function updateRequestAsync(request) {
+        try {
+            const response = await orderingApi.updateRequest(request);
+            const updated = RequestAssembler.toEntityFromResource(response.data);
+            const index = requests.value.findIndex(r => r.id === updated.id);
+            if (index !== -1) requests.value[index] = updated;
+            return updated;
+        } catch (error) {
+            errors.value.push(error);
+            return null;
+        }
+    }
+
+    /** @param {Order} order @returns {Promise<Order>} */
+    async function createOrderAsync(order) {
+        try {
+            const response = await orderingApi.createOrder(order);
+            const created = OrderAssembler.toEntityFromResource(response.data);
+            orders.value.push(created);
+            return created;
+        } catch (error) {
+            errors.value.push(error);
+            return null;
+        }
+    }
+
+    /**
+     * Approves a request and creates the resulting order.
+     * @param {Request} request
+     * @returns {Promise<Order>}
+     */
+    async function approveRequestAsync(request) {
+        const approved = await updateRequestAsync(new Request({ ...request, status: 'APPROVED' }));
+        if (!approved) return null;
+        const now = new Date().toISOString();
+        const unitPrice = Number(request.unitPrice) || 0;
+        const order = new Order({
+            requestId: request.id,
+            clientId: request.clientId,
+            companyId: request.companyId ?? request.clientId,
+            equipmentId: request.equipmentId ?? null,
+            providerId: request.providerId,
+            fuelType: request.fuelType,
+            quantity: request.quantity,
+            unit: request.unit,
+            unitPrice,
+            totalAmount: Math.round(unitPrice * Number(request.quantity) * 100) / 100,
+            deliveryAddress: request.deliveryAddress,
+            status: 'ACCEPTED',
+            paymentStatus: 'PENDING',
+            estimatedDeliveryDate: request.deliveryDate,
+            createdAt: now,
+            updatedAt: now,
+        });
+        return await createOrderAsync(order);
+    }
+
+    /** @param {Request} request @param {string} [code='OTHER'] @param {string} [note=''] @returns {Promise<void>} */
+    async function rejectRequestAsync(request, code = 'OTHER', note = '') {
+        return await updateRequestAsync(new Request({ ...request, status: 'REJECTED', rejectionReasonCode: code, rejectionReasonNote: note }));
+    }
+
+    /**
+     * Dispatches an order (sets DISPATCHED + driver/vehicle).
+     * @param {Order} order
+     * @param {{ driverId:number, vehicleId:number }} assignment
+     * @returns {Promise<Order|null>}
+     */
+    async function dispatchOrder(order, { driverId, vehicleId }) {
+        const now = new Date().toISOString();
+        const updated = new Order({ ...order, status: 'DISPATCHED', driverId, vehicleId, dispatchedAt: now, updatedAt: now });
+        return await updateOrder(updated);
+    }
+
+    /**
+     * Updates an order's payment status.
+     * @param {number|string} orderId
+     * @param {string} status
+     */
+    function setOrderPaymentStatus(orderId, status) {
+        const order = getOrderById(orderId);
+        if (!order) return;
+        const updated = new Order({ ...order, paymentStatus: status, updatedAt: new Date().toISOString() });
+        updateOrder(updated);
+    }
+
+    /**
+     * Buyer confirms reception of a dispatched order: moves it to
+     * PENDING_PAYMENT and stamps the delivery time. Equipment refill and
+     * notifications are handled by the coordination service.
+     * @param {Order} order
+     * @returns {Promise<Order>}
+     */
+    async function confirmReception(order) {
+        const now = new Date().toISOString();
+        const updated = new Order({ ...order, status: 'PENDING_PAYMENT', deliveredAt: now, updatedAt: now });
+        return await updateOrder(updated);
+    }
+
+    /**
+     * Marks an order as fully paid (status + paymentStatus).
+     * @param {number|string} orderId
+     */
+    async function markOrderPaid(orderId) {
+        const order = getOrderById(orderId);
+        if (!order) return;
+        const now = new Date().toISOString();
+        const updated = new Order({ ...order, status: 'PAID', paymentStatus: 'PAID', paidAt: now, updatedAt: now });
+        return await updateOrder(updated);
+    }
+
+    function markOrderPaidLocally(orderId) {
+        const order = getOrderById(orderId);
+        if (!order) return null;
+        const now = new Date().toISOString();
+        const updated = new Order({ ...order, status: 'PAID', paymentStatus: 'PAID', paidAt: now, updatedAt: now });
+        const index = orders.value.findIndex(item => item.id === updated.id);
+        if (index !== -1) orders.value[index] = updated;
+        return updated;
+    }
+
+    /**
+     * Cancels an accepted order before dispatch (provider action). Reservation
+     * release and notification are handled by the coordination service.
+     * @param {number|string} orderId
+     * @param {string} [reason='']
+     * @returns {Promise<Order|null>}
+     */
+    async function cancelOrder(orderId, reason = '') {
+        const order = getOrderById(orderId);
+        if (!order) return null;
+        const now = new Date().toISOString();
+        const updated = new Order({ ...order, status: 'CANCELLED', cancelReason: reason, cancelledAt: now, updatedAt: now });
+        return await updateOrder(updated);
+    }
+
+    /**
+     * Advances an order's delivery status (provider action).
+     * @param {Order} order
+     * @param {string} status - CREATED | DISPATCHED | DELIVERED | CLOSED
+     */
+    function changeOrderStatus(order, status) {
+        const now = new Date().toISOString();
+        const patch = { ...order, status, updatedAt: now };
+        if (status === 'DISPATCHED') patch.dispatchedAt = patch.dispatchedAt ?? now;
+        if (status === 'DELIVERED') patch.deliveredAt = now;
+        if (status === 'CLOSED') patch.closedAt = now;
+        updateOrder(new Order(patch));
+    }
+
     function clearErrors() {
         errors.value = [];
     }
@@ -272,13 +444,21 @@ const useOrderingStore = defineStore('ordering', () => {
         requestsCount,
         pendingRequests, approvedRequests,
         activeOrders, closedOrders,
+        // read models
+        requestsForBuyer, ordersForBuyer,
+        requestsForProvider, ordersForProvider,
         // request actions
         fetchRequests, getRequestById,
         addRequest, updateRequest, deleteRequest,
         approveRequest, rejectRequest,
+        createRequestAsync, updateRequestAsync,
+        approveRequestAsync, rejectRequestAsync,
         // order actions
         fetchOrders, getOrderById,
         addOrder, updateOrder, deleteOrder,
+        createOrderAsync, dispatchOrder,
+        setOrderPaymentStatus, changeOrderStatus,
+        confirmReception, markOrderPaid, markOrderPaidLocally, cancelOrder,
         clearErrors,
     };
 });

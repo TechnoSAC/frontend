@@ -1,173 +1,214 @@
 <script setup>
+/**
+ * Provider pending-requests page. Route-level coordinator: accept/reject go
+ * through the shared coordination service, which checks Inventory stock,
+ * creates the Order and notifies the buyer. Requests are shown as horizontal
+ * cards and reference the buyer company name (not a raw client id).
+ */
 import { useConfirm } from "primevue/useconfirm";
-import { onMounted, ref, toRefs } from "vue";
+import { useToast } from "primevue/usetoast";
+import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import useOrderingStore from "../../application/ordering.store.js";
+import useIamStore from "../../../iam/application/iam.store.js";
+import { acceptRequest, rejectRequest as rejectRequestUseCase } from "../../../shared/application/coordination.service.js";
+import { fuelTypeLabel } from "../../../shared/domain/fuel-types.js";
+import { unitSuffix, formatDate as fmtDate } from "../../../shared/domain/helpers.js";
+import pinia from "../../../pinia.js";
 
 const confirm = useConfirm();
-const store = useOrderingStore();
-const { pendingRequests, errors, requestsLoaded, loading } = toRefs(store);
-const { fetchRequests, approveRequest, rejectRequest, clearErrors } = store;
-const { t } = useI18n();
+const toast = useToast();
+const { t, locale } = useI18n();
+
+function formatDate(val) {
+  return val ? fmtDate(val, locale.value) : '—';
+}
+const store = useOrderingStore(pinia);
+const iamStore = useIamStore(pinia);
+
+const loading = computed(() => store.loading);
+const errors = computed(() => store.errors);
+const pendingRequests = computed(() =>
+  store.requestsForProvider(iamStore.currentProviderId)
+    .filter(r => r.status === 'PENDING')
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+);
+
+function buyerName(id) {
+  return iamStore.buyerCompanies.find(c => c.id === id)?.name ?? `Company #${id}`;
+}
 
 const onRefresh = () => {
-  clearErrors();
-  fetchRequests();
+  store.clearErrors();
+  store.fetchRequests();
 };
 
 const confirmApprove = (request) => {
   confirm.require({
-    message: `Approve fuel request #${request.id} for ${request.quantity} ${request.unit} of ${request.fuelType}?`,
-    header: 'Approve Request',
+    message: t('ordering.approve-msg', { id: request.id, qty: request.quantity, unit: unitSuffix(request.unit), fuel: fuelTypeLabel(request.fuelType) }),
+    header: t('ordering.approve'),
     icon: 'pi pi-check-circle',
     acceptClass: 'p-button-success',
-    accept: () => approveRequest(request)
+    accept: async () => {
+      const result = await acceptRequest(request);
+      if (result.ok) {
+        toast.add({ severity: 'success', summary: t('ordering.accepted'), life: 4000 });
+      } else if (result.reason === 'NO_STOCK') {
+        toast.add({ severity: 'warn', summary: t('ordering.no-stock-warning'), life: 4000 });
+      } else {
+        toast.add({ severity: 'error', summary: t('ordering.accept-error'), life: 4000 });
+      }
+    },
   });
 };
 
-const confirmReject = (request) => {
-  confirm.require({
-    message: `Reject fuel request #${request.id}? This action cannot be undone.`,
-    header: 'Reject Request',
-    icon: 'pi pi-times-circle',
-    acceptClass: 'p-button-danger',
-    accept: () => rejectRequest(request)
-  });
-};
+// ── Reject with reason ───────────────────────────────────────────────────────
+const rejectVisible = ref(false);
+const rejectTarget = ref(null);
+const rejectReason = ref('NO_STOCK');
+const rejectNote = ref('');
+
+const reasonOptions = computed(() => [
+  { label: t('ordering.reason-no-stock'),    value: 'NO_STOCK' },
+  { label: t('ordering.reason-out-of-zone'), value: 'OUT_OF_ZONE' },
+  { label: t('ordering.reason-date'),        value: 'DATE' },
+  { label: t('ordering.reason-quantity'),    value: 'QUANTITY' },
+  { label: t('ordering.reason-other'),       value: 'OTHER' },
+]);
+
+function openReject(request) {
+  rejectTarget.value = request;
+  rejectReason.value = 'NO_STOCK';
+  rejectNote.value = '';
+  rejectVisible.value = true;
+}
+
+async function doReject() {
+  if (!rejectTarget.value) return;
+  const note = rejectReason.value === 'OTHER' ? rejectNote.value.trim() : '';
+  await rejectRequestUseCase(rejectTarget.value, { code: rejectReason.value, note });
+  rejectVisible.value = false;
+  toast.add({ severity: 'info', summary: t('ordering.rejected-ok'), life: 3000 });
+}
 
 onMounted(() => {
-  clearErrors();
-  if (!requestsLoaded.value) fetchRequests();
+  store.clearErrors();
+  if (!store.requestsLoaded) store.fetchRequests();
+  if (!iamStore.buyerCompanies.length) iamStore.fetchDirectories();
 });
 </script>
 
 <template>
-  <div>
-        <div class="page-header">
-          <div class="page-title-group">
-            <h1 class="page-title">{{ t('ordering.page-title') }}</h1>
-            <p class="page-subtitle">{{ t('ordering.page-subtitle') }}</p>
+  <div class="page">
+    <div class="page-header">
+      <div class="page-title-group">
+        <h1 class="page-title">{{ t('ordering.page-title') }}</h1>
+        <p class="page-subtitle">{{ t('ordering.page-subtitle') }}</p>
+      </div>
+      <pv-button icon="pi pi-refresh" text rounded class="refresh-btn" :loading="loading" @click="onRefresh" />
+    </div>
+
+    <pv-message v-if="errors.length" severity="error" class="error-banner">
+      {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
+    </pv-message>
+
+    <div v-if="!pendingRequests.length && !loading" class="empty-state">
+      <i class="pi pi-inbox"/>
+      <p>{{ t('ordering.no-pending') }}</p>
+    </div>
+
+    <div v-else class="request-cards">
+      <div v-for="req in pendingRequests" :key="req.id" class="request-card">
+        <div class="rc-left">
+          <span class="rc-id">#{{ req.id }}</span>
+          <span class="rc-company">{{ buyerName(req.companyId ?? req.clientId) }}</span>
+          <span class="fuel-chip">{{ fuelTypeLabel(req.fuelType) }}</span>
+        </div>
+
+        <div class="rc-mid">
+          <div class="rc-field">
+            <span class="rc-label">{{ t('ordering.col-quantity') }}</span>
+            <span class="rc-value">{{ req.quantity }} {{ unitSuffix(req.unit) }}</span>
           </div>
-          <div class="page-actions">
-            <pv-button icon="pi pi-refresh" text rounded class="refresh-btn" :loading="loading" @click="onRefresh" />
+          <div class="rc-field">
+            <span class="rc-label">{{ t('ordering.col-address') }}</span>
+            <span class="rc-value">{{ req.deliveryAddress?.split(',')[0] }}</span>
+          </div>
+          <div class="rc-field">
+            <span class="rc-label">{{ t('ordering.col-date') }}</span>
+            <span class="rc-value">{{ formatDate(req.deliveryDate) }}</span>
+          </div>
+          <div class="rc-field">
+            <span class="rc-label">{{ t('ordering.col-source') }}</span>
+            <pv-tag :value="t('ordering.source-' + (req.source || 'MANUAL'))" severity="secondary"/>
           </div>
         </div>
 
-        <pv-message v-if="errors.length" severity="error" class="error-banner">
-          {{ t('errors.fetch') }}: {{ errors[0]?.message || 'Unknown Error' }}
-        </pv-message>
+        <div class="rc-actions">
+          <pv-button :label="t('ordering.accept')" icon="pi pi-check" severity="success" size="small" @click="confirmApprove(req)" />
+          <pv-button :label="t('ordering.reject')" icon="pi pi-times" severity="danger" outlined size="small" @click="openReject(req)" />
+        </div>
+      </div>
+    </div>
 
-        <pv-card class="table-card">
-          <template #content>
-            <pv-data-table :value="pendingRequests" :loading="loading" responsive-layout="scroll" class="requests-table">
-              <template #empty>
-                <div class="empty-row">{{ t('ordering.no-pending') }}</div>
-              </template>
-              <pv-column :header="t('ordering.col-request-id')">
-                <template #body="{ data }">
-                  <span class="request-id">#{{ data.id }}</span>
-                </template>
-              </pv-column>
-              <pv-column :header="t('ordering.col-client-id')">
-                <template #body="{ data }">Client #{{ data.clientId }}</template>
-              </pv-column>
-              <pv-column field="fuelType" :header="t('ordering.col-fuel-type')" />
-              <pv-column :header="t('ordering.col-quantity')">
-                <template #body="{ data }">{{ data.quantity }} {{ data.unit }}</template>
-              </pv-column>
-              <pv-column field="deliveryAddress" :header="t('ordering.col-address')" class="address-col" />
-              <pv-column field="deliveryDate" :header="t('ordering.col-date')" />
-              <pv-column :header="t('ordering.col-actions')" class="actions-col">
-                <template #body="{ data }">
-                  <div class="row-actions">
-                    <pv-button :label="t('ordering.approve')" icon="pi pi-check" class="action-btn approve-btn" @click="confirmApprove(data)" />
-                    <pv-button :label="t('ordering.reject')" icon="pi pi-times" class="action-btn reject-btn" @click="confirmReject(data)" />
-                  </div>
-                </template>
-              </pv-column>
-            </pv-data-table>
-          </template>
-        </pv-card>
-    <pv-confirm-dialog/>
+    <!-- Reject reason dialog -->
+    <pv-dialog v-model:visible="rejectVisible" modal :header="t('ordering.reject')" :style="{ width: '440px' }">
+      <div class="reject-form">
+        <p class="reject-intro">{{ t('ordering.reject-reason-intro') }}</p>
+        <label class="reject-lbl">{{ t('ordering.reject-reason') }}</label>
+        <pv-select v-model="rejectReason" :options="reasonOptions" option-label="label" option-value="value" class="w-full"/>
+        <template v-if="rejectReason === 'OTHER'">
+          <label class="reject-lbl">{{ t('ordering.reject-note') }}</label>
+          <pv-textarea v-model="rejectNote" rows="2" class="w-full" :placeholder="t('ordering.reject-note')"/>
+        </template>
+      </div>
+      <template #footer>
+        <pv-button :label="t('common.cancel')" text @click="rejectVisible = false"/>
+        <pv-button :label="t('ordering.reject')" icon="pi pi-times" severity="danger" @click="doReject"/>
+      </template>
+    </pv-dialog>
   </div>
 </template>
 
 <style scoped>
-
-.request-id {
-  font-family: monospace;
-  color: #1f2937;
-}
-
-.page-header {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  margin-bottom: 1.25rem;
-}
-.page-title { font-size: 1.75rem; font-weight: 700; color: #1E3A8A; margin: 0; }
+.page { display: flex; flex-direction: column; gap: 1rem; }
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; }
+.page-title { font-size: 1.6rem; font-weight: 700; color: #1E3A8A; margin: 0; }
 .page-subtitle { color: #6B7280; font-size: 0.9rem; margin: 0.25rem 0 0 0; }
-.page-actions { display: flex; align-items: center; gap: 0.75rem; }
-.refresh-btn {
-  width: 40px; height: 40px; border-radius: 50%;
-  border: none; background: transparent;
-  color: #1E3A8A; cursor: pointer; font-size: 1.1rem;
-  display: flex; align-items: center; justify-content: center;
-}
-.refresh-btn:hover { background: #EFF6FF; }
-.refresh-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-.spinning { animation: spin 1s linear infinite; }
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+.refresh-btn { color: #1E3A8A; }
 
-.error-banner {
-  background: #FEE2E2; border: 1px solid #FCA5A5;
-  color: #B91C1C; padding: 1rem 1.25rem;
-  border-radius: 8px;
-  display: flex; align-items: center; gap: 0.75rem;
-  margin-bottom: 1.25rem; font-size: 0.95rem;
-}
+.error-banner { margin-bottom: .5rem; }
 
-.table-card {
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+.empty-state { padding: 4rem 2rem; text-align: center; color: #94a3b8; }
+.empty-state i { font-size: 2.5rem; display: block; margin-bottom: .75rem; }
+
+.request-cards { display: flex; flex-direction: column; gap: 12px; }
+.request-card {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px 22px;
+  transition: box-shadow .15s;
 }
-.table-card :deep(.p-card-body) { padding: 1.5rem 2rem; }
-.table-card :deep(.p-card-content) { padding: 0; }
-.requests-table :deep(.p-datatable-table) { width: 100%; border-collapse: collapse; }
-.requests-table :deep(.p-datatable-thead > tr > th) {
-  text-align: left; font-weight: 600;
-  color: #1E3A8A; font-size: 0.95rem;
-  padding: 0.75rem 0.5rem;
-  border-bottom: 1px solid #E5E7EB;
-  background: #ffffff;
-}
-.requests-table :deep(.p-datatable-tbody > tr > td) {
-  padding: 1rem 0.5rem; color: #1f2937; font-size: 0.92rem;
-  border-bottom: 1px solid #F3F4F6;
-}
-.empty-row { text-align: center; color: #9CA3AF; padding: 3rem 0 !important; }
-.address-col { color: #6B7280; max-width: 200px; }
-.actions-col { width: 220px; text-align: right; }
-.row-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
-.action-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-.approve-btn {
-  background: #DCFCE7;
-  color: #15803D;
-}
-.approve-btn:hover {
-  background: #BBF7D0;
-}
-.reject-btn {
-  background: #FEE2E2;
-  color: #B91C1C;
-}
-.reject-btn:hover {
-  background: #FECACA;
+.request-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+
+.rc-left { display: flex; flex-direction: column; gap: 6px; min-width: 200px; }
+.rc-id { font-family: monospace; font-weight: 700; color: #94a3b8; font-size: .82rem; }
+.rc-company { font-weight: 700; color: #1a2744; font-size: 1.02rem; }
+.fuel-chip { align-self: flex-start; background: #eff6ff; color: #1e3a8a; border-radius: 6px; padding: 2px 10px; font-size: .74rem; font-weight: 600; }
+
+.rc-mid { display: flex; align-items: center; gap: 36px; flex: 1; flex-wrap: wrap; }
+.rc-field { display: flex; flex-direction: column; gap: 4px; }
+.rc-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .4px; color: #94a3b8; }
+.rc-value { font-weight: 600; color: #1a2744; }
+
+.rc-actions { display: flex; gap: 8px; align-items: center; min-width: 220px; justify-content: flex-end; }
+
+.reject-form { display: flex; flex-direction: column; gap: 8px; }
+.reject-intro { margin: 0 0 4px; color: #64748b; font-size: .88rem; }
+.reject-lbl { font-size: .8rem; font-weight: 600; color: #475569; margin-top: 4px; }
+.reject-form .w-full { width: 100%; }
+
+@media (max-width: 900px) {
+  .request-card { flex-direction: column; align-items: stretch; }
+  .rc-actions { justify-content: flex-start; }
 }
 </style>

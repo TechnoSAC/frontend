@@ -1,8 +1,16 @@
-import { BaseApi } from "../../shared/infrastructure/base-api.js";
-import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
+import { BaseApi } from "../../../../../../../../Downloads/TrabajoWebCompleto (1)/TrabajoWebCompleto/fronted-copia/src/shared/infrastructure/base-api.js";
+import { BaseEndpoint } from "../../../../../../../../Downloads/TrabajoWebCompleto (1)/TrabajoWebCompleto/fronted-copia/src/shared/infrastructure/base-endpoint.js";
 
 const requestsEndpointPath = import.meta.env.VITE_REQUESTS_ENDPOINT_PATH;
 const ordersEndpointPath   = import.meta.env.VITE_ORDERS_ENDPOINT_PATH;
+
+function toBackendResource(resource) {
+    const { clientId, companyId, ...rest } = resource;
+    return {
+        ...rest,
+        buyerCompanyId: resource.buyerCompanyId ?? companyId ?? clientId ?? null,
+    };
+}
 
 /**
  * Infrastructure adapter for Ordering HTTP endpoints.
@@ -45,7 +53,7 @@ export class OrderingApi extends BaseApi {
      * @returns {Promise<import('axios').AxiosResponse>}
      */
     createRequest(resource) {
-        return this.#requestsEndpoint.create(resource);
+        return this.#requestsEndpoint.create(toBackendResource(resource));
     }
 
     /**
@@ -54,7 +62,7 @@ export class OrderingApi extends BaseApi {
      * @returns {Promise<import('axios').AxiosResponse>}
      */
     updateRequest(resource) {
-        return this.#requestsEndpoint.update(resource.id, resource);
+        return this.#requestsEndpoint.update(resource.id, toBackendResource(resource));
     }
 
     /**
@@ -78,12 +86,12 @@ export class OrderingApi extends BaseApi {
 
     /** @param {Object} resource @returns {Promise<import('axios').AxiosResponse>} */
     createOrder(resource) {
-        return this.#ordersEndpoint.create(resource);
+        return this.#ordersEndpoint.create(toBackendResource(resource));
     }
 
     /** @param {Object} resource @returns {Promise<import('axios').AxiosResponse>} */
     updateOrder(resource) {
-        return this.#ordersEndpoint.update(resource.id, resource);
+        return this.#ordersEndpoint.update(resource.id, toBackendResource(resource));
     }
 
     /** @param {number|string} id @returns {Promise<import('axios').AxiosResponse>} */

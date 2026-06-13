@@ -11,7 +11,11 @@ export class RequestAssembler {
      * @returns {Request} Request entity.
      */
     static toEntityFromResource(resource) {
-        return new Request({ ...resource });
+        return new Request({
+            ...resource,
+            companyId: resource.companyId ?? resource.buyerCompanyId,
+            clientId: resource.clientId ?? resource.buyerCompanyId,
+        });
     }
 
     /**
