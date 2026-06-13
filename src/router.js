@@ -1,76 +1,87 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "./shared/presentation/views/home.vue";
-import inventoryRoutes from "./inventory/presentation/inventory-routes.js";
 import { RouterView } from 'vue-router';
+
+import iamRoutes from "./iam/presentation/iam-routes.js";
+import catalogRoutes from "./catalog/presentation/catalog-routes.js";
+import equipmentRoutes from "./equipment/presentation/equipment-routes.js";
+import inventoryRoutes from "./inventory/presentation/inventory-routes.js";
 import orderingRoutes from "./ordering/presentation/ordering-routes.js";
 import fulfillmentRoutes from "./fulfillment/presentation/fulfillment-routes.js";
+import paymentRoutes from "./payment/presentation/payment-routes.js";
+import notificationRoutes from "./notification/presentation/notification-routes.js";
 import reportingRoutes from "./reporting/presentation/reporting-routes.js";
-import dashboardRoutes from "./dashboard/presentation/dashboard-routes.js";
-// To import when IAM is implemented
-// import iamRoutes from "./iam/presentation/iam-routes.js";
 
-// Lazy-loaded routes
+import useIamStore from "./iam/application/iam.store.js";
+import pinia from "./pinia.js";
+
+// Lazy-loaded shared views
 const about = () => import('./shared/presentation/views/about.vue');
 const pageNotFound = () => import('./shared/presentation/views/page-not-found.vue');
 
-// Lazy-loaded BC routes (uncomment as each BC is implemented)
-// const inventoryRoutes = () => import('./inventory/presentation/inventory-routes.js');
-// const orderingRoutes     = () => import('./ordering/presentation/ordering-routes.js');
-// const fulfillmentRoutes  = () => import('./fulfillment/presentation/fulfillment-routes.js');
-// const paymentRoutes      = () => import('./payment/presentation/payment-routes.js');
-// const notificationRoutes = () => import('./notification/presentation/notification-routes.js');
-// const reportingRoutes    = () => import('./reporting/presentation/reporting-routes.js');
+// Dashboard now lives inside the Reporting & Analytics bounded context. The
+// `/dashboard` URL is kept for backward compatibility but resolves to a
+// Reporting & Analytics view (segment home for buyer/provider).
+const dashboardView = () => import('./reporting/presentation/views/dashboard.vue');
 
-/*
-// Full routes when all BCs + IAM are implemented
 const routes = [
-    { path: '/home',          name: 'home',         component: Home,   meta: { title: 'Home' } },
-    { path: '/about',         name: 'about',        component: about,  meta: { title: 'About' } },
-    { path: '/iam',           name: 'iam',          children: iamRoutes },
-    { path: '/inventory',       name: 'inventory',      children: inventoryRoutes },
-    { path: '/ordering',      name: 'ordering',     children: orderingRoutes },
-    { path: '/fulfillment',   name: 'fulfillment',  children: fulfillmentRoutes },
-    { path: '/payment',       name: 'payment',      children: paymentRoutes },
-    { path: '/notification',  name: 'notification', children: notificationRoutes },
-    { path: '/reporting',     name: 'reporting',    children: reportingRoutes },
-    { path: '/',              redirect: '/home' },
-    { path: '/:pathMatch(.*)*', name: 'not-found',  component: pageNotFound, meta: { title: 'Page Not Found' } }
-];
-*/
-
-// Routes version without IAM and BCs not yet implemented
-const routes = [
-    { path: '/home', name: 'home', component: Home, meta: { title: 'Home' } },
-    { path: '/about', name: 'about', component: about, meta: { title: 'About' } },
     { path: '/', redirect: '/dashboard' },
-    { path: '/:pathMatch(.*)*', name: 'not-found', component: pageNotFound, meta: { title: 'Page Not Found' } },
-    { path: '/dashboard', component: RouterView, children: dashboardRoutes },
+
+    // IAM — login/register are public (no app shell); profile uses the shell
+    { path: '/iam', component: RouterView, children: iamRoutes },
+
+    // Segment home (Reporting & Analytics) + bounded contexts (layout shell)
+    { path: '/dashboard', name: 'dashboard', component: dashboardView, meta: { title: 'Dashboard' } },
+    { path: '/catalog', component: RouterView, children: catalogRoutes },
+    { path: '/equipment', component: RouterView, children: equipmentRoutes },
     { path: '/inventory', component: RouterView, children: inventoryRoutes },
-    { path: '/ordering', children: orderingRoutes },
-    { path: '/fulfillment', children: fulfillmentRoutes },
-    { path: '/reporting', children: reportingRoutes }
+    { path: '/ordering', component: RouterView, children: orderingRoutes },
+    { path: '/fulfillment', component: RouterView, children: fulfillmentRoutes },
+    { path: '/payment', component: RouterView, children: paymentRoutes },
+    { path: '/notification', component: RouterView, children: notificationRoutes },
+    { path: '/reporting', component: RouterView, children: reportingRoutes },
+
+    { path: '/about', name: 'about', component: about, meta: { title: 'About' } },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: pageNotFound, meta: { title: 'Page Not Found' } },
 ];
-
-
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes
 });
 
+// Route prefixes that belong exclusively to one segment. Anything not listed
+// here (dashboard, notifications, about) is shared by both segments.
+const PROVIDER_ONLY = ['/inventory', '/fulfillment', '/reporting/provider', '/ordering/pending', '/ordering/orders', '/ordering/collections'];
+const BUYER_ONLY = ['/catalog', '/equipment', '/payment', '/reporting/buyer', '/ordering/my-requests', '/ordering/my-orders'];
+
+const matchesPrefix = (path, prefixes) => prefixes.some(p => path === p || path.startsWith(p + '/'));
+
 /**
- * Global navigation guard that updates the document title and delegates auth when enabled.
+ * Global guard: updates the document title, enforces the simulated IAM session
+ * and keeps each segment inside its own area. A buyer reaching a provider-only
+ * route (or vice versa) is redirected to the dashboard instead of seeing an
+ * out-of-context screen.
  *
  * @param {import('vue-router').RouteLocationNormalized} to
  * @param {import('vue-router').RouteLocationNormalized} from
  * @param {import('vue-router').NavigationGuardNext} next
  */
 router.beforeEach((to, from, next) => {
-    console.log(`Navigating from ${from.name} to ${to.name}`);
-    let baseTitle = 'FullTank';
-    document.title = `${baseTitle} - ${to.meta['title']}`;
-    // When IAM is implemented, use:
-    // return authenticationGuard(to, from, next);
+    document.title = `FullTank - ${to.meta['title'] ?? 'B2B Fuel Platform'}`;
+
+    const iamStore = useIamStore(pinia);
+
+    // Authenticated users have no business on the login / register screens.
+    const guestOnly = ['/iam', '/iam/login', '/iam/register', '/iam/demo'];
+    if (iamStore.isAuthenticated && guestOnly.includes(to.path)) return next('/dashboard');
+
+    if (to.meta.public) return next();
+    if (!iamStore.isAuthenticated) return next('/iam/login');
+
+    // Role guards: redirect to the dashboard when the segment doesn't match.
+    if (iamStore.isProvider && matchesPrefix(to.path, BUYER_ONLY)) return next('/dashboard');
+    if (!iamStore.isProvider && matchesPrefix(to.path, PROVIDER_ONLY)) return next('/dashboard');
+
     return next();
 });
 
